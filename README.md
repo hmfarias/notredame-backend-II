@@ -92,6 +92,8 @@ Gracias por visitar nuestro repositorio. ¡Esperamos que disfrutes explorando y 
 
 ![Static Badge](https://img.shields.io/badge/Mongoose-white?style=for-the-badge) como biblioteca de JavaScript que permite modelar y gestionar datos en bases de datos MongoDB. Se lo ha utilizado para: definir esquemas, validar datos, administrar relaciones entre datos, interactuar con MongoDB, traducir entre objetos en código y su representación en MongoDB, simplificar las operaciones de MongoDB y trabajar de forma más ordenada y con menor margen de error
 
+![Static Badge](https://img.shields.io/badge/Passport-white?style=for-the-badge) como middleware de Node.js que permite implementar diversas estrategias de autenticación en la aplicación. 
+
 [Volver al menú](#top)
 
 <hr>
