@@ -118,7 +118,7 @@ El uso de Mongoose no solo simplifica la manipulación de datos mediante esquema
 
 ### 🟢 ACCESO A LOS DATOS
 
-El acceso a los datos se gestiona a través de Managers, representados por las clases ProductsMongoManager y CartsMongoManager. Esta arquitectura garantiza una clara separación entre la lógica de persistencia y las rutas que consumen los datos, promoviendo un diseño modular y escalable.
+El acceso a los datos se gestiona a través de Managers. Esta arquitectura garantiza una clara separación entre la lógica de persistencia y las rutas que consumen los datos, promoviendo un diseño modular y escalable.
 
 Gracias a esta abstracción, si en el futuro se decide cambiar el sistema de persistencia (por ejemplo, migrar de MongoDB a otro motor de base de datos), solo será necesario implementar nuevos Managers sin afectar la estructura ni la lógica de las rutas existentes. Esto facilita el mantenimiento y la evolución del sistema con mínima intervención en el código.
 
@@ -142,26 +142,9 @@ El diseño de la interfaz sigue una estructura sencilla pero organizada, asegura
 
 ### 🟢 RUTAS Y SIMULACION DEL FRONT CON HANDLEBARS
 
-En esta aplicación, se utilizan rutas tanto para la interacción con el backend como para la simulación del frontend mediante vistas renderizadas con **Handlebars**. Algunas rutas están diseñadas para renderizar directamente vistas de Handlebars en lugar de devolver respuestas en formato JSON, lo que es un enfoque común en una API RESTful.
-
-### Rutas que renderizan vistas de Handlebars
-
-En lugar de enviar una respuesta en formato JSON, algunas rutas procesan la información y la pasan a una vista de Handlebars para ser renderizada directamente en el navegador. Este enfoque se utiliza en aquellas rutas que sirven para visualizar el frontend de la aplicación, como la visualización de productos, carritos, y formularios de creación o edición de productos. Estas rutas son responsables de generar las vistas de la aplicación que interactúan con el usuario de manera visual.
-
-Por ejemplo, una ruta como:
-
-```js
-router.get('/products', async (req, res) => {
-	const products = await ProductsMongoManager.get();
-	res.render('products', { products });
-});
-```
-
-En este caso, la ruta /products obtiene los productos desde la base de datos y luego los pasa a la vista products.handlebars, la cual será renderizada en el navegador, mostrando la lista de productos.
-
-Simulación del Frontend
-
-Si bien las rutas deberían devolver un objeto JSON para ser utilizadas como una API convencional, el uso de Handlebars y el renderizado directo en el servidor ayuda a simular el comportamiento completo de una aplicación en un entorno controlado. Esto también simplifica el proceso de pruebas y demostración en un entorno sin necesidad de depender de un frontend separado, ya que las vistas son generadas y gestionadas directamente desde el backend.
+En esta aplicación se implementan rutas para la interacción con el backend y también para simular el comportamiento del frontend mediante vistas construidas con Handlebars.
+Las rutas del backend están diseñadas para devolver respuestas en formato JSON, siguiendo el enfoque típico de una API RESTful.
+Cada vista cuenta con su propio archivo JavaScript, encargado de realizar las peticiones, actualizar dinámicamente los datos mostrados y gestionar la visualización de mensajes para el usuario.
 
 [Volver al menú](#top)
 
@@ -238,13 +221,13 @@ Antes de instalar la aplicación, asegúrate de contar con:
      git clone https://github.com/hmfarias/notredame-backend-II.git
    ```
 
-   Esto creará una carpeta llamada backend-ecommerce-mongoDB con todos los archivos de la aplicación.
+   Esto creará una carpeta llamada notredame-backend-II con todos los archivos de la aplicación.
 
 3. **Abrir el proyecto en el editor de código:**
    Abre Visual Studio Code (o tu editor de preferencia) y selecciona la carpeta backend-ecommerce-mongoDB.
 
 4. **Abrir una terminal en la carpeta del proyecto:**
-   Asegúrate de estar ubicado dentro de la carpeta backend-ecommerce-mongoDB en la terminal.
+   Asegúrate de estar ubicado dentro de la carpeta notredame-backend-II en la terminal.
 
 5. **Instalar las dependencias:**
 
@@ -257,18 +240,19 @@ Antes de instalar la aplicación, asegúrate de contar con:
 6. **Configurar las variables de entorno:**
    Crea un archivo .env en la raíz del proyecto con la configuración de las credenciales (ver sección CREDENCIALES (.env)).
    Consulta la configuración de credenciales en la sección [CREDENCIALES (.env)](#environment).
-7. **Iniciar la aplicación en modo desarrollador:**
+   
+8. **Iniciar la aplicación en modo desarrollador:**
    Ejecuta el siguiente comando:
 
    ```
    npm run dev
    ```
 
-   Esto iniciará el servidor y mostrará un mensaje en la terminal indicando que la aplicación está corriendo en el puerto 8080 y conectada a la base de datos.
+   Esto iniciará el servidor y mostrará un mensaje en la terminal indicando que la aplicación está corriendo en el puerto 3000 y conectada a la base de datos.
 
-8. **Acceder a la aplicación desde el navegador:**
+9. **Acceder a la aplicación desde el navegador:**
    Abre una nueva pestaña en tu navegador y accede a la siguiente dirección:
-   http://localhost:8080
+   http://localhost:3000
 
 ✅ ¡Listo! Ya puedes explorar y probar la aplicación en tu entorno local. 🚀
 
@@ -286,7 +270,7 @@ Antes de instalar la aplicación, asegúrate de contar con:
 
 La aplicación está basada en una arquitectura **MVC (Modelo-Vista-Controlador)** y utiliza **MongoDB** como sistema de persistencia, gestionado a través de **Mongoose** como ODM. Esto permite realizar las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de forma eficiente y simplificada.
 
-Los datos se acceden mediante **Managers** (clases `ProductsMongoManager` y `CartsMongoManager`), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos managers sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
+Los datos se acceden mediante **Managers** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos managers sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
 
 [Volver al menú](#top)
 
@@ -302,49 +286,45 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 |-src/
 ├── config/
 │   └── config.js  // Lógica para manejar las variables de entorno provistas en .env
+│   └── configDB.js  // Lógica para manejar la conexíon a la BD
+│   └── configPassport.js  // Middleware de Passport que implementa las estrategias de registro y autorización
 │
-├── managers/
-│   └── ProductsMongoManager.js  // Lógica de interacción con la base de datos de productos
-│   └── CartsMongoManager.js  // Lógica de interacción con la base de datos de carritos
-│   └── CountersMongoManager.js // Lógica de interacción con los contadores para manejar ids personalizados tanto para productos como para carritos
-│   └── FileManagerJson.js // Logica de interaccion para persistencia en archivos JSON (version anterior de la aplicacion - queda para ilustrar la separacion entre rutas y acceso a datos)
+├── dao/
+│   └── models
+│   │   └── user.model.js  // Modelo de datos de usuarios en MongoDB
+│   │   └── product.model.js  // Modelo de datos de productos en MongoDB
+│   │   └── cart.model.js // Modelo de datos de carritos en MongoDB
+│   └── UserssManagerMongo.js  // Lógica de interacción con la base de datos de usuarios
 │
-├── models/
-│   └── product.model.js  // Modelo de datos de productos en MongoDB
-│   └── cart.model.js // Modelo de datos de carritos en MongoDB
-│   └── counter.model.js // Modelo de datos de contadores en MongoDB
+├── middlewares/
+│   └── auth.js  // Lógica de autenticación con JWT
 │
 ├── public/
 │   └── css/
 │       └── styles.css // Maneja la maquetación de la aplicacion
 │   └── img/
-│       └── defect-product.png // archivo png para mostrar el uso de MULTER. Se lo puede utilizar para asignar la foto de producto a la hora de crear uno nuevo
 │       └── logo.png // archivo png con el logo de la app
 │   └── js/
-│       └── cart.js  // Lógica de interacción en el frontend de carritos
-│       └── navbar.js  // Lógica de interacción en el frontend para el navbar
-│       └── product.js  // Lógica de interacción en el frontend cuando se visualiza un producto individual
-│       └── products.js  // Lógica de interacción en el frontend de productos cuando se visualiza la lista
+│       └── current.js  // Lógica de estrategia current que devuelve los datos del ususario autenticado en el sistema
+│       └── login.js  // Lógica de la página de login
+│       └── register.js  // Lógica de la página de registro de ususarios
 │
 ├── routes/
-│   └── cartRouter.js  // Rutas relacionadas con carritos
-│   └── productRouter.js  // Rutas relacionadas con productos
+│   └── sessions.router.js  // Rutas relacionadas con las sessiones (registro - login - current)
 │   └── viewsRouter.js  // Rutas relacionadas con las vistas handlebars
 │
 ├── views/
 │   └── layouts/
-│       └── main.handlebars // layout base para el frontend
+│   │   └── main.handlebars // layout base para el frontend
 │   └── partials/
 │       └── header.handlebars // layout para el header de la app
-│   └── cart.handlebars  // Vista del carrito con los productos agregados en la interfaz de usuario
-│   └── error.handlebars  // Vista de error para la interfaz de usuario cuando se produce algun tipo de error
-│   └── index.handlebars  // Vista de home para la interfaz de usuario
-│   └── newProduct.handlebars  // Vista de carga de nuevo producto para la interfaz de usuario
-│   └── product.handlebars  // Vista de un producto individual para la interfaz de usuario
-│   └── products.handlebars  // Vista de la lista de productos para la interfaz de usuario
+│   └── current.handlebars  // Vista que muestra los datos del ususario autenticado en el sistema
+│   └── home.handlebars  // Vista de la home page de la página
+│   └── login.handlebars  // Vista de la página para hacer login al sistema
+│   └── register.handlebars  // Vista de registro de ususarios
 │
 ├── app.js  // Archivo principal que inicia el servidor
-├── utils.js  // crea y exporta una variable __dirname que proporciona la ruta del archivo App.js
+├── utils.js  // crea y exporta una variable __dirname que proporciona la ruta del archivo App.js y funciones para proteger las contraseñas mediante encriptación, y registrar errores inesperados en archivos de log
 ├── utilsMulter.js  // configura el manejo de archivos mediante la librería multer para la carga de imágenes en la aplicación.
 ├── .env  // Variables de entorno
 └── package.json  // Dependencias y configuraciones del proyecto
