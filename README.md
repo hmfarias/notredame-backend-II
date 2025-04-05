@@ -1,4 +1,4 @@
-[![Status][statuss-shield]][statuss-url]
+[![Status][status-shield]][status-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
