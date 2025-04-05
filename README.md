@@ -44,12 +44,9 @@
 6. [Funcionamiento de la Aplicacion](#funcionamiento)
    - [Arquitectura](#arquitectura)
    - [Estructura de archivos](#estructura)
-   - [Filtros y Paginación](#filtros)
-   - [Gestión de Productos](#productos)
-     - [Vista de Productos](#vistaproductos)
-     - [Método GET](#get)
-     - [Update y Delete](#update-y-delete)
-   - [Gestión del Carrito](#carrito)
+   - [Gestión de Usuarios](#usuarios)
+     - [Vista de Registro](#vistaregistro)
+     - [Método GET en Current](#get)
 7. [Contribuyendo](#contribuyendo)
 8. [Licencia](#licencia)
 9. [Contacto](#contacto)
@@ -334,258 +331,56 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 
 <hr>
 
-<a name="filtros"></a>
+<a name="usuarios"></a>
 
-### 🟢 Filtros y Paginación
+### 🟢 Gestión de Usuarios
 
-### Filtros y Paginación en la Aplicación
+La gestión de usuarios en esta aplicación se maneja a través del modelo `user.model.js`, que define la estructura de cada registro de usuario en la base de datos. Este modelo incluye campos como 
+- first_name:String,
+- last_name:String,
+- email:String (único)
+- age:Number,
+- password:String(Hash)
+- cart:Id con referencia a Carts
+- role:String(default:’user’)
 
-La aplicación implementa un sistema de **filtros** y **paginación** para facilitar la visualización de productos en el frontend, mejorando la experiencia del usuario al interactuar con un gran número de productos. A continuación se explica cómo funcionan ambos:
 
-### 🔶 Filtros
-
-Los **filtros** permiten al usuario especificar ciertos criterios para reducir la cantidad de productos que se muestran en la lista. Los filtros disponibles son:
-
-- **Categoría**: Filtra los productos según su categoría.
-- **Estado**: Permite seleccionar entre productos disponibles o no disponibles.
-- **Orden de precio**: El usuario puede elegir ordenar los productos por precio, ya sea de menor a mayor o de mayor a menor.
-- **Límite**: Establece la cantidad de productos a mostrar por página.
-
-El sistema de filtros se implementa utilizando parámetros en la URL, lo que permite que la búsqueda sea dinámica y fácil de manejar tanto en el frontend como en el backend. Los filtros se aplican directamente a las consultas a la base de datos, mejorando la eficiencia de la aplicación.
-
-### 🔶 Paginación
-
-La **paginación** permite dividir la lista de productos en varias páginas, mostrando solo una parte de los productos a la vez. Esto ayuda a optimizar la carga de la página y mejora el rendimiento general de la aplicación.
-
-La paginación se maneja a través de los siguientes parámetros:
-
-- **Página**: Indica qué página de productos se está visualizando.
-- **Límite**: Determina cuántos productos se deben mostrar por página.
-
-Cuando el usuario cambia la página, se actualizan los enlaces de paginación (`prevLink`, `nextLink`, `firstLink`, `lastLink`), que permiten navegar entre las páginas de productos.
-
-### 🔶 Implementación de los Filtros y Paginación
-
-1. **En el Backend**: El backend maneja los filtros y la paginación en las consultas a la base de datos. Se utilizan parámetros opcionales en la URL para aplicar los filtros y calcular la página correspondiente. Se implementa con `paginate`.
-
-#### ¿Cómo Funciona `paginate`?
-
-El método `paginate` permite que los resultados de una consulta de MongoDB se dividan en varias páginas, facilitando la visualización de un número limitado de resultados por página. Este método se aplica directamente sobre los modelos de Mongoose y acepta parámetros que indican la página actual, el número de elementos por página y otros filtros de búsqueda.
-
-Los parámetros que se pasan al método `paginate` en la aplicación son:
-
-- **Página (`page`)**: El número de la página que se desea visualizar.
-- **Límite (`limit`)**: El número de documentos que se deben mostrar por página.
-- **Filtros**: Los filtros que el usuario aplica, como categoría, estado de disponibilidad, y orden de precio.
-
-3. **En el Frontend**: El frontend permite al usuario seleccionar los filtros y navegar entre las páginas de resultados utilizando formularios interactivos.
-
-El código de filtrado y paginación es flexible y permite ajustar los filtros sin necesidad de modificar el código de las rutas principales. Esto asegura que la lógica de los filtros y la paginación se pueda extender fácilmente en el futuro.
-
-Por ejemplo, los parámetros `category`, `status`, `priceOrder`, `limit`, y `page` se envían como parte de la URL y se manejan adecuadamente en las rutas del servidor.
-
-Este sistema permite que los usuarios encuentren los productos que desean de manera más rápida y sencilla, mejorando la eficiencia en la navegación dentro de la tienda online.
-
-[Volver al menú](#top)
-
-<hr>
-
-<a name="productos"></a>
-
-### 🟢 Gestión de Productos
-
-La gestión de productos en esta aplicación se maneja a través del modelo `product.model.js`, que define la estructura de cada producto en la base de datos. Este modelo incluye campos como el nombre del producto, la descripción, el precio y la cantidad en inventario, categoría, status de disponibilidad, thumbnail, entre otros. La interacción con los productos se realiza mediante un conjunto de rutas y métodos que permiten realizar las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sobre los productos.
-
-- **Creación de Producto**: Los productos se pueden agregar a la base de datos mediante un formulario en el frontend. Se validan los datos y se cargan en la base de datos, donde se guardan con un identificador único (`_id`).
-- **Visualización de Productos**: Los productos almacenados en la base de datos se pueden recuperar y mostrar en el frontend. Para la visualización de la lista de productos o de un producto individual, se realizan consultas a la base de datos que recuperan los datos necesarios, y se muestran en las vistas correspondientes.
-
-- **Actualización de Producto**: Los productos existentes se pueden actualizar a través de un formulario que permite modificar campos como el nombre, precio o descripción del producto. Al actualizar un producto, los cambios se reflejan en la base de datos.
-
-- **Eliminación de Producto**: Un producto puede eliminarse del sistema si ya no es necesario. Para ello, se proporciona una ruta que permite eliminar un producto a partir de su identificador (`_id`), lo que borra el documento correspondiente en la base de datos.
+- **Creación de Usuario**: Los usuarios se pueden agregar a la base de datos mediante el formulario de registro en el frontend. Se validan los datos, se encripta la contraseña y se cargan en la base de datos, donde se guardan con un identificador único (`_id`).
+  
+- **Visualización de Usuarios**: Los datos de un usuario logueado al sistema se pueden obtener en la ruta api/sessions/current.
 
 #### 🔶 Relación con el Carrito
 
-Cada producto en el carrito se referencia solo por su `_id` en el modelo de carrito, lo que optimiza el almacenamiento. Para obtener los detalles completos de un producto dentro del carrito (como su nombre, precio, etc.), se utiliza el método `populate` de Mongoose. Este permite cargar toda la información del producto en el carrito, sin necesidad de almacenarla duplicada, lo que mejora la eficiencia de la base de datos.
+Cada usuario tiene un campo cart que referencia a un carrito solo por su `_id`, lo que optimiza el almacenamiento. Para obtener los detalles completos de un carrito dentro del usuario, se utiliza el método `populate` de Mongoose. Este permite cargar toda la información del carrito, sin necesidad de almacenarla duplicada, lo que mejora la eficiencia de la base de datos.
 
-Esta estructura hace que la gestión de productos sea flexible y eficiente, permitiendo agregar, actualizar y eliminar productos con facilidad, y mejorando la experiencia del usuario en la tienda.
-
-<a name="vistaproductos"></a>
-
-### 🟢 Vista de Productos
-
-La vista de productos está diseñada para mostrar una lista de productos disponibles en la tienda, con varias funcionalidades de filtrado, ordenamiento y paginación.
-
-#### 🔶 Estructura
-
-- ☑️ **Filtros y Ordenamiento**: En la parte izquierda de la página, se encuentra una sección con filtros que permite al usuario:
-
-  - Filtrar productos por **categoría**.
-  - Filtrar productos por **estado** (en stock, bajo stock o agotado).
-  - Ordenar los productos por **precio** (de menor a mayor o de mayor a menor).
-  - Establecer el número de **productos por página** mediante un campo numérico.
-
-  El formulario de filtros incluye un botón para restablecer los filtros y otro para aplicarlos.
-
-- ☑️ **Lista de Productos**: A la derecha de la sección de filtros, se muestra la lista de productos en formato de tarjetas. Cada tarjeta de producto incluye:
-
-  - Una **imagen** miniatura del producto.
-  - El **título** del producto.
-  - El **precio** del producto.
-  - Un enlace para ver los detalles del producto individualmente.
-  - Un formulario para **eliminar** el producto, el cual se puede activar mediante un botón de eliminación.
-
-  La lista de productos se genera dinámicamente utilizando el motor de plantillas Handlebars, iterando sobre el array `products`.
-
-- ☑️ **Paginación**: La vista incluye controles de paginación que permiten al usuario navegar entre las diferentes páginas de productos. Los controles de paginación incluyen:
-  - Enlaces para **ir a la primera** y **última** página.
-  - Enlaces para **navegar a la página anterior** o **siguiente**.
-  - Un indicador que muestra la página actual y el total de páginas disponibles.
-
-#### 🔶 Funcionalidad
-
-- Los filtros se aplican a la consulta de productos para mostrar solo aquellos que cumplan con los criterios seleccionados (por ejemplo, categoría, estado y rango de precios).
-- La paginación es útil para manejar grandes cantidades de productos, permitiendo mostrar un número limitado por página y navegar entre las páginas de manera eficiente.
-- La eliminación de productos está vinculada a un endpoint de tipo `DELETE` que permite eliminar un producto de la base de datos mediante un formulario.
-
-#### 🔶 Interactividad
-
-El archivo `products.js` contiene la lógica necesaria para interactuar con los filtros y la paginación, manejando la aplicación de filtros y la actualización de la lista de productos en función de las acciones del usuario.
-
-Esta vista de productos es una parte fundamental de la interfaz de usuario, proporcionando un medio para explorar, filtrar y eliminar productos de manera eficiente.
-
-[Volver al menú](#top)
+Esta estructura hace que la gestión de usuarios sea flexible y eficiente.
 
 <hr>
 <a name="get"></a>
 
-### 🟢 El método GET de productos:
+### 🟢 El método GET en CURRENT:
 
-El método GET en la aplicación está diseñado para recuperar una lista paginada de productos y devolverla en el siguiente formato:
-
-```
-{
-  "status": "success/error",
-  "payload": "Resultado de los productos solicitados",
-  "totalPages": "Total de páginas",
-  "prevPage": "Página anterior",
-  "nextPage": "Página siguiente",
-  "page": "Página actual",
-  "hasPrevPage": "Indicador para saber si la página previa existe",
-  "hasNextPage": "Indicador para saber si la página siguiente existe",
-  "prevLink": "Link directo a la página previa (null si hasPrevPage=false)",
-  "nextLink": "Link directo a la página siguiente (null si hasNextPage=false)"
-  "firstLink": "Link directo a la primera página"
-  "lastLink": "Link directo a la última página"
-
-}
-```
-
-Este formato permite una paginación eficiente y facilita la navegación entre diferentes páginas de resultados en la interfaz de usuario, proporcionando tanto los datos como los enlaces para navegar a las páginas adyacentes de productos.
-
-El llamado a este método se realiza a través de una URL específica, donde se pueden incluir parámetros como los filtros por categoría y estado, y el orden de los productos por precio asi como la página actual, el límite de productos por página.
-
-Ejemplo:
-
-```
-GET /products?category=all&status=in-stock&price=asc&page=2&limit=10
-```
-
-- category=all: Filtra los productos por todas las categorías disponibles (en este caso, sin filtrado específico).
-- status=in-stock: Filtra los productos que están en stock.
-- price=asc: Ordena los productos por precio en orden ascendente.
-- page=2: Indica que el usuario está solicitando la página 2 de los productos.
-- limit=10: Establece que el número máximo de productos por página será 10.
-
-#### 🔶 Respuesta del Método GET:
+El método GET de usuario en la aplicación está diseñado para recuperar los datos de un usuario autenticado en el sistema (con token generado al momento del login); y devuelve los datos en el siguiente formato:
 
 ```
 {
-  "status": "success",
-  "docs": [
-    {
-      "_id": "123",
-      "title": "Product 1",
-      "price": 100,
-      "thumbnail": "/img/product1.jpg"
-    },
-    {
-      "_id": "124",
-      "title": "Product 2",
-      "price": 150,
-      "thumbnail": "/img/product2.jpg"
+    "error": false,
+    "message": "Authenticated user",
+    "payload": {
+        "_id": "67f199a5ad908916c9c2bc9e",
+        "first_name": "Marce",
+        "last_name": "Farias",
+        "email": "marce@test.com",
+        "age": 54,
+        "cart": null,
+        "role": "user",
+        "__v": 0,
+        "iat": 1743894822,
+        "exp": 1743895422
     }
-  ],
-  "totalPages": 5,
-  "prevPage": 1,
-  "nextPage": 3,
-  "page": 2,
-  "hasPrevPage": true,
-  "hasNextPage": true,
-  "prevLink": "/products?page=1&limit=10&category=all&status=in-stock&price=asc",
-  "nextLink": "/products?page=3&limit=10&category=all&status=in-stock&price=asc",
-  "firstLink": "/products?page=1&limit=10&category=all&status=in-stock&price=asc",
-  "lastLink": "/products?page=5&limit=10&category=all&status=in-stock&price=asc"
 }
 ```
 
-[Volver al menú](#top)
-
-<hr>
-
-<a name="update-y-delete"></a>
-
-### 🟢 Update y Delete de Productos
-
-Para actualizar un producto, se utiliza el método **PUT** en la ruta `products/:id`. Este método permite modificar los detalles de un producto en la base de datos, como su nombre, precio y descripción. Al ejecutar la actualización, los datos almacenados en la base de datos se reemplazan por la nueva información proporcionada.
-
-Para eliminar un producto, se emplea el método **DELETE** en la ruta `products/:id`. Este método elimina permanentemente el producto de la base de datos, junto con su información asociada en el carrito.
-
-En cuanto al **Frontend**, se han aplicado dos enfoques distintos para manejar estas operaciones:
-• **Actualización de productos**: El botón para actualizar se encuentra en la vista del producto individual, lo que permite modificar sus detalles sin necesidad de cambiar de pantalla.
-• **Eliminación de productos**: El botón para eliminar se ha integrado en el listado de productos, ubicándose dentro de la tarjeta de cada uno.
-
-Estos dos enfoques permiten ilustrar diferentes formas de agregar eventos (listeners) en la interfaz, optimizando la interacción del usuario según la acción requerida.
-
-[Volver al menú](#top)
-
-<hr>
-
-<a name="carrito"></a>
-
-### 🟢 Gestión del Carrito
-
-En la aplicación, la **gestión del carrito** se encarga de permitir a los usuarios agregar, actualizar, eliminar y ver los productos en su carrito de compras. Esta funcionalidad es crucial para una experiencia de compra en línea, ya que permite a los usuarios seleccionar productos antes de proceder con el pago. La gestión del carrito se implementa mediante un conjunto de rutas y lógica de backend que interactúan con la base de datos.
-
-#### 🔶 ¿Cómo Funciona la Gestión del Carrito?
-
-1. **Creación de un Carrito**:
-   Cuando un usuario agrega un producto al carrito, se verifica si ya existe un carrito. Si es la primera vez que el usuario agrega un producto, se crea un carrito vacío y, a continuación, se agrega el producto en la misma operación. Si el carrito ya existe (es decir, no es la primera vez que el usuario agrega productos), se recupera el carrito previamente creado y el producto se agrega a dicho carrito.
-
-2. **Agregar Productos al Carrito**:
-   Los usuarios pueden agregar productos uno a uno al carrito mediante la selección de un producto y la elección de la cantidad mediante los botones `+` y `-`. Al agregar un producto, se actualiza el carrito en la base de datos, y se almacena información como el ID del producto, la cantidad, y el precio total del producto.
-
-3. **Actualizar Cantidad de Productos en la vista de carrito**:
-   Los usuarios pueden modificar la cantidad de un producto en su carrito desde el mismo carrito. Esta acción actualiza la cantidad de ese producto en el carrito y recalcula el precio total.
-
-4. **Eliminar Productos del Carrito**:
-   Los productos pueden ser eliminados completamente del carrito en cualquier momento. Al eliminar un producto, se elimina su entrada en la base de datos correspondiente al carrito.
-
-5. **Visualización del Carrito**:
-   El carrito del usuario se puede ver en cualquier momento desde la interfaz de usuario presionando el simbolo del carrito que se ubica a la derecha en el Navbar. Esta vista muestra los productos en el carrito, su cantidad, el precio total por producto y el total a pagar por el carrito. En caso de que todavía no exista un carrito (pues el usuario no ha agregado ningún producto), la aplicación informa sobre esa situación.
-
-6. **Finalización de Compra**:
-   El alcance del proyecto no incluye la funcionalidad completa de finalización de compra. Sin embargo, se ha implementado un botón "Eliminar" en el carrito para ilustrar el uso del endpoint `DELETE`, el cual se utilizaría posteriormente para eliminar los productos del carrito luego de procesar la compra. Esta implementación es solo una representación de cómo se gestionaría el proceso de eliminación una vez completada la compra en un sistema real.
-
-#### 🔶 Estructura de la Gestión del Carrito
-
-La gestión del carrito se realiza mediante el uso de un **modelo de carrito** en la base de datos, y las operaciones CRUD (Crear, Leer, Actualizar, Eliminar) se manejan con la ayuda de los **routers** y **managers**.
-
-El flujo básico es el siguiente:
-
-- **Router**: Las rutas para manejar el carrito están definidas en el archivo `cart.router.js`, donde se exponen los endpoints para agregar, eliminar o ver productos del carrito.
-- **Modelo de Carrito y uso de Populate**: El modelo `cart.model.js` representa la estructura del carrito en la base de datos, incluyendo los productos agregados, su cantidad y el precio. En este modelo, cada producto dentro del carrito solo guarda el `_id` del producto, en lugar de almacenar toda la información del producto directamente. Para obtener los detalles completos de cada producto, se utiliza el método `populate` de Mongoose. Este método permite realizar una consulta de referencia a la colección de productos y traer los datos completos de cada producto, como su nombre, descripción, precio, etc., a partir del `_id` almacenado en el carrito. De esta manera, se optimiza el almacenamiento y se mantiene la relación entre los carritos y los productos en la base de datos.
-
-- **Manager de Carrito**: El manager maneja la lógica para las operaciones del carrito. Incluye métodos para agregar productos, actualizar cantidades, eliminar productos y obtener el carrito completo.
 
 [Volver al menú](#top)
 
