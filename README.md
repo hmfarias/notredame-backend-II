@@ -45,7 +45,6 @@
    - [Arquitectura](#arquitectura)
    - [Estructura de archivos](#estructura)
    - [Gestión de Usuarios](#usuarios)
-     - [Vista de Registro](#vistaregistro)
      - [Método GET en Current](#get)
 7. [Contribuyendo](#contribuyendo)
 8. [Licencia](#licencia)
