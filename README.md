@@ -188,17 +188,23 @@ Antes de ejecutar la aplicación, es necesario crear un archivo .env en la carpe
 ```
 /**
 * Environment variables
-    PORT: Port of application
-    MONGODB_URI: URI of the database
 */
-/* Server Configuration
-PORT=8080
+# Server Configuration
+PORT=3000
 
-/* Database Configuration
+SECRET_KEY="X9v$3jK@pLm7!zQwT2"
+
+# Database Configuration
 DB_USER=hmfarias
 DB_PASSWORD=QQATDs4SdAAWYa23
 DB_HOST=cluster0.fergg.mongodb.net
-DB_NAME=Backend-ecommerce
+APP_NAME=Cluster0
+DB_NAME=backendII  
+
+# Github Configuration
+GITHUB_CLIENT_ID="Iv23lilcJZrO7UjGM8Y7"
+GITHUB_CLIENT_SECRET="a17bf66aef1fdc6d9958f1b240cbc7df06f101d8"  
+GITHUB_CALLBACK_URL="http://localhost:3000/api/sessions/callbackGithub"
 ```
 
 Este archivo a su vez es procesado por `/src/config/config.js`, que es quien finalmente se encarga de cargar las variables de entorno y configurar los valores necesarios para el funcionamiento de la aplicación, como el puerto del servidor y la conexión a la base de datos.
