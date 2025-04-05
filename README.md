@@ -17,11 +17,11 @@
     <a href="" target="_blank" ><strong>»</strong></a>
     <br />
     <br />
-    <a href="https://github.com/hmfarias/notredame-backend-II.git">Ver repositorio</a>
+    <a href="https://github.com/hmfarias/notredame-backend-II">Ver repositorio</a>
     ·
-    <a href="https://github.com/hmfarias/notredame-backend-II.git/issues">Reportar un error</a>
+    <a href="https://github.com/hmfarias/notredame-backend-II/issues">Reportar un error</a>
     ·
-    <a href="https://github.com/hmfarias/notredame-backend-II.git/issues">Solicitar función</a>
+    <a href="https://github.com/hmfarias/notredame-backend-II/issues">Solicitar función</a>
   </p>
 </div>
 
@@ -199,11 +199,11 @@ DB_USER=hmfarias
 DB_PASSWORD=QQATDs4SdAAWYa23
 DB_HOST=cluster0.fergg.mongodb.net
 APP_NAME=Cluster0
-DB_NAME=backendII  
+DB_NAME=backendII
 
 # Github Configuration
 GITHUB_CLIENT_ID="Iv23lilcJZrO7UjGM8Y7"
-GITHUB_CLIENT_SECRET="a17bf66aef1fdc6d9958f1b240cbc7df06f101d8"  
+GITHUB_CLIENT_SECRET="a17bf66aef1fdc6d9958f1b240cbc7df06f101d8"
 GITHUB_CALLBACK_URL="http://localhost:3000/api/sessions/callbackGithub"
 ```
 
@@ -233,7 +233,7 @@ Antes de instalar la aplicación, asegúrate de contar con:
    Ejecuta el siguiente comando para clonar el proyecto:
 
    ```
-     git clone https://github.com/hmfarias/notredame-backend-II.git.git
+     git clone https://github.com/hmfarias/notredame-backend-II.git
    ```
 
    Esto creará una carpeta llamada backend-ecommerce-mongoDB con todos los archivos de la aplicación.
