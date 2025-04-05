@@ -7,7 +7,7 @@
 <!-- PROJECT LOGO -->
 <div align="center">
   <a href="https://github.com/hmfarias/notredame-backend-II.git">
-    <img src="https://github.com/hmfarias/notredame-backend-II.git/blob/main/src/public/img/logo.png" alt="Logo" width="350" height="auto">
+    <img src="https://github.com/hmfarias/notredame-backend-II/blob/main/src/public/img/logo.png" alt="Logo" width="350" height="auto">
   </a>
   <h1 align="center">BACKEND</h1>
 
