@@ -658,8 +658,8 @@ Marcelo Farias - [+54 9 3512601888] - hmfarias7@gmail.com
 
 <!-- [statuss-shield]: https://img.shields.io/badge/STATUS-Developing-green -->
 
-[statuss-shield]: https://img.shields.io/badge/STATUS-finished-green
-[statuss-url]: https://github.com/hmfarias/notredame-backend-II#readme
+[status-shield]: https://img.shields.io/badge/STATUS-finished-green
+[status-url]: https://github.com/hmfarias/notredame-backend-II#readme
 [forks-shield]: https://img.shields.io/github/forks/hmfarias/notredame-backend-II
 [forks-url]: https://github.com/hmfarias/notredame-backend-II/network/members
 [stars-shield]: https://img.shields.io/github/stars/hmfarias/notredame-backend-II
