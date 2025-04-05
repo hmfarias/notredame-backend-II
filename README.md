@@ -658,16 +658,13 @@ Marcelo Farias - [+54 9 3512601888] - hmfarias7@gmail.com
 
 <!-- [statuss-shield]: https://img.shields.io/badge/STATUS-Developing-green -->
 
-[statuss-shield]: https://img.shields.io/badge/STATUSS-finished-green
-[statuss-url]: https://https://github.com/hmfarias/NotreDame#readme
-[forks-shield]: https://img.shields.io/github/forks/hmfarias/NotreDame
-[forks-url]: https://github.com/hmfarias/NotreDame/network/members
-[stars-shield]: https://img.shields.io/github/stars/hmfarias/NotreDame
-[stars-url]: https://github.com/hmfarias/NotreDame/stargazers
-[issues-shield]: https://img.shields.io/github/issues/hmfarias/NotreDame
-[issues-url]: https://github.com/hmfarias/NotreDame/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg
-[license-url]: https://github.com/hmfarias/NotreDame/blob/master/LICENSE.txt
-[product-screenshot]: https://github.com/hmfarias/NotreDame/blob/main/assets/images/screenShot.webp
-[product-screenshot-navbar]: https://github.com/hmfarias/NotreDame/blob/main/assets/images/navbar.webp
-[others-url]: https://github.com/hmfarias/NotreDame
+[statuss-shield]: https://img.shields.io/badge/STATUS-finished-green
+[statuss-url]: https://github.com/hmfarias/notredame-backend-II#readme
+[forks-shield]: https://img.shields.io/github/forks/hmfarias/notredame-backend-II
+[forks-url]: https://github.com/hmfarias/notredame-backend-II/network/members
+[stars-shield]: https://img.shields.io/github/stars/hmfarias/notredame-backend-II
+[stars-url]: https://github.com/hmfarias/notredame-backend-II/stargazers
+[issues-shield]: https://img.shields.io/github/issues/hmfarias/notredame-backend-II
+[issues-url]: https://github.com/hmfarias/notredame-backend-II/issues
+[license-shield]: https://img.shields.io/github/license/hmfarias/notredame-backend-II
+[license-url]: https://github.com/hmfarias/notredame-backend-II/blob/master/LICENSE
