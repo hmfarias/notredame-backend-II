@@ -1,0 +1,30 @@
+<h1>{{title}}</h1>
+{{! 'multipart/form-data' indicates that the form will contain files }}
+<form class='form-insert' action='' method='POST' enctype='multipart/form-data'>
+	<label for='name'>Name</label>
+	<input type='text' name='name' id='name' placeholder='Enter name' />
+	<label for='Surname'>Surname</label>
+	<input type='text' name='surname' id='surname' placeholder='Enter surname' />
+	<div class='items-group'>
+		<div>
+			<label for='age'>Age</label>
+			<input type='number' name='age' id='age' placeholder='Enter age' />
+
+		</div>
+		<div>
+			<label for='email'>Email</label>
+			<input type='email' name='email' id='email' placeholder='Enter email' />
+
+		</div>
+
+	</div>
+	<label for='password'>Password</label>
+	<input type='password' name='password' id='password' placeholder='Enter password' />
+
+	<div class='container-buttons j-end'>
+		<button type='submit' id='btnRegister'>Register</button>
+		<button type='button' onclick="window.location.href = '/'">Home</button>
+	</div>
+</form>
+
+<script type='module' src='/js/register.js'></script>

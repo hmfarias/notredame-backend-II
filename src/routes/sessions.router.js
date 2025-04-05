@@ -41,7 +41,7 @@ router.post(
 	'/login',
 	passport.authenticate('login', {
 		session: false,
-		failureRedirect: '/api/sessions/error',
+		// failureRedirect: '/api/sessions/error',
 	}),
 	async (req, res) => {
 		try {
@@ -70,19 +70,10 @@ router.post(
 				token,
 			});
 		} catch (error) {
-			errorHandler(error, req, res);
+			errorHandler(error, res);
 		}
 	}
 );
-
-// Error -  ---------------------------------------------------------
-router.get('/error', (req, res) => {
-	return res.status(401).json({
-		error: true,
-		message: 'Operation error',
-		payload: null,
-	});
-});
 
 // Current -  ---------------------------------------------------------
 router.get('/current', auth, (req, res) => {
@@ -92,5 +83,14 @@ router.get('/current', auth, (req, res) => {
 		error: false,
 		message: 'Authenticated user',
 		payload: user,
+	});
+});
+
+// Error -  ---------------------------------------------------------
+router.get('/error', (req, res) => {
+	return res.status(401).json({
+		error: true,
+		message: 'Operation error',
+		payload: null,
 	});
 });

@@ -1,0 +1,558 @@
+/* Reset básico */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	background-color: #f4f4f4;
+	margin: 0;
+	padding: 0px;
+	text-align: center;
+}
+
+/* Header *********************************/
+.header {
+	margin-bottom: 2rem;
+}
+
+.header h1 {
+	font-size: 2.5rem;
+	color: black;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.header p {
+	font-size: 1.2rem;
+	color: gray;
+}
+
+/* Estilo para el navbar ****************/
+.navbar {
+	display: flex;
+	justify-content: space-between;
+	background-color: #333;
+	padding: 10px 10px;
+}
+
+.navbar a {
+	color: white;
+	text-decoration: none;
+	margin: 0 10px;
+	display: block;
+	text-align: center;
+	font-size: 18px;
+}
+
+.navbar a:hover {
+	background-color: #575757;
+}
+
+/* Contenedor principal HOME****************************/
+.home-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	max-width: 1200px;
+	width: 90%;
+	margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+	.homecontainer {
+		flex-direction: row;
+		justify-content: space-between;
+	}
+}
+
+/* Sección de texto */
+.text-section {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+}
+
+.text-section h2 {
+	font-size: 2rem;
+	color: darkgray;
+}
+
+.text-section p {
+	font-size: 1.2rem;
+	color: gray;
+}
+
+.cta-button {
+	background-color: #2f14dd;
+	color: white;
+	padding: 1rem 2rem;
+	font-size: 1.2rem;
+	border: none;
+	border-radius: 50px;
+	cursor: pointer;
+	transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cta-button:hover {
+	background-color: #ff4d4d;
+	transform: scale(1.05);
+}
+
+/* Sección de imagen */
+.image-section {
+	flex: 1;
+	max-width: 500px;
+	margin: 70px 0;
+}
+
+.image-section img {
+	width: 100%;
+	height: auto;
+}
+
+h1 {
+	font-size: 2rem; /* Tamaño del título */
+	font-weight: 600; /* Negrita */
+	text-align: center;
+	margin-top: 2rem;
+}
+
+button {
+	padding: 0.75rem 1.5rem;
+	border: none;
+	background-color: #3b82f6; /* Similar a bg-blue-500 */
+	color: white;
+	cursor: pointer;
+	border-radius: 0.375rem;
+	font-size: 1rem;
+	transition: background-color 0.3s ease;
+	max-height: 2.5rem;
+	display: flex;
+	justify-content: center; /* Centra el texto horizontalmente */
+	align-items: center; /* Centra el texto verticalmente */
+	text-align: center;
+}
+
+button:hover {
+	background: #0056b3;
+}
+
+h3 {
+	margin-bottom: 10px;
+	font-size: 1.2rem;
+	color: #333;
+}
+
+a {
+	display: inline-block;
+	margin: 8px 0;
+	text-decoration: none;
+	color: #007bff;
+	font-weight: bold;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+/* Estilo para el formulario de insertar un producto **********************/
+.form-insert {
+	max-width: 768px; /* Similar a max-w-3xl */
+	margin: 2rem auto; /* Centra el formulario */
+	padding: 1.5rem;
+	background-color: white;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	border-radius: 0.5rem;
+	text-align: start;
+}
+
+/* Estilo para las etiquetas */
+label {
+	display: block;
+	font-size: 1.125rem;
+	font-weight: 500;
+	color: #4b5563; /* Similar a text-gray-700 */
+	margin-top: 1rem;
+}
+
+/* Estilo para los inputs, textarea y select */
+input,
+textarea,
+select {
+	width: 100%;
+	padding: 0.75rem;
+	margin-top: 0.5rem;
+	border: 1px solid #d1d5db; /* Similar a border-gray-300 */
+	border-radius: 0.375rem;
+	font-size: 1rem;
+	color: #4b5563;
+	box-sizing: border-box;
+}
+
+textarea {
+	height: 100px;
+}
+/* Estilo para los inputs, textarea y select al tener el foco */
+input:focus,
+textarea:focus,
+select:focus {
+	outline: none;
+	border-color: #3b82f6; /* Similar a focus:ring-blue-500 */
+	box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+	background-color: #dceafd;
+}
+
+/* Estilo para el botón de envío */
+button[type='submit'] {
+	background-color: #3b82f6; /* Similar a bg-blue-500 */
+	color: white;
+	padding: 0.75rem 1.5rem;
+	border-radius: 0.375rem;
+	cursor: pointer;
+	font-size: 1rem;
+	border: none;
+	transition: background-color 0.3s ease;
+	margin-top: 1rem;
+}
+
+/* Estilo para el botón de envío al pasar el ratón */
+button[type='submit']:hover {
+	background-color: #2563eb; /* Similar a hover:bg-blue-600 */
+}
+
+/* Estilos para la vista de un solo producto ************/
+.product-container {
+	background-color: #fff;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+	padding: 2rem;
+	text-align: justify;
+	max-width: 55%;
+	margin: 2rem auto;
+	display: grid;
+	grid-template-columns: auto auto;
+	gap: 1rem;
+}
+.ga1 {
+	grid-area: 1/1/3/2;
+}
+
+.product-container h2 {
+	font-size: 1.8rem;
+	color: #333;
+	margin-bottom: 0.5rem;
+}
+
+.product-container p {
+	font-size: 1rem;
+	color: #555;
+	margin: 0.5rem 0;
+}
+
+.product-container img {
+	width: 100%;
+	max-width: 20rem;
+	min-width: 15rem;
+	height: auto;
+	border-radius: 8px;
+	grid-area: 1/1/3/2;
+	object-fit: cover;
+}
+
+.price {
+	font-size: 18px;
+	color: #ff6600;
+}
+
+.description {
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.error-page {
+	text-align: center;
+	padding: 100px;
+	background-color: #f2dede;
+	color: #a94442;
+}
+
+.error-page h1 {
+	font-size: 3rem;
+	margin-bottom: 20px;
+}
+
+.error-page p {
+	font-size: 1.5rem;
+	margin-bottom: 30px;
+}
+
+.error-page button {
+	background-color: #337ab7;
+	color: #fff;
+	padding: 10px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+/* Estilo para los campos Code y Price en el mismo renglón */
+.items-group {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.items-group div {
+	width: 48%; /* Definir el ancho de cada grupo de campos */
+}
+
+/* Estilo para los inputs dentro de los grupos ***************/
+.items-group input,
+.items-group select {
+	width: 100%; /* Asegura que cada campo ocupe el 48% del espacio disponible */
+}
+
+.container {
+	display: flex;
+	align-items: flex-end;
+	gap: 10px; /* Espaciado entre elementos */
+}
+.container-buttons {
+	display: flex;
+
+	align-items: flex-end; /* Asegura que todos los elementos tengan la misma altura */
+	gap: 10px;
+	margin-top: 10px;
+}
+
+.container-buttons > div {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.large-text {
+	font-size: 1.5rem; /* Aumenta el tamaño de la fuente (puedes ajustar este valor según lo necesites) */
+	padding: 10px 20px; /* Ajusta el padding si lo necesitas para que se vea mejor */
+	text-align: start;
+}
+
+.j-between {
+	justify-content: space-between;
+}
+
+.j-end {
+	justify-content: flex-end;
+}
+
+.j-center {
+	justify-content: center;
+}
+
+.cart-container {
+	max-width: 800px;
+	margin: 0 auto;
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+h1 {
+	text-align: center;
+	color: #333;
+}
+.cart-item {
+	display: flex;
+	align-items: flex-start; /* Alinea los elementos al inicio */
+	justify-content: space-between; /* Distribuye el espacio entre los elementos */
+	margin-bottom: 15px;
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+	position: relative; /* Necesario para posicionar el botón "Delete" */
+}
+.cart-item img {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+	margin-right: 15px;
+	border-radius: 4px;
+}
+.cart-item-details {
+	/* flex-grow: 1; */
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+.cart-item-title {
+	font-size: 1.2rem;
+	color: #333;
+	margin: 0;
+}
+.quantity-buttons {
+	display: flex;
+	align-items: center;
+	margin-top: 1rem;
+}
+.quantity-buttons button {
+	background: #007bff;
+	color: white;
+	border: none;
+	padding: 5px 15px;
+	cursor: pointer;
+	font-size: 1rem;
+	border-radius: 4px;
+	margin: 5px;
+	height: 35px;
+}
+.quantity-buttons button:hover {
+	background: #0056b3;
+}
+.cart-item-price,
+.cart-item-quantity,
+.cart-item-total {
+	margin-left: auto;
+	text-align: right;
+}
+.cart-item-price {
+	font-size: 1rem;
+	color: #666;
+}
+.cart-item-quantity {
+	font-size: 1rem;
+	color: #333;
+}
+.cart-item-total {
+	font-size: 1.1rem;
+	font-weight: bold;
+	color: #333;
+}
+.cart-total {
+	text-align: right;
+	font-size: 1.2rem;
+	font-weight: bold;
+	margin-top: 20px;
+}
+.price-label,
+.quantity-label,
+.total-label {
+	font-size: 0.9rem;
+	color: #666;
+	font-weight: bold;
+}
+.button-delete-cart {
+	background: #ff4d4d;
+	color: white;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background 0.3s ease-in-out;
+}
+
+/* Product List Page	-------------------------------------------------------------------------------- */
+
+/* Diseño con flexbox: Parte izquierda (filtros) 1/4, Parte derecha (productos) 3/4 */
+.page-product-container {
+	display: flex;
+	gap: 2rem;
+	max-width: 100%;
+	margin: 1.5rem 1.5rem;
+}
+
+/* Filtros (izquierda) */
+.filters-section {
+	flex: 1; /* 1/4 de la pantalla */
+	max-width: 300px; /* Limitar el ancho de la columna de filtros */
+	background-color: #f9f9f9;
+	padding: 1.5rem;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+
+/* Estilo de los formularios dentro de la sección de filtros */
+.filters-section form {
+	margin-bottom: 1.5rem;
+	text-align: start;
+	font-weight: bold;
+}
+
+/* Productos (derecha) */
+.products-list-section {
+	flex: 3; /* 3/4 de la pantalla */
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+/* Diseño de la lista de productos */
+.products-list-section ul {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: 16px;
+	padding: 0;
+	margin: 0;
+}
+
+.product-card {
+	position: relative; /* Hace que el contenedor sea el punto de referencia para el posicionamiento absoluto*/
+	background: white;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	padding: 16px;
+	text-align: center;
+	transition: transform 0.2s ease-in-out;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.product-card:hover {
+	transform: translateY(-7px);
+}
+
+.product-thumbnail {
+	width: 100%;
+	max-width: 200px;
+	height: auto;
+	border-radius: 8px;
+	object-fit: cover;
+	margin-bottom: 10px;
+}
+
+.button-delete {
+	position: absolute; /* Posiciona el botón respecto al contenedor .product-card */
+	bottom: 10px; /* Distancia desde el borde inferior */
+	right: 10px; /* Distancia desde el borde derecho */
+	background: #ff4d4d;
+	color: white;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 0.9rem;
+	transition: background 0.3s ease-in-out;
+}
+.button-delete:hover {
+	background: #cc0000;
+}
+
+.button-upadate {
+	background: #eda64f;
+	color: white;
+	border: none;
+	padding: 8px 12px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 0.9rem;
+	transition: background 0.3s ease-in-out;
+}
+.button-update:hover {
+	background: #686262;
+}

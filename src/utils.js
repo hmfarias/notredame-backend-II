@@ -2,6 +2,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import bcrypt from 'bcrypt';
 import fs from 'fs';
+import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -16,27 +17,32 @@ export const hashPassword = async (password) =>
 export const comparePassword = async (password, hash) =>
 	bcrypt.compareSync(password, hash);
 
-//
-const path = './src/logs/error.log';
+// Error handler
 export const errorHandler = (error, res) => {
-	const data = {
-		fecha: new Date(),
-		error: error.message,
-		detalle: error.stack,
+	const now = new Date();
+	const today = now.toISOString().split('T')[0];
+	const logPath = path.join(__dirname, 'logs', `${today}.log`);
+
+	const logEntry = {
+		timestamp: now.toISOString(),
+		message: error.message,
+		stack: error.stack,
 	};
-	let logs;
-	if (fs.existsSync(path)) {
-		logs = JSON.parse(fs.readFileSync(path, 'utf-8'));
-	} else {
-		logs = [];
-	}
-	logs.push(data);
-	fs.writeFileSync(path, JSON.stringify(logs, null, 5));
-	res.setHeader('Content-Type', 'application/json');
-	return res.status(500).json({
+
+	// Ensure the logs directory exists
+	fs.mkdirSync(path.dirname(logPath), { recursive: true });
+
+	const logs = fs.existsSync(logPath)
+		? JSON.parse(fs.readFileSync(logPath, 'utf-8') || '[]')
+		: [];
+
+	logs.push(logEntry);
+	fs.writeFileSync(logPath, JSON.stringify(logs, null, 2));
+
+	// Send the response
+	res.status(500).json({
 		error: true,
-		message: `Unexpected server error - Try later, or contact your administrator`,
-		// detalle:`${error.message}`
+		message: 'Unexpected server error - Try later or contact your administrator',
 		payload: null,
 	});
 };
