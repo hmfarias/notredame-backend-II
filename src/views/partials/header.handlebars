@@ -6,11 +6,26 @@
 			<a href='/'><img src='/img/logo.png' alt='logo' width='200' height='auto' /></a>
 		</div>
 		<div class='container'>
-			<a href='/'>Home</a>
-			<a href='/register'>Registro</a>
-			<a href='/login'>Login</a>
-			<a href='/current'>Current</a>
-			<a href='/login'>Logout</a>
+			<a href='/' class='nav-link'>Home</a>
+			<div class='dropdown'>
+				<span class='dropdown-label nav-link'><i
+						class='fa-regular fa-user fa-fade'
+					></i></span>
+				<div class='dropdown-content'>
+					<a href='/register' id='registerLink'><i class='fa-solid fa-user-plus'></i><span
+							style='margin-left: 10px;'
+						>Register</span></a>
+					<a href='/login' id='loginLink'><i
+							class='fa-solid fa-right-to-bracket'
+						></i><span style='margin-left: 10px;'>Login</span></a>
+					<a href='/current' id='profileLink'><i
+							class='fa-solid fa-address-card'
+						></i><span style='margin-left: 10px;'>Profile</span></a>
+					<a href='/login' id='logoutLink'><i
+							class='fa-solid fa-right-from-bracket'
+						></i><span style='margin-left: 10px;'>Logout</span></a>
+				</div>
+			</div>
 
 			{{! <a id='cart-link' href='#'><i class='fa-solid fa-cart-shopping'></i></a> }}
 
@@ -18,4 +33,4 @@
 	</div>
 </header>
 
-{{! <script src='/js/navbar.js'></script> }}
+<script src='/js/navbar.js'></script>

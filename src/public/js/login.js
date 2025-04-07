@@ -1,3 +1,18 @@
+// Logout
+try {
+	localStorage.removeItem('token');
+} catch (error) {
+	Swal.fire({
+		text: 'Logout failed. Please try again.',
+		icon: 'error',
+		position: 'top-end',
+		timer: 3000,
+		showConfirmButton: false,
+		toast: true,
+	});
+}
+// End Logout
+
 const params = new URLSearchParams(window.location.search);
 const email = params.get('email');
 

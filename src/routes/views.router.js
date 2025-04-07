@@ -13,5 +13,5 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/current', (req, res) => {
-	res.status(200).render('current', { title: 'Current User' });
+	res.status(200).render('current', { title: 'User Profile' });
 });

@@ -37,17 +37,79 @@ body {
 	padding: 10px 10px;
 }
 
-.navbar a {
+.nav-link {
 	color: white;
 	text-decoration: none;
 	margin: 0 10px;
-	display: block;
+	/* display: block; */
 	text-align: center;
 	font-size: 18px;
+	font-weight: bold;
 }
 
-.navbar a:hover {
+.navbar a:hover,
+span:hover {
 	background-color: #575757;
+}
+
+.navbar .container > * {
+	display: flex;
+	align-items: center;
+	min-height: 40px;
+}
+
+/*---------------
+/* Contenedor del dropdown */
+.dropdown {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+/* Menú desplegable oculto por defecto */
+.dropdown-content {
+	display: none;
+	position: absolute;
+	top: 100%; /* coloca el dropdown justo debajo del botón */
+	right: 0;
+	background-color: white;
+	min-width: 130px;
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+	z-index: 1;
+	border-radius: 4px;
+	overflow: hidden;
+	text-align: start;
+}
+
+.dropdown-label {
+	color: white;
+	cursor: pointer;
+	padding: 10px 15px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+/* Enlaces dentro del menú */
+.dropdown-content a {
+	color: black;
+	padding: 10px 16px;
+	text-decoration: none;
+	display: block;
+}
+
+/* Hover sobre cada item */
+.dropdown-content a:hover {
+	background-color: #f1f1f1;
+}
+
+/* Mostrar el menú al hacer hover en el contenedor */
+.dropdown:hover .dropdown-content {
+	display: block;
+}
+
+/* Cambiar color del botón al hacer hover */
+.dropdown:hover .dropbtn {
+	background-color: #2980b9;
 }
 
 /* Contenedor principal HOME****************************/

@@ -3,6 +3,7 @@ const inputSurname = document.getElementById('surname');
 const inputAge = document.getElementById('age');
 const inputEmail = document.getElementById('email');
 const inputPassword = document.getElementById('password');
+const mainContent = document.getElementById('main-content');
 
 try {
 	const response = await fetch('/api/sessions/current', {
@@ -16,6 +17,12 @@ try {
 		const errorData = await response.json().catch(() => ({})); // Prevent error if response body is not JSON
 		const errorMessage =
 			errorData.message || response.statusText || 'Unknown error during registration';
+
+		// Disable main content
+		if (mainContent) {
+			mainContent.style.pointerEvents = 'none';
+			mainContent.style.opacity = '0.5';
+		}
 
 		await Swal.fire({
 			text: `You must be logged to access this page - ${errorMessage}`,
@@ -37,6 +44,11 @@ try {
 	}
 } catch (error) {
 	console.error('❌ Unexpected error during registration:', error);
+
+	if (mainContent) {
+		mainContent.style.pointerEvents = 'none';
+		mainContent.style.opacity = '0.5';
+	}
 
 	Swal.fire({
 		text: 'Unexpected error during registration. Please try again later.',
