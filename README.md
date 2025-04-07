@@ -34,9 +34,9 @@
 1. [Introducción](#introduccion)
 2. [Construido con](#consturido)
 3. [Consideraciones Importantes](#consideraciones)
+   - [Maquetación y CSS](#maqueta)
    - [Persistencia](#persistencia)
    - [Acceso a los datos](#acceso)
-   - [Maquetación y CSS](#maqueta)
    - [Rutas y Simulación del Front con Handlebars](#rutas)
    - [Comentarios en el código](#comentarios)
 4. [Credenciales - .env](#environment)
@@ -88,7 +88,7 @@ Gracias por visitar nuestro repositorio. ¡Esperamos que disfrutes explorando y 
 
 ![Static Badge](https://img.shields.io/badge/Mongoose-white?style=for-the-badge) como biblioteca de JavaScript que permite modelar y gestionar datos en bases de datos MongoDB. Se lo ha utilizado para: definir esquemas, validar datos, administrar relaciones entre datos, interactuar con MongoDB, traducir entre objetos en código y su representación en MongoDB, simplificar las operaciones de MongoDB y trabajar de forma más ordenada y con menor margen de error
 
-![Static Badge](https://img.shields.io/badge/Passport-violet?style=for-the-badge) como middleware de Node.js que permite implementar diversas estrategias de autenticación en la aplicación. 
+![Static Badge](https://img.shields.io/badge/Passport-violet?style=for-the-badge) como middleware de Node.js que permite implementar diversas estrategias de autenticación en la aplicación.
 
 [Volver al menú](#top)
 
@@ -97,6 +97,18 @@ Gracias por visitar nuestro repositorio. ¡Esperamos que disfrutes explorando y 
 <a name="consideraciones"></a>
 
 ## 🔹 CONSIDERACIONES IMPORTATES
+
+<a name="maqueta"></a>
+
+### 🟢 MAQUETACIÓN Y CSS DE LA PAGINA
+
+Si bien el enfoque principal de la aplicación ha sido el desarrollo del backend, se ha implementado una maquetación básica para ofrecer un entorno visual limpio y funcional que facilite la prueba de sus funcionalidades.
+
+El diseño de la interfaz sigue una estructura sencilla pero organizada, asegurando una navegación clara y una experiencia de usuario intuitiva. Se han aplicado estilos CSS básicos para mejorar la presentación de los datos sin descuidar el rendimiento ni la accesibilidad.
+
+[Volver al menú](#top)
+
+<hr>
 
 <a name="persistencia"></a>
 
@@ -117,18 +129,6 @@ El uso de Mongoose no solo simplifica la manipulación de datos mediante esquema
 El acceso a los datos se gestiona a través de Managers. Esta arquitectura garantiza una clara separación entre la lógica de persistencia y las rutas que consumen los datos, promoviendo un diseño modular y escalable.
 
 Gracias a esta abstracción, si en el futuro se decide cambiar el sistema de persistencia (por ejemplo, migrar de MongoDB a otro motor de base de datos), solo será necesario implementar nuevos Managers sin afectar la estructura ni la lógica de las rutas existentes. Esto facilita el mantenimiento y la evolución del sistema con mínima intervención en el código.
-
-[Volver al menú](#top)
-
-<hr>
-
-<a name="maqueta"></a>
-
-### 🟢 MAQUETACIÓN Y CSS DE LA PAGINA
-
-Si bien el enfoque principal de la aplicación ha sido el desarrollo del backend, se ha implementado una maquetación básica para ofrecer un entorno visual limpio y funcional que facilite la prueba de sus funcionalidades.
-
-El diseño de la interfaz sigue una estructura sencilla pero organizada, asegurando una navegación clara y una experiencia de usuario intuitiva. Se han aplicado estilos CSS básicos para mejorar la presentación de los datos sin descuidar el rendimiento ni la accesibilidad.
 
 [Volver al menú](#top)
 
@@ -236,8 +236,7 @@ Antes de instalar la aplicación, asegúrate de contar con:
 6. **Configurar las variables de entorno:**
    Crea un archivo .env en la raíz del proyecto con la configuración de las credenciales (ver sección CREDENCIALES (.env)).
    Consulta la configuración de credenciales en la sección [CREDENCIALES (.env)](#environment).
-   
-8. **Iniciar la aplicación en modo desarrollador:**
+7. **Iniciar la aplicación en modo desarrollador:**
    Ejecuta el siguiente comando:
 
    ```
@@ -246,7 +245,7 @@ Antes de instalar la aplicación, asegúrate de contar con:
 
    Esto iniciará el servidor y mostrará un mensaje en la terminal indicando que la aplicación está corriendo en el puerto 3000 y conectada a la base de datos.
 
-9. **Acceder a la aplicación desde el navegador:**
+8. **Acceder a la aplicación desde el navegador:**
    Abre una nueva pestaña en tu navegador y accede a la siguiente dirección:
    http://localhost:3000
 
@@ -334,7 +333,8 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 
 ### 🟢 Gestión de Usuarios
 
-La gestión de usuarios en esta aplicación se maneja a través del modelo `user.model.js`, que define la estructura de cada registro de usuario en la base de datos. Este modelo incluye campos como 
+La gestión de usuarios en esta aplicación se maneja a través del modelo `user.model.js`, que define la estructura de cada registro de usuario en la base de datos. Este modelo incluye campos como
+
 - first_name:String,
 - last_name:String,
 - email:String (único)
@@ -343,9 +343,7 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 - cart:Id con referencia a Carts
 - role:String(default:’user’)
 
-
 - **Creación de Usuario**: Los usuarios se pueden agregar a la base de datos mediante el formulario de registro en el frontend. Se validan los datos, se encripta la contraseña y se cargan en la base de datos, donde se guardan con un identificador único (`_id`).
-  
 - **Visualización de Usuarios**: Los datos de un usuario logueado al sistema se pueden obtener en la ruta api/sessions/current.
 
 #### 🔶 Relación con el Carrito
@@ -379,7 +377,6 @@ El método GET de usuario en la aplicación está diseñado para recuperar los d
     }
 }
 ```
-
 
 [Volver al menú](#top)
 
