@@ -47,11 +47,6 @@ body {
 	font-weight: bold;
 }
 
-.navbar a:hover,
-span:hover {
-	background-color: #575757;
-}
-
 .navbar .container > * {
 	display: flex;
 	align-items: center;
@@ -99,17 +94,13 @@ span:hover {
 
 /* Hover sobre cada item */
 .dropdown-content a:hover {
-	background-color: #f1f1f1;
+	background-color: #575757;
+	color: white;
 }
 
 /* Mostrar el menú al hacer hover en el contenedor */
 .dropdown:hover .dropdown-content {
 	display: block;
-}
-
-/* Cambiar color del botón al hacer hover */
-.dropdown:hover .dropbtn {
-	background-color: #2980b9;
 }
 
 /* Contenedor principal HOME****************************/
