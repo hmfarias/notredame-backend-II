@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	const loginLink = document.getElementById('loginLink');
 	const logoutLink = document.getElementById('logoutLink');
 	const registerLink = document.getElementById('registerLink');
+	const cartLink = document.getElementById('cart-link');
 
 	try {
 		const response = await fetch('/api/sessions/current', {
@@ -49,4 +50,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 			logoutLink.title = 'You are not logged in';
 		}
 	}
+
+	// Cart link
+	cartLink.addEventListener('click', async (e) => {
+		e.preventDefault();
+		Swal.fire({
+			text: 'This feature is not available yet.',
+			icon: 'info',
+			position: 'top-end',
+			timer: 2000,
+			showConfirmButton: false,
+			toast: true,
+		});
+	});
 });
