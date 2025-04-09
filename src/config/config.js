@@ -1,6 +1,9 @@
 //import dotenv and initialize environment variables
 import dotenv from 'dotenv';
-dotenv.config(); //load the .env file
+dotenv.config({
+	path: '.env',
+	override: true,
+}); //load the .env file
 
 export const config = {
 	PORT: process.env.PORT || 3000,

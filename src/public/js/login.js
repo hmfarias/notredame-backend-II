@@ -1,18 +1,3 @@
-// Logout
-try {
-	localStorage.removeItem('token');
-} catch (error) {
-	Swal.fire({
-		text: 'Logout failed. Please try again.',
-		icon: 'error',
-		position: 'top-end',
-		timer: 3000,
-		showConfirmButton: false,
-		toast: true,
-	});
-}
-// End Logout
-
 const params = new URLSearchParams(window.location.search);
 const email = params.get('email');
 
@@ -34,13 +19,12 @@ btnLogin.addEventListener('click', async (e) => {
 			text: 'All fields are required',
 			icon: 'error',
 			position: 'top-end',
-			timer: 3000,
+			timer: 2000,
 			showConfirmButton: false,
 			toast: true,
 		});
 		return;
 	}
-
 	try {
 		const response = await fetch('/api/sessions/login', {
 			method: 'POST',
@@ -48,18 +32,19 @@ btnLogin.addEventListener('click', async (e) => {
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify(user),
+			redirect: 'manual',
 		});
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({})); // Prevent error if response body is not JSON
 			const errorMessage =
-				errorData.message || response.statusText || 'Unknown error during registration';
+				errorData.message || response.statusText || 'Unknown error during the process';
 
 			Swal.fire({
 				text: `Error in the login process: ${errorMessage}`,
 				icon: 'error',
 				position: 'top-end',
-				timer: 3000,
+				timer: 2000,
 				showConfirmButton: false,
 				toast: true,
 			});
@@ -68,14 +53,11 @@ btnLogin.addEventListener('click', async (e) => {
 
 		const data = await response.json();
 
-		//save the token in local storage
-		localStorage.setItem('token', data.token);
-
 		Swal.fire({
 			text: `Welcome ${data.payload.first_name} ${data.payload.last_name}!`,
 			icon: 'success',
 			position: 'top-end',
-			timer: 3000,
+			timer: 1500,
 			showConfirmButton: false,
 			toast: true,
 		}).then(() => {
@@ -89,7 +71,7 @@ btnLogin.addEventListener('click', async (e) => {
 			text: 'Unexpected error during registration. Please try again later.',
 			icon: 'error',
 			position: 'top-end',
-			timer: 3000,
+			timer: 2000,
 			showConfirmButton: false,
 			toast: true,
 		});

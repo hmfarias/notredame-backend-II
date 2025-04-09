@@ -162,7 +162,7 @@ Sin embargo, en un proyecto real, se recomienda minimizar el uso de comentarios 
 
 ## 🔹 CREDENCIALES (archivo .env)
 
-Antes de ejecutar la aplicación, es necesario crear un archivo .env en la carpeta raíz (donde se encuentra el package.json). Este archivo almacenará las variables de entorno necesarias para la configuración del servidor y la conexión a la base de datos. CON FINES DIDÁCTICOS SE DETALLA SU CONTENIDO PARA PODER PROBAR LA APLICACIÓN. 
+Antes de ejecutar la aplicación, es necesario crear un archivo .env en la carpeta raíz (donde se encuentra el package.json). Este archivo almacenará las variables de entorno necesarias para la configuración del servidor y la conexión a la base de datos. CON FINES DIDÁCTICOS SE DETALLA SU CONTENIDO PARA PODER PROBAR LA APLICACIÓN.
 
 ### 🟢 Contenido que debe tener el archivo .env:
 
@@ -281,8 +281,8 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 |-src/
 ├── config/
 │   └── config.js  // Lógica para manejar las variables de entorno provistas en .env
-│   └── configDB.js  // Lógica para manejar la conexíon a la BD
-│   └── configPassport.js  // Middleware de Passport que implementa las estrategias de registro y autorización
+│   └── database.config.js  // Lógica para manejar la conexíon a la BD
+│   └── passport.config.js  // Middleware de Passport que implementa las estrategias de registro y autorización
 │
 ├── dao/
 │   └── models

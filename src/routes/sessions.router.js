@@ -2,81 +2,81 @@ import { Router } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
-import { errorHandler } from '../utils.js';
-import { auth } from '../middlewares/auth.js';
+import { errorHandler, passportCall } from '../utils.js';
 
 export const router = Router();
 
-// Register - Local Strategy ---------------------------------------------------------
-router.post(
-	'/register',
-	passport.authenticate('register', { session: false }),
-	async (req, res) => {
-		try {
-			const { user } = req;
-			if (!user) {
-				return res.status(400).json({
-					error: true,
-					message: 'User registration failed',
-					payload: null,
-				});
-			}
-
-			// Destructure to exclude sensitive fields like password
-			const { password, ...safeUser } = user;
-
-			return res.status(201).json({
-				error: false,
-				message: 'User created successfully',
-				payload: safeUser,
+// Register - Local Strategy ------------------------------------------
+// passport.authenticate('register', { session: false }),
+router.post('/register', passportCall('register'), async (req, res) => {
+	try {
+		const { user } = req;
+		if (!user) {
+			return res.status(400).json({
+				error: true,
+				message: 'User registration failed',
+				payload: null,
 			});
-		} catch (error) {
-			errorHandler(error, res);
 		}
+
+		// Destructure to exclude sensitive fields like password
+		const { password, ...safeUser } = user;
+
+		return res.status(201).json({
+			error: false,
+			message: 'User created successfully',
+			payload: safeUser,
+		});
+	} catch (error) {
+		errorHandler(error, res);
 	}
-);
+});
 
-// Login - Local Strategy ---------------------------------------------------------
-router.post(
-	'/login',
-	passport.authenticate('login', {
-		session: false,
-		// failureRedirect: '/api/sessions/error',
-	}),
-	async (req, res) => {
-		try {
-			const user = req.user;
+// passport.authenticate('login', {
+// 	session: false,
+// 	// failureRedirect: '/api/sessions/error',
+// }),
+// Login - Local Strategy ---------------------------------------------
+router.post('/login', passportCall('login'), async (req, res) => {
+	try {
+		const user = req.user;
 
-			if (!user) {
-				return res.status(401).json({
-					error: true,
-					message: 'Authentication failed',
-					payload: null,
-				});
-			}
-
-			// Safely extract user without password
-			const { password, ...safeUser } = user;
-
-			// Generate JWT token
-			const token = jwt.sign(safeUser, config.SECRET_KEY, {
-				expiresIn: '10m',
+		if (!user) {
+			return res.status(401).json({
+				error: true,
+				message: 'Authentication failed',
+				payload: null,
 			});
-
-			return res.status(200).json({
-				error: false,
-				message: 'Successful login',
-				payload: safeUser,
-				token,
-			});
-		} catch (error) {
-			errorHandler(error, res);
 		}
+
+		// Safely extract user without password
+		const { password, ...safeUser } = user;
+
+		// Generate JWT token
+		const token = jwt.sign(safeUser, config.SECRET_KEY, {
+			expiresIn: '10m',
+		});
+
+		// Set JWT token in cookie
+		res.cookie('token', token, {
+			httpOnly: true,
+			sameSite: 'strict',
+			maxAge: 1000 * 60 * 60 * 24, //one day max duration
+		});
+
+		return res.status(200).json({
+			error: false,
+			message: 'Successful login',
+			payload: safeUser,
+		});
+	} catch (error) {
+		errorHandler(error, res);
 	}
-);
+});
 
 // Current -  ---------------------------------------------------------
-router.get('/current', auth, (req, res) => {
+// passport.authenticate('current', { session: false }),
+router.get('/current', passportCall('current'), (req, res) => {
 	const { user } = req;
 
 	return res.status(200).json({
@@ -86,7 +86,12 @@ router.get('/current', auth, (req, res) => {
 	});
 });
 
-// Error -  ---------------------------------------------------------
+router.post('/logout', (req, res) => {
+	res.clearCookie('token');
+	res.status(200).json({ error: false, message: 'Logout successful', payload: null });
+});
+
+// Error -  -----------------------------------------------------------
 router.get('/error', (req, res) => {
 	return res.status(401).json({
 		error: true,

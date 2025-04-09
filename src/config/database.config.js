@@ -6,7 +6,7 @@ export const connectDB = async () => {
 		await mongoose.connect(config.MONGODB_URI, {
 			dbName: config.DB_NAME,
 		});
-		console.log('DB online');
+		console.log(`DB online`);
 	} catch (error) {
 		console.log('Error connecting with the database:', error);
 	}

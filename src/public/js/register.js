@@ -68,6 +68,7 @@ btnRegister.addEventListener('click', async (e) => {
 		}
 
 		const data = await response.json();
+		console.log('✅ ~ btnRegister.addEventListener ~ data:', data);
 
 		Swal.fire({
 			text: `User ${data.payload.first_name} ${data.payload.last_name} registered successfully!`,

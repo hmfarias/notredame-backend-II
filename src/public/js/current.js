@@ -8,9 +8,6 @@ const mainContent = document.getElementById('main-content');
 try {
 	const response = await fetch('/api/sessions/current', {
 		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${localStorage.getItem('token')}`,
-		},
 	});
 
 	if (!response.ok) {

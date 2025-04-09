@@ -3,6 +3,7 @@ import { dirname } from 'path';
 import bcrypt from 'bcrypt';
 import fs from 'fs';
 import path from 'path';
+import passport from 'passport';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -45,4 +46,28 @@ export const errorHandler = (error, res) => {
 		message: 'Unexpected server error - Try later or contact your administrator',
 		payload: null,
 	});
+};
+
+export const passportCall = (strategy) => {
+	return function (req, res, next) {
+		passport.authenticate(strategy, function (err, user, info, status) {
+			// console.log('✅ ~ info:', info);
+
+			if (err) {
+				return next(err); //when passport.config returns donde(error) - (error and user is not logged)
+			}
+			if (!user) {
+				//when passport.config returns donde(null,false) - (no error and user is not logged)
+				res.setHeader('Content-Type', 'application/json');
+				return res.status(400).json({
+					error: true,
+					message: `${info.message ? info.message : info.toString()}`,
+					payload: null,
+				});
+			}
+			//when passport.config returns donde(null,user) - (no error and user is logged)
+			req.user = user;
+			return next();
+		})(req, res, next);
+	};
 };

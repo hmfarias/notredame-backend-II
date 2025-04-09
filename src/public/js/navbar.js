@@ -8,9 +8,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	try {
 		const response = await fetch('/api/sessions/current', {
 			method: 'GET',
-			headers: {
-				Authorization: `Bearer ${localStorage.getItem('token')}`,
-			},
 		});
 
 		if (!response.ok) {
@@ -62,5 +59,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 			showConfirmButton: false,
 			toast: true,
 		});
+	});
+
+	logoutLink.addEventListener('click', async (e) => {
+		e.preventDefault();
+		try {
+			const response = await fetch('/api/sessions/logout', {
+				method: 'POST',
+			});
+
+			if (!response.ok) throw new Error('Logout failed');
+
+			await Swal.fire({
+				text: 'You have been logged out',
+				icon: 'success',
+				position: 'top-end',
+				timer: 1500,
+				showConfirmButton: false,
+				toast: true,
+			});
+			window.location.href = '/login'; // redirect to login
+		} catch (error) {
+			Swal.fire({
+				text: 'Logout failed. Please try again.',
+				icon: 'error',
+				position: 'top-end',
+				timer: 1500,
+				showConfirmButton: false,
+				toast: true,
+			});
+		}
 	});
 });
