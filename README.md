@@ -44,6 +44,7 @@
 6. [Funcionamiento de la Aplicacion](#funcionamiento)
    - [Arquitectura](#arquitectura)
    - [Estructura de archivos](#estructura)
+   - [Uso de Passport Strategies](#passport)
    - [Gestión de Usuarios](#usuarios)
      - [Método GET en Current](#get)
 7. [Contribuyendo](#contribuyendo)
@@ -324,6 +325,64 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 ├── .env  // Variables de entorno
 └── package.json  // Dependencias y configuraciones del proyecto
 ```
+
+[Volver al menú](#top)
+
+<hr>
+
+<a name="passport"></a>
+
+### 🔐 Uso de Passport Strategies
+
+Esta aplicación utiliza Passport como middleware de autenticación, implementando dos estrategias principales:
+
+🧾 **Estrategia Local**
+
+La estrategia local permite la autenticación tradicional mediante email y contraseña. Se utiliza en las rutas de login y register, y su función principal es verificar las credenciales ingresadas por el usuario con los datos almacenados en la base de datos.
+• Se realiza hashing de contraseñas con bcrypt para asegurar la información del usuario.
+• Al iniciar sesión correctamente, se genera un JWT y se guarda en el navegador del cliente como una cookie HTTP-only, lo cual evita accesos desde JavaScript y mejora la seguridad.
+
+🔑 **Estrategia JWT**
+
+La estrategia JWT se emplea para proteger rutas privadas. El token se extrae automáticamente desde la cookie enviada por el cliente en cada petición.
+• Si el token es válido y no ha expirado, se permite el acceso a la ruta.
+• En caso contrario, la solicitud se rechaza con un mensaje adecuado.
+
+⚙️ **Función passportCall**
+
+La autenticación en las rutas se maneja mediante una función personalizada llamada passportCall, que encapsula el uso de Passport y agrega una capa extra de control sobre:
+• Qué estrategia se utiliza (local o jwt)
+• Cómo manejar errores de autenticación
+• Cómo continuar la ejecución si el usuario es válido
+
+Esto permite centralizar la lógica y facilitar el mantenimiento del sistema de autenticación.
+
+📦 **Cookie y Seguridad**
+
+El token JWT se almacena en una cookie con las siguientes configuraciones de seguridad:
+
+```
+res.cookie('token', token, {
+	httpOnly: true,
+	sameSite: 'strict',
+	maxAge: 1000 * 60 * 60 * 24 // 1 día
+});
+```
+
+Esto garantiza que:
+• El token no es accesible desde JavaScript (httpOnly)
+• Se restringe el envío de cookies entre sitios (sameSite: 'strict')
+• Tiene una duración maxima de 24 horas por defecto (salvo que el token expire antes)
+
+[Volver al menú](#top)
+
+<hr>
+
+<a name="usuarios"></a>
+
+### 🟢 Gestión de Usuarios
+
+La gestión de usuarios en esta aplicación se maneja a través del modelo `user.model.js`, que define la estructura de cada registro de usuario en la base de datos.
 
 [Volver al menú](#top)
 
