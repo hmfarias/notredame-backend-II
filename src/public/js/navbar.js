@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', async () => {
+	//* Enable and disable links based on user session -------------------------------------------
 	const profileLink = document.getElementById('profileLink');
 	const loginLink = document.getElementById('loginLink');
 	const logoutLink = document.getElementById('logoutLink');
 	const registerLink = document.getElementById('registerLink');
-	const cartLink = document.getElementById('cart-link');
 
 	try {
 		const response = await fetch('/api/sessions/current', {
@@ -47,20 +47,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 			logoutLink.title = 'You are not logged in';
 		}
 	}
+	//* end Enable and disable links based on user session ----------------------------------------
 
-	// Cart link
-	cartLink.addEventListener('click', async (e) => {
-		e.preventDefault();
-		Swal.fire({
-			text: 'This feature is not available yet.',
-			icon: 'info',
-			position: 'top-end',
-			timer: 2000,
-			showConfirmButton: false,
-			toast: true,
-		});
+	//* Cart link ---------------------------------------------------------------------------------
+	// Obtain the element with the ID "cart-link"
+	const cartLink = document.getElementById('cart-link');
+
+	// Add a click event to the cart link
+	cartLink.addEventListener('click', async (event) => {
+		event.preventDefault();
+
+		// Get the cartId from LocalStorage
+		const cartId = localStorage.getItem('cartId');
+
+		// Verify if there is a cartId in LocalStorage
+		if (!cartId) {
+			await Swal.fire({
+				title: 'Warning!',
+				text: 'No cart found. Please add products to create it',
+				icon: 'warning',
+				position: 'top-end',
+				timer: 2500,
+				showConfirmButton: false,
+				toast: true,
+			});
+			// Redirect to the home page
+			// window.location.href = '/';
+			return;
+		}
+
+		// Redirect to the cart if it exists
+		window.location.href = `/carts/${cartId}`;
 	});
+	//* end Cart link --------------------------------------------------------------------------------
 
+	//* Logout link ---------------------------------------------------------------------------------
 	logoutLink.addEventListener('click', async (e) => {
 		e.preventDefault();
 		try {
@@ -90,4 +111,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 			});
 		}
 	});
+	//* end Logout link --------------------------------------------------------------------------------
 });

@@ -15,3 +15,11 @@ router.get('/login', (req, res) => {
 router.get('/current', (req, res) => {
 	res.status(200).render('current', { title: 'User Profile' });
 });
+
+router.get('/products', (req, res) => {
+	res.render('products', { title: 'Products' });
+});
+
+router.get('/product', (req, res) => {
+	res.render('product', { title: 'Product Detail' });
+});

@@ -71,3 +71,11 @@ export const passportCall = (strategy) => {
 		})(req, res, next);
 	};
 };
+
+// verify if and ID has valid format
+export const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+
+// round to two decimals
+export const roundToTwoDecimals = (value) => {
+	return Number(value.toFixed(2));
+};

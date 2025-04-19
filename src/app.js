@@ -4,8 +4,11 @@ import path from 'path';
 import { engine } from 'express-handlebars';
 import { connectDB } from './config/database.config.js';
 import { config } from './config/config.js';
-import { router as sessionsRouter } from './routes/sessions.router.js';
+import { router as sessionsRouter } from './routes/session.router.js';
 import { router as viewsRouter } from './routes/views.router.js';
+import { router as productsRouter } from './routes/product.router.js';
+import { router as cartRouter } from './routes/cart.router.js';
+
 import cookieParser from 'cookie-parser';
 
 // STEP 2-1 - IMPORT Passport ******************
@@ -35,6 +38,8 @@ app.set('views', path.join(__dirname, './views'));
 // routes
 app.use('/', viewsRouter);
 app.use('/api/sessions', sessionsRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartRouter);
 
 //connect to the database
 await connectDB();

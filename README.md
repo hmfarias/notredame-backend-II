@@ -306,7 +306,7 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │       └── register.js  // Lógica de la página de registro de ususarios
 │
 ├── routes/
-│   └── sessions.router.js  // Rutas relacionadas con las sessiones (registro - login - current)
+│   └── session.router.js  // Rutas relacionadas con las sessiones (registro - login - current)
 │   └── viewsRouter.js  // Rutas relacionadas con las vistas handlebars
 │
 ├── views/
@@ -339,12 +339,14 @@ Esta aplicación utiliza Passport como middleware de autenticación, implementan
 🧾 **Estrategia Local**
 
 La estrategia local permite la autenticación tradicional mediante email y contraseña. Se utiliza en las rutas de login y register, y su función principal es verificar las credenciales ingresadas por el usuario con los datos almacenados en la base de datos.
+
 - Se realiza hashing de contraseñas con bcrypt para asegurar la información del usuario.
 - Al iniciar sesión correctamente, se genera un JWT y se guarda en el navegador del cliente como una cookie HTTP-only, lo cual evita accesos desde JavaScript y mejora la seguridad.
 
 🔑 **Estrategia JWT**
 
 La estrategia JWT se emplea para proteger rutas privadas. El token se extrae automáticamente desde la cookie enviada por el cliente en cada petición.
+
 - Si el token es válido y no ha expirado, se permite el acceso a la ruta.
 - En caso contrario, la solicitud se rechaza con un mensaje adecuado.
 

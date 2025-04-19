@@ -62,7 +62,7 @@ btnLogin.addEventListener('click', async (e) => {
 			toast: true,
 		}).then(() => {
 			// redirect after registration
-			window.location.href = '/current';
+			window.location.href = '/products';
 		});
 	} catch (error) {
 		console.error('❌ Unexpected error during registration:', error);

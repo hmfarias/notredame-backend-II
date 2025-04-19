@@ -580,9 +580,6 @@ h1 {
 }
 
 .button-delete {
-	position: absolute; /* Posiciona el botón respecto al contenedor .product-card */
-	bottom: 10px; /* Distancia desde el borde inferior */
-	right: 10px; /* Distancia desde el borde derecho */
 	background: #ff4d4d;
 	color: white;
 	border: none;
@@ -593,10 +590,10 @@ h1 {
 	transition: background 0.3s ease-in-out;
 }
 .button-delete:hover {
-	background: #cc0000;
+	background: #686262;
 }
 
-.button-upadate {
+.button-update {
 	background: #eda64f;
 	color: white;
 	border: none;
