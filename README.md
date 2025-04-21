@@ -47,6 +47,9 @@
    - [Uso de Passport Strategies](#passport)
    - [Gestión de Usuarios](#usuarios)
      - [Método GET en Current](#get)
+   - [Gestión de Productos](#productos)
+   - [Gestión de Carritos](#carritos)
+     - [Estrategia de Gestión de Carrito - Usuarios Autenticados y visitantes](#estrategiaCarrito)
 7. [Contribuyendo](#contribuyendo)
 8. [Licencia](#licencia)
 9. [Contacto](#contacto)
@@ -61,7 +64,7 @@
 
 Bienvenidos al backend de Notre Dame, tu tienda polirubro online exclusiva. Este repositorio contiene la infraestructura y lógica de negocio que impulsa nuestra plataforma, garantizando una experiencia de compra eficiente, segura y confiable.
 
-Nuestro backend ha sido diseñado para gestionar productos y carritos de compra, asegurando un flujo de datos ágil y seguro. Implementamos las mejores prácticas en desarrollo, seguridad y escalabilidad para ofrecer un servicio robusto y optimizado.
+Nuestro backend ha sido diseñado para gestionar usuarios, productos y carritos de compra, asegurando un flujo de datos ágil y seguro. Implementamos las mejores prácticas en desarrollo, seguridad y escalabilidad para ofrecer un servicio robusto y optimizado.
 
 Gracias por visitar nuestro repositorio. ¡Esperamos que disfrutes explorando y contribuyendo a este proyecto!
 
@@ -290,40 +293,63 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │   │   └── user.model.js  // Modelo de datos de usuarios en MongoDB
 │   │   └── product.model.js  // Modelo de datos de productos en MongoDB
 │   │   └── cart.model.js // Modelo de datos de carritos en MongoDB
-│   └── UserssManagerMongo.js  // Lógica de interacción con la base de datos de usuarios
+│   └── CartsManagerMongo.js  // Lógica de interacción con la base de datos de carritos
+│   └── ProductsManagerMongo.js  // Lógica de interacción con la base de datos de productos
+│   └── UsersManagerMongo.js  // Lógica de interacción con la base de datos de usuarios
+│
+├── logs/ // Archivos de registro de errores inesperados en la aplicación - Inicialmente no existe y se crea automáticamente al ocurrir el primer error inesperado
 │
 ├── middlewares/
-│   └── auth.js  // Lógica de autenticación con JWT
+│   └── auth.js  // Lógica de autenticación con JWT (queda sin uso al implementar passport estrategia jwt)
+│   └── authorisation.js  // Lógica de autorización para las rutas de la aplicación
 │
 ├── public/
 │   └── css/
 │       └── styles.css // Maneja la maquetación de la aplicacion
 │   └── img/
+│       └── defect-product.png // Imagen por defecto para un producto - incluida a los fines de prueba
 │       └── logo.png // archivo png con el logo de la app
 │   └── js/
+│       └── cart.js  // Lógica de gestión del carrito
 │       └── current.js  // Lógica de estrategia current que devuelve los datos del ususario autenticado en el sistema
+│       └── home.js  // Lógica de la página de inicio
 │       └── login.js  // Lógica de la página de login
+│       └── navbar.js  // Lógica de la barra de navegación
+│       └── newProduct.js  // Lógica de la página de nuevo producto
+│       └── product.js  // Lógica de la página de producto
 │       └── register.js  // Lógica de la página de registro de ususarios
+│       └── update.js  // Lógica de la página de actualización de producto
 │
 ├── routes/
+│   └── cart.router.js  // Rutas relacionadas con el carrito
+│   └── product.router.js  // Rutas relacionadas con los productos
 │   └── session.router.js  // Rutas relacionadas con las sessiones (registro - login - current)
-│   └── viewsRouter.js  // Rutas relacionadas con las vistas handlebars
+│   └── viewsRouter.js  // Rutas relacionadas con las vistas handlebar
+│
+├── testData / // Carpeta que contiene datos de prueba para la aplicación
+│   └── products.json // Archivo JSON con datos de prueba de productos
 │
 ├── views/
 │   └── layouts/
 │   │   └── main.handlebars // layout base para el frontend
 │   └── partials/
-│       └── header.handlebars // layout para el header de la app
+│   │   └── header.handlebars // layout para el header de la app
+│   └── cart.handlebars  // Vista de carrito
 │   └── current.handlebars  // Vista que muestra los datos del ususario autenticado en el sistema
 │   └── home.handlebars  // Vista de la home page de la página
 │   └── login.handlebars  // Vista de la página para hacer login al sistema
+│   └── newProduct.handlebars  // Vista de la página para agregar un nuevo producto
+│   └── product.handlebars  // Vista de la página para mostrar un producto
+│   └── products.handlebars  // Vista de la página para mostrar todos los productos
 │   └── register.handlebars  // Vista de registro de ususarios
+│   └── update.handlebars  // Vista de la página para actualizar un producto
 │
 ├── app.js  // Archivo principal que inicia el servidor
 ├── utils.js  // crea y exporta una variable __dirname que proporciona la ruta del archivo App.js y funciones para proteger las contraseñas mediante encriptación, y registrar errores inesperados en archivos de log
 ├── utilsMulter.js  // configura el manejo de archivos mediante la librería multer para la carga de imágenes en la aplicación.
 ├── .env  // Variables de entorno
 └── package.json  // Dependencias y configuraciones del proyecto
+└── readme.md  // Este archivo
 ```
 
 [Volver al menú](#top)
@@ -385,16 +411,7 @@ Esto garantiza que:
 
 ### 🟢 Gestión de Usuarios
 
-La gestión de usuarios en esta aplicación se maneja a través del modelo `user.model.js`, que define la estructura de cada registro de usuario en la base de datos.
-
-[Volver al menú](#top)
-
-<hr>
-
-<a name="usuarios"></a>
-
-### 🟢 Gestión de Usuarios
-
+🔙 **Backend**
 La gestión de usuarios en esta aplicación se maneja a través del modelo `user.model.js`, que define la estructura de cada registro de usuario en la base de datos. Este modelo incluye campos como
 
 - first_name:String,
@@ -405,8 +422,33 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 - cart:Id con referencia a Carts
 - role:String(default:’user’)
 
-- **Creación de Usuario**: Los usuarios se pueden agregar a la base de datos mediante el formulario de registro en el frontend. Se validan los datos, se encripta la contraseña y se cargan en la base de datos, donde se guardan con un identificador único (`_id`).
-- **Visualización de Usuarios**: Los datos de un usuario logueado al sistema se pueden obtener en la ruta api/sessions/current.
+**Estrategia de Gestión de Sesión**
+• Registro y login con passport-local.
+• Validación de sesión y token con passport-jwt.
+• El token JWT se almacena en una cookie segura.
+**Rutas REST (API):**
+• POST /api/sessions/register → Registro de usuario.
+• POST /api/sessions/login → Inicio de sesión.
+• GET /api/sessions/current → Obtener usuario autenticado (con JWT).
+• POST /api/sessions/logout → Cerrar sesión.
+**Autorización por rol:**
+• Se diferencia el comportamiento de usuarios admin y user.
+• Restricciones para ciertas acciones solo disponibles para admin.
+
+💻 **Frontend**
+**Vistas:**
+• register.handlebars y login.handlebars para autenticación.
+• current.handlebars para visualizar y editar datos del usuario logueado.
+**Manejo de Sesión:**
+• localStorage se utiliza para almacenar temporalmente los datos del usuario (currentUser).
+• Los accesos al menú (navbar) se habilitan o deshabilitan según el estado de sesión y rol del usuario.
+**Feedback al Usuario:**
+• Se muestran alertas personalizadas con SweetAlert2 para errores, éxito o advertencias.
+• Se verifica en tiempo real si el usuario tiene sesión activa (JWT válido) antes de mostrar ciertas vistas o permitir acciones.
+
+**Creación de Usuario**: Los usuarios se pueden agregar a la base de datos mediante el formulario de registro en el frontend. Se validan los datos, se encripta la contraseña y se cargan en la base de datos, donde se guardan con un identificador único (`_id`).
+
+**Visualización de Usuarios**: Los datos de un usuario logueado al sistema se pueden obtener en la ruta api/sessions/current. (debe estar logueado en el sistema)
 
 #### 🔶 Relación con el Carrito
 
@@ -441,6 +483,124 @@ El método GET de usuario en la aplicación está diseñado para recuperar los d
 ```
 
 [Volver al menú](#top)
+
+<hr>
+
+<a name="productos"></a>
+
+### 🛍️ Gestión de Productos
+
+La gestión de productos en esta aplicación está diseñada para ser robusta y eficiente, combinando una API RESTful en el backend con una interfaz dinámica del lado del cliente en el frontend.
+
+🔙 **Backend**
+
+La lógica del backend está construida con Node.js, Express y MongoDB, siguiendo principios REST.
+
+📦 Funcionalidades del Backend
+• Endpoints RESTful disponibles en /api/products
+• GET /api/products: Listado con filtros, ordenamiento y paginación.
+• GET /api/products/:id: Obtener un producto por ID.
+• POST /api/products: Crear un nuevo producto (requiere rol admin).
+• PUT /api/products/:id: Actualizar un producto existente (requiere rol admin).
+• DELETE /api/products/:id: Eliminar un producto (requiere rol admin).
+• Validación de campos en la creación y edición de productos.
+• Verificación de duplicados por título antes de insertar o actualizar.
+• Carga opcional de imágenes mediante multer.
+• Control de acceso mediante autenticación con JWT y roles.
+• Paginación dinámica implementada con mongoose-paginate-v2.
+
+💻 **Frontend**
+
+El frontend está basado en Handlebars como motor de plantillas y JavaScript modular para la lógica dinámica del lado del cliente.
+
+🎨 Funcionalidades del Frontend
+**Vista principal (products.handlebars)**
+• Lista todos los productos.
+• Permite aplicar filtros por categoría, estado de stock y orden por precio.
+• Incluye paginación dinámica generada desde products.js.
+• Los datos se obtienen desde la API y se renderizan dinámicamente sin usar res.render.
+**Vista de detalle de un producto (product.handlebars)**
+• Muestra los datos completos del producto.
+• Permite agregar y quitar unidades al carrito.
+• Los botones “Editar” y “Eliminar” están habilitados solo para administradores.
+• Toda la información se obtiene mediante fetch desde la API y se renderiza con JavaScript (product.js).
+**Vista de edición (updateProduct.handlebars)**
+• Se alimenta desde update.js, que carga el producto desde la API y lo inserta en el DOM.
+• Permite modificar los datos del producto e incluso cambiar su imagen.
+**Vista de creación (newProduct.handlebars)**
+• Solo accesible para administradores.
+• Valida todos los campos y envía los datos como JSON al backend mediante fetch desde newProduct.js.
+
+✅ Seguridad y UX
+• Los botones sensibles (editar/eliminar) están deshabilitados si el usuario no es admin.
+• Se muestra un tooltip explicativo en esos casos.
+• Se utiliza SweetAlert para brindar retroalimentación visual en cada acción.
+• El sistema detecta si el JWT ha expirado y redirige al login en caso necesario.
+
+<hr>
+
+<a name="carritos"></a>
+
+### 🛒 Gestión de Carritos
+
+🔙 **Backend**
+• Modelo: Se define un esquema en Mongoose para el carrito, incluyendo productos, cantidades y el total del carrito. Los productos son referencias al modelo de productos.
+• Rutas REST (API):
+• GET /api/carts/:cid → Obtener carrito por ID.
+• POST /api/carts → Crear un nuevo carrito.
+• POST /api/carts/:cid/product/:pid → Agregar o aumentar cantidad de un producto.
+• DELETE /api/carts/:cid/product/:pid → Disminuir cantidad o eliminar un producto.
+• DELETE /api/carts/:cid/product/:pid/delete → Eliminar completamente un producto.
+• DELETE /api/carts/:cid → Eliminar todo el carrito.
+• POST /api/carts/merge → Fusionar dos carritos (ej: localStorage + carrito del usuario autenticado).
+• PUT /api/carts/:cid/empty → Vaciar carrito sin eliminarlo.
+**Middleware y Validaciones:**
+• Validación de IDs con isValidObjectId.
+• Middleware de autorización con JWT para operaciones seguras.
+• Verificación de stock y existencia de productos al manipular el carrito.
+
+💻 **Frontend**
+• Visualización:
+• cart.handlebars muestra los productos del carrito, sus cantidades, precios, totales y opciones para aumentar, disminuir o eliminar productos.
+**Lógica en JS:**
+• cart.js se encarga de:
+• Manejar eventos de botones para modificar el carrito.
+• Consumir la API para reflejar cambios en tiempo real.
+• Mostrar alertas interactivas con SweetAlert2.
+• Actualizar automáticamente la vista al modificar el carrito.
+• Gestión de Sesión:
+• Si el usuario no está logueado, se guarda el carrito en localStorage.
+• Al hacer login, se ofrece opción para fusionar el carrito local con el del usuario.
+
+<a name="estrategiaCarrito"></a>
+
+🧠 **Estrategia de Gestión de Carrito**
+
+La aplicación implementa una estrategia robusta y flexible para la gestión del carrito, contemplando tanto usuarios autenticados como no autenticados:
+
+🧾 **Usuarios No Autenticados (Visitantes)**
+• Cuando un usuario no está logueado, el carrito se crea automáticamente al intentar agregar el primer producto.
+• El ID de este carrito se guarda en el localStorage del navegador bajo la clave cartId.
+• Todas las interacciones posteriores (agregar, quitar productos, vaciar o eliminar el carrito) utilizan este carrito local.
+
+👤 **Usuarios Autenticados**
+• Al registrarse un usuario, se crea automáticamente un carrito vacío y se asocia al campo cart del modelo de usuario.
+• Este carrito es persistente y se consulta desde la base de datos mediante el ID referenciado.
+• Las operaciones sobre el carrito del usuario autenticado son seguras y validadas mediante JWT.
+
+🔀 **Fusión de Carritos (localStorage + Usuario)**
+• Al hacer login, si existe un carrito en localStorage, como el usuario ya tiene un carrito propio:
+• Se solicita al usuario una confirmación para:
+• 🔁 **Fusionar** ambos carritos: se suman cantidades de productos repetidos, y se integran productos únicos.
+• ♻️ **Descartar** el carrito local: se mantiene solamente el carrito del usuario y se elimina el carrito con el id guardado en localStorage.
+• Esta lógica se maneja desde el frontend, y para eso el backend expone un endpoint específico:
+• POST /api/carts/merge → Fusión de carritos mediante IDs (sourceCartId, targetCartId).
+
+🚨 **Consideraciones adicionales**
+• Si un producto del carrito deja de existir, se omite automáticamente al renderizar.
+• Si el carrito queda vacío (sin productos), se puede vaciar o eliminar automáticamente:
+• Para el localStorage, se elimina la clave cartId.
+• Para el usuario autenticado, el carrito nunca se elimina de la base de datos, solo se vacía.
 
 <hr>
 
