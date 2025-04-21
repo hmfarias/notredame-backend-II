@@ -50,7 +50,7 @@ router.post('/login', passportCall('login'), async (req, res) => {
 
 		// Generate JWT token
 		const token = jwt.sign(safeUser, config.SECRET_KEY, {
-			expiresIn: '10m',
+			expiresIn: '30m',
 		});
 
 		// Set JWT token in cookie

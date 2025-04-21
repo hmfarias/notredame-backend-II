@@ -11,7 +11,6 @@ const getCartIdFromStorage = () => localStorage.getItem('cartId');
 const getUserFromLocalStorage = () => {
 	try {
 		const userData = localStorage.getItem('currentUser');
-		console.log('✅ ~ getUserFromLocalStorage ~ userData:', userData);
 		return userData ? JSON.parse(userData) : null;
 	} catch (error) {
 		console.error('❌ Error parsing user from localStorage:', error);
@@ -19,7 +18,7 @@ const getUserFromLocalStorage = () => {
 	}
 };
 
-// Create a cart if needed and add the product to it
+// Create a cart if needed and add the product to it -------------------
 const createCartAndAddProduct = async (productId) => {
 	let user = getUserFromLocalStorage();
 	console.log('✅ ~ createCartAndAddProduct ~ user:', user);
@@ -64,7 +63,7 @@ const createCartAndAddProduct = async (productId) => {
 	await addProductToCart(cartId, productId);
 };
 
-// Add product to cart
+// Add product to cart ------------------------------------------------
 const addProductToCart = async (cartId, productId) => {
 	try {
 		const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
@@ -88,7 +87,7 @@ const addProductToCart = async (cartId, productId) => {
 	}
 };
 
-// Remove or decrease product quantity from cart
+// Remove or decrease product quantity from cart ----------------------------
 const removeProductFromCart = async (cartId, productId) => {
 	try {
 		const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
@@ -126,7 +125,66 @@ const removeProductFromCart = async (cartId, productId) => {
 	}
 };
 
-// Render product in the DOM
+// Delete product ------------------------------------------------------------
+const deleteProduct = async (productId) => {
+	try {
+		const response = await fetch(`/api/products/${productId}`, {
+			method: 'DELETE',
+			headers: { 'Content-Type': 'application/json' },
+		});
+
+		const data = await response.json();
+
+		// Check if the token is expired (or user unauthorized)
+		if (response.status === 401 && data.message === 'jwt expired') {
+			// Clean up and redirect
+			localStorage.removeItem('currentUser');
+
+			await Swal.fire({
+				title: 'Session expired',
+				text: 'Please log in again.',
+				icon: 'warning',
+				position: 'top-end',
+				timer: 4000,
+				showConfirmButton: false,
+				toast: true,
+			});
+
+			window.location.href = '/login';
+			return;
+		}
+
+		if (data.error) {
+			Swal.fire({
+				title: 'Warning!',
+				text: data.message,
+				icon: 'warning',
+				position: 'top-end',
+				timer: 1500,
+				showConfirmButton: false,
+				toast: true,
+			});
+
+			return;
+		}
+
+		Swal.fire({
+			title: 'Deleted!',
+			text: 'Product deleted successfully.',
+			icon: 'info',
+			position: 'top-end',
+			timer: 1500,
+			showConfirmButton: false,
+			toast: true,
+		}).then(() => {
+			window.location.href = '/products';
+		});
+	} catch (error) {
+		console.error('❌ Error deleting product:', error.message);
+	}
+};
+
+// Render product in the DOM -----------------------------------
 const renderProduct = (product) => {
 	const container = document.querySelector('.product-container');
 	if (!container) return;
@@ -228,6 +286,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 		// Edit product
 		document.querySelector('.button-update')?.addEventListener('click', () => {
 			window.location.href = `/products/updateProduct/${product._id}`;
+		});
+
+		// Delete product
+		document.querySelector('.button-delete')?.addEventListener('click', () => {
+			deleteProduct(product._id);
 		});
 	} catch (error) {
 		console.error('❌ Error loading product:', error.message);

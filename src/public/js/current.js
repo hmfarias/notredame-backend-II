@@ -3,6 +3,7 @@ const inputSurname = document.getElementById('surname');
 const inputAge = document.getElementById('age');
 const inputEmail = document.getElementById('email');
 const inputPassword = document.getElementById('password');
+const inputRole = document.getElementById('role');
 const mainContent = document.getElementById('main-content');
 
 try {
@@ -13,7 +14,26 @@ try {
 		},
 	});
 
-	const data = await response.json(); // ✅ solo una vez
+	const data = await response.json();
+
+	// Check if the token is expired (or user unauthorized)
+	if (response.status === 401 && data.message === 'jwt expired') {
+		// Clean up and redirect
+		localStorage.removeItem('currentUser');
+
+		await Swal.fire({
+			title: 'Session expired',
+			text: 'Please log in again.',
+			icon: 'warning',
+			position: 'top-end',
+			timer: 4000,
+			showConfirmButton: false,
+			toast: true,
+		});
+
+		window.location.href = '/login';
+		return;
+	}
 
 	if (!response.ok || !data.payload?.user) {
 		const errorMessage =
@@ -43,6 +63,7 @@ try {
 		if (user.last_name) inputSurname.value = user.last_name;
 		if (user.age) inputAge.value = user.age;
 		if (user.email) inputEmail.value = user.email;
+		if (user.role) inputRole.value = user.role.toUpperCase();
 	}
 } catch (error) {
 	console.error('❌ Unexpected error during session validation:', error);

@@ -617,3 +617,10 @@ h1 {
 .button-update:hover {
 	background: #686262;
 }
+
+.disabled-link {
+	color: gray;
+	/* cursor: not-allowed; */
+	text-decoration: none;
+	opacity: 0.6;
+}

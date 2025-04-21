@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate-v2';
-// import CartModel from './carts.model';
+import { CartModel } from './cart.model.js';
 
 const { Schema } = mongoose;
 

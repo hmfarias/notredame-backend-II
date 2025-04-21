@@ -74,6 +74,25 @@ const setupFormSubmit = (productId) => {
 			});
 			const data = await response.json();
 
+			// Check if the token is expired (or user unauthorized)
+			if (response.status === 401 && data.message === 'jwt expired') {
+				// Clean up and redirect
+				localStorage.removeItem('currentUser');
+
+				await Swal.fire({
+					title: 'Session expired',
+					text: 'Please log in again.',
+					icon: 'warning',
+					position: 'top-end',
+					timer: 4000,
+					showConfirmButton: false,
+					toast: true,
+				});
+
+				window.location.href = '/login';
+				return;
+			}
+
 			if (data.error) {
 				throw new Error(data.message);
 			}

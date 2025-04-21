@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	const loginLink = document.getElementById('loginLink');
 	const logoutLink = document.getElementById('logoutLink');
 	const registerLink = document.getElementById('registerLink');
+	const newProductLink = document.getElementById('newProductLink');
 
 	try {
 		const response = await fetch('/api/sessions/current', {
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		});
 
 		if (!response.ok) {
-			// If user is not authenticated, hide the profile link
+			// If user is not authenticated
 			if (profileLink) {
 				profileLink.style.pointerEvents = 'none';
 				profileLink.style.opacity = '0.5';
@@ -22,7 +23,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 				logoutLink.style.opacity = '0.5';
 				logoutLink.title = 'You are not logged in';
 			}
+			if (newProductLink) {
+				// newProductLink.style.pointerEvents = 'none';
+				newProductLink.classList.add('disabled-link');
+				newProductLink.removeAttribute('href'); // Remove href to disable link
+				// newProductLink.style.opacity = '0.5';
+				newProductLink.title = 'Log in to access your profile';
+			}
 		} else {
+			const data = await response.json();
+			const user = data.payload.user;
+
+			// If the user is logged in but not admin, hide newProductLink
+			if (user.role !== 'admin' && newProductLink) {
+				// newProductLink.style.pointerEvents = 'none';
+				newProductLink.classList.add('disabled-link');
+				newProductLink.removeAttribute('href'); // Remove href to disable link
+				// newProductLink.style.opacity = '0.5';
+				newProductLink.title = 'Admin access required';
+			}
+
+			// Disable login/register since user is logged in
 			if (loginLink) {
 				loginLink.style.pointerEvents = 'none';
 				loginLink.style.opacity = '0.5';
@@ -36,6 +57,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		}
 	} catch (error) {
 		console.error('❌ Error checking user session:', error);
+
+		// Fallback in case of error
 		if (profileLink) {
 			profileLink.style.pointerEvents = 'none';
 			profileLink.style.opacity = '0.5';
@@ -45,6 +68,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 			logoutLink.style.pointerEvents = 'none';
 			logoutLink.style.opacity = '0.5';
 			logoutLink.title = 'You are not logged in';
+		}
+		if (newProductLink) {
+			// newProductLink.style.pointerEvents = 'none';
+			newProductLink.classList.add('disabled-link');
+			newProductLink.removeAttribute('href'); // Remove href to disable link
+			// newProductLink.style.opacity = '0.5';
+			newProductLink.title = 'Admin access required';
 		}
 	}
 	//* end Enable and disable links based on user session ----------------------------------------
