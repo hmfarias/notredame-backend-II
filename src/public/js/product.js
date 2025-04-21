@@ -7,21 +7,44 @@ const getProductIdFromURL = () => {
 // Get cart ID from localStorage
 const getCartIdFromStorage = () => localStorage.getItem('cartId');
 
+// Get user from localStorage after successful login
+const getUserFromLocalStorage = () => {
+	try {
+		const userData = localStorage.getItem('currentUser');
+		console.log('✅ ~ getUserFromLocalStorage ~ userData:', userData);
+		return userData ? JSON.parse(userData) : null;
+	} catch (error) {
+		console.error('❌ Error parsing user from localStorage:', error);
+		return null;
+	}
+};
+
 // Create a cart if needed and add the product to it
 const createCartAndAddProduct = async (productId) => {
-	let cartId = getCartIdFromStorage();
+	let user = getUserFromLocalStorage();
+	console.log('✅ ~ createCartAndAddProduct ~ user:', user);
+	let cartId = user?.cart?._id || getCartIdFromStorage();
+	console.log('✅ ~ createCartAndAddProduct ~ cartId:', cartId);
 
 	if (!cartId) {
 		try {
-			const response = await fetch('/carts', {
+			const response = await fetch('/api/carts', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 			});
 			const data = await response.json();
 			if (data.error) throw new Error(data.message);
 
-			cartId = data.payload.id;
+			cartId = data.payload.cart._id;
+
+			// Save cart ID
 			localStorage.setItem('cartId', cartId);
+
+			// If user is logged in, update cart reference
+			if (user) {
+				user.cart = { _id: cartId };
+				localStorage.setItem('user', JSON.stringify(user));
+			}
 
 			await Swal.fire({
 				title: 'Cart created',
@@ -33,7 +56,7 @@ const createCartAndAddProduct = async (productId) => {
 				toast: true,
 			});
 		} catch (error) {
-			console.error('Error creating cart:', error.message);
+			console.error('❌ Error creating cart:', error.message);
 			return;
 		}
 	}
@@ -41,10 +64,10 @@ const createCartAndAddProduct = async (productId) => {
 	await addProductToCart(cartId, productId);
 };
 
-// Add product to existing cart
+// Add product to cart
 const addProductToCart = async (cartId, productId) => {
 	try {
-		const response = await fetch(`/carts/${cartId}/product/${productId}`, {
+		const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 		});
@@ -61,19 +84,33 @@ const addProductToCart = async (cartId, productId) => {
 			toast: true,
 		});
 	} catch (error) {
-		console.error('Error adding product to cart:', error.message);
+		console.error('❌ Error adding product to cart:', error.message);
 	}
 };
 
 // Remove or decrease product quantity from cart
 const removeProductFromCart = async (cartId, productId) => {
 	try {
-		const response = await fetch(`/carts/${cartId}/product/${productId}`, {
+		const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json' },
 		});
+
 		const data = await response.json();
-		if (data.error) throw new Error(data.message);
+
+		if (data.error) {
+			Swal.fire({
+				title: 'Warning!',
+				text: data.message,
+				icon: 'warning',
+				position: 'top-end',
+				timer: 1500,
+				showConfirmButton: false,
+				toast: true,
+			});
+
+			return;
+		}
 
 		Swal.fire({
 			title: 'Updated!',
@@ -85,7 +122,7 @@ const removeProductFromCart = async (cartId, productId) => {
 			toast: true,
 		});
 	} catch (error) {
-		console.error('Error removing product from cart:', error.message);
+		console.error('❌ Error removing product from cart:', error.message);
 	}
 };
 
@@ -130,19 +167,6 @@ const renderProduct = (product) => {
 	`;
 };
 
-// Get current user from session
-const getCurrentUser = async () => {
-	try {
-		const response = await fetch('/api/sessions/current');
-		if (!response.ok) return null;
-		const data = await response.json();
-		return data.payload.user || null;
-	} catch (err) {
-		console.error('Error getting current user:', err);
-		return null;
-	}
-};
-
 // DOM Ready
 document.addEventListener('DOMContentLoaded', async () => {
 	const productId = getProductIdFromURL();
@@ -160,21 +184,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 		renderProduct(product);
 
 		// Restrict edit/delete to admin only
-		const user = await getCurrentUser();
-		console.log('✅ ~ document.addEventListener ~ user:', user);
-
+		const user = getUserFromLocalStorage();
 		const editBtn = document.querySelector('.button-update');
 		const deleteBtn = document.querySelector('.button-delete');
 
 		if (!user || user.role !== 'admin') {
 			if (editBtn) {
 				editBtn.disabled = true;
-				editBtn.style.opacity = '0.5';
+				editBtn.style.opacity = '0.2';
 				editBtn.title = 'Admin access required';
 			}
 			if (deleteBtn) {
 				deleteBtn.disabled = true;
-				deleteBtn.style.opacity = '0.5';
+				deleteBtn.style.opacity = '0.2';
 				deleteBtn.title = 'Admin access required';
 			}
 		}
@@ -186,11 +208,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 		// Remove from cart
 		document.getElementById('subs-to-cart-btn')?.addEventListener('click', () => {
-			const cartId = getCartIdFromStorage();
+			const user = getUserFromLocalStorage();
+			const cartId = user?.cart?._id || getCartIdFromStorage();
 			if (!cartId) {
 				Swal.fire({
 					title: 'Warning!',
-					text: 'No cart found in localStorage.',
+					text: 'No cart found.',
 					icon: 'warning',
 					position: 'top-end',
 					timer: 1500,
@@ -202,12 +225,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 			removeProductFromCart(cartId, product._id);
 		});
 
-		// Edit button
+		// Edit product
 		document.querySelector('.button-update')?.addEventListener('click', () => {
 			window.location.href = `/products/updateProduct/${product._id}`;
 		});
 	} catch (error) {
-		console.error('Error loading product:', error.message);
+		console.error('❌ Error loading product:', error.message);
 		document.querySelector('.product-container').innerHTML = `
 			<p style="color:red; font-size:1.2rem;">Error: ${error.message}</p>
 		`;

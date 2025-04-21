@@ -7,8 +7,8 @@ import { comparePassword, hashPassword } from '../utils.js';
 import { config } from './config.js';
 
 export const initPassport = () => {
-	// Local Strategy ---------------------------------------------------------------------------------
-	// Register
+	//* Local Strategy ---------------------------------------------------------------------------------
+	//* Register
 	// STEP 1 *****************************
 	passport.use(
 		'register',
@@ -52,8 +52,8 @@ export const initPassport = () => {
 	);
 	// END STEP 1 *************************
 
-	// Local Strategy ---------------------------------------------------------------------------------
-	// Login
+	//* Local Strategy ---------------------------------------------------------------------------------
+	//* Login
 	// STEP 1 *****************************
 	passport.use(
 		'login',
@@ -76,8 +76,8 @@ export const initPassport = () => {
 	);
 	// END STEP 1 *************************
 
-	// JWT Strategy ---------------------------------------------------------------------------------
-
+	//* JWT Strategy ---------------------------------------------------------------------------------
+	//* Current
 	// cookieExtractor is a function that takes a request and returns the token from the cookie if exists
 	const cookieExtractor = (req) => req.cookies?.token ?? null;
 
@@ -105,7 +105,7 @@ export const initPassport = () => {
 	);
 	// END STEP 1 *************************
 
-	//STEP 1'(ONLY IF USING SESSIONS)*****
+	//STEP 1' (ONLY IF USING SESSIONS)*****
 	//Save in session ----------------------------------------------------------------
 	//Only if using sessions
 	// passport.serializeUser((user, done) => {

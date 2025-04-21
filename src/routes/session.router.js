@@ -63,7 +63,7 @@ router.post('/login', passportCall('login'), async (req, res) => {
 		return res.status(200).json({
 			error: false,
 			message: 'Successful login',
-			payload: safeUser,
+			payload: { user: safeUser },
 		});
 	} catch (error) {
 		errorHandler(error, res);
@@ -95,9 +95,6 @@ router.get('/current', passportCall('current'), (req, res) => {
 				})) ?? [],
 		},
 	};
-	res
-		.status(200)
-		.json({ error: false, message: 'Authenticated user', payload: { user: safeUser } });
 
 	return res.status(200).json({
 		error: false,
@@ -152,7 +149,7 @@ router.get('/:uid', async (req, res) => {
 			payload: { user },
 		});
 	} catch (error) {
-		console.error('Error fetching the user:', error.message);
+		console.error('❌ Error fetching the user:', error.message);
 		errorHandler(error, res);
 	}
 });

@@ -44,8 +44,24 @@ export class CartsManagerMongo {
 				(item) => item.product._id?.toString() === productId.toString()
 			);
 		} catch (error) {
-			console.error('Error checking product in cart:', error.message);
+			console.error('❌ Error checking product in cart:', error.message);
 			return false;
 		}
+	}
+
+	// Empty a cart
+	static async empty(cartId) {
+		const updatedCart = await CartModel.findByIdAndUpdate(
+			cartId,
+			{
+				$set: {
+					products: [],
+					totalCart: 0,
+				},
+			},
+			{ new: true, lean: true }
+		);
+
+		return updatedCart;
 	}
 }

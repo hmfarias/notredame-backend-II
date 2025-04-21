@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 			payload: { carts },
 		});
 	} catch (error) {
-		console.error('Error fetching carts:', error.message);
+		console.error('❌ Error fetching carts:', error.message);
 		errorHandler(error, res);
 	}
 });
@@ -81,7 +81,7 @@ router.get('/:cid', async (req, res) => {
 			payload: { cart: formattedCart },
 		});
 	} catch (error) {
-		console.error('Error fetching the cart:', error.message);
+		console.error('❌ Error fetching the cart:', error.message);
 		errorHandler(error, res);
 	}
 });
@@ -104,7 +104,7 @@ router.post('/', async (req, res) => {
 			payload: { cart: newCart },
 		});
 	} catch (error) {
-		console.error('Error creating the cart:', error.message);
+		console.error('❌ Error creating the cart:', error.message);
 		errorHandler(error, res);
 	}
 });
@@ -189,7 +189,7 @@ router.post('/:cid/product/:pid', async (req, res) => {
 			payload: { cart: updatedCart },
 		});
 	} catch (error) {
-		console.error('Error fetching products:', error.message);
+		console.error('❌ Error fetching products:', error.message);
 		errorHandler(error, res);
 	}
 });
@@ -284,7 +284,7 @@ router.delete('/:cid/product/:pid', async (req, res) => {
 			payload: { cart: updatedCart },
 		});
 	} catch (error) {
-		console.error('Error deleting the product from the cart:', error.message);
+		console.error('❌ Error deleting the product from the cart:', error.message);
 		errorHandler(error, res);
 	}
 });
@@ -374,7 +374,7 @@ router.delete('/:cid/product/:pid/delete', async (req, res) => {
 			payload: { cart: updatedCart },
 		});
 	} catch (error) {
-		console.error('Error deleting the product from the cart:', error.message);
+		console.error('❌ Error deleting the product from the cart:', error.message);
 		errorHandler(error, res);
 	}
 });
@@ -411,6 +411,110 @@ router.delete('/:cid', async (req, res) => {
 			error: false,
 			message: 'Cart successfully deleted',
 			payload: { cart: deletedCart },
+		});
+	} catch (error) {
+		console.error('❌ Error deleting the cart:', error.message);
+		errorHandler(error, res);
+	}
+});
+
+//* EMPTY A CART ************************/
+router.delete('/empty/:cid', async (req, res) => {
+	try {
+		const cartId = req.params.cid;
+
+		// verify that the ID has valid format
+		if (!isValidObjectId(cartId)) {
+			res.setHeader('Content-Type', 'application/json');
+			return res.status(400).json({
+				error: true,
+				message: 'Invalid cart ID format',
+				payload: null,
+			});
+		}
+
+		// empty the cart
+		const emptyCart = await CartsManager.empty(cartId);
+
+		if (!emptyCart) {
+			res.setHeader('Content-Type', 'application/json');
+			return res.status(404).json({
+				error: true,
+				message: 'Cart not found - No cart exists with the specified ID',
+				payload: null,
+			});
+		}
+
+		res.setHeader('Content-Type', 'application/json');
+		return res.status(200).json({
+			error: false,
+			message: 'Cart successfully emptied',
+			payload: { cart: emptyCart },
+		});
+	} catch (error) {
+		console.error('❌ Error emptying the cart:', error.message);
+		errorHandler(error, res);
+	}
+});
+
+//* MERGE TWO CARTS ************************/
+// This endpoint merges two carts by combining their products and quantities
+// and then deletes the source cart.
+// It assumes that the source cart's products will be merged into the target cart.
+router.post('/merge', async (req, res) => {
+	try {
+		const { sourceCartId, targetCartId } = req.body;
+
+		// Validate both IDs
+		if (!isValidObjectId(sourceCartId) || !isValidObjectId(targetCartId)) {
+			return res.status(400).json({
+				error: true,
+				message: 'Invalid cart ID(s)',
+				payload: null,
+			});
+		}
+
+		// Fetch both carts
+		const sourceCart = await CartsManager.getBy({ _id: sourceCartId });
+		const targetCart = await CartsManager.getBy({ _id: targetCartId });
+
+		if (!sourceCart || !targetCart) {
+			return res.status(404).json({
+				error: true,
+				message: 'One or both carts not found',
+				payload: null,
+			});
+		}
+
+		// Merge logic: combine quantities and products
+		sourceCart.products.forEach((sourceItem) => {
+			const existingItem = targetCart.products.find(
+				(targetItem) => String(targetItem.product._id) === String(sourceItem.product._id)
+			);
+
+			if (existingItem) {
+				existingItem.quantity += sourceItem.quantity;
+				existingItem.totalProduct = existingItem.quantity * sourceItem.product.price;
+			} else {
+				targetCart.products.push(sourceItem);
+			}
+		});
+
+		// Recalculate totalCart
+		targetCart.totalCart = round(
+			targetCart.products.reduce((acc, item) => acc + item.totalProduct, 0)
+		);
+
+		// Save the updated target cart
+		const updatedCart = await CartsManager.update(targetCart);
+
+		// Delete the source cart
+		await CartsManager.delete(sourceCartId);
+
+		return res.status(200).json({
+			error: false,
+			message: 'Carts merged successfully',
+			payload: { cart: updatedCart },
 		});
 	} catch (error) {
 		console.error('Error deleting the cart:', error.message);

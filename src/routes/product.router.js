@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { uploader } from '../utilsMulter.js';
 import { ProductsManagerMongo as ProductsManager } from '../dao/ProductsManagerMongo.js';
-import { errorHandler, isValidObjectId } from '../utils.js';
+import { errorHandler, isValidObjectId, passportCall } from '../utils.js';
+import { authorisation } from '../middlewares/authorisation.js';
 
 export const router = Router();
 
@@ -83,7 +84,7 @@ router.get('/', async (req, res) => {
 			},
 		});
 	} catch (error) {
-		console.error('Error fetching products:', error.message);
+		console.error('❌ Error fetching products:', error.message);
 		errorHandler(error, res);
 	}
 });
@@ -120,145 +121,162 @@ router.get('/:id', async (req, res) => {
 			payload: { product },
 		});
 	} catch (error) {
-		console.error('Error fetching the product:', error.message);
+		console.error('❌ Error fetching the product:', error.message);
 		errorHandler(error, res);
 	}
 });
 
 //* CREATE a new product *****************************************/
-router.post('/', uploader.single('file'), async (req, res) => {
-	try {
-		const { title, description, code, price, stock, category } = req.body;
+router.post(
+	'/',
+	uploader.single('file'),
+	passportCall('current'),
+	authorisation('admin'),
+	async (req, res) => {
+		try {
+			const { title, description, code, price, stock, category } = req.body;
 
-		const thumbnail = req.file
-			? '/img/' + req.file.filename
-			: 'https://prd.place/400?id=14';
+			const thumbnail = req.file
+				? '/img/' + req.file.filename
+				: 'https://prd.place/400?id=14';
 
-		// Verify if there is already a product with the same title
-		const existingProduct = await ProductsManager.getBy({ title });
+			// Verify if there is already a product with the same title
+			const existingProduct = await ProductsManager.getBy({ title });
 
-		if (existingProduct) {
+			if (existingProduct) {
+				res.setHeader('Content-Type', 'application/json');
+				return res.status(409).json({
+					error: true,
+					message: `A product with the title "${title}" already exists`,
+					payload: null,
+				});
+			}
+
+			const product = {
+				title,
+				description,
+				code,
+				price,
+				stock,
+				category,
+				thumbnail,
+			};
+
+			// Save the product
+			const newProduct = await ProductsManager.create(product);
+
 			res.setHeader('Content-Type', 'application/json');
-			return res.status(409).json({
-				error: true,
-				message: `A product with the title "${title}" already exists`,
-				payload: null,
+			return res.status(201).json({
+				error: false,
+				message: `Product created successfully`,
+				payload: { product: newProduct },
 			});
+		} catch (error) {
+			console.error('❌ Error creating the product:', error.message);
+			errorHandler(error, res);
 		}
-
-		const product = {
-			title,
-			description,
-			code,
-			price,
-			stock,
-			category,
-			thumbnail,
-		};
-
-		// Save the product
-		const newProduct = await ProductsManager.create(product);
-
-		res.setHeader('Content-Type', 'application/json');
-		return res.status(201).json({
-			error: false,
-			message: `Product created successfully`,
-			payload: { product: newProduct },
-		});
-	} catch (error) {
-		console.error('Error creating the product:', error.message);
-		errorHandler(error, res);
 	}
-});
+);
 
 //* UPDATE a product by id *****************************************/
-router.put('/:id', uploader.single('file'), async (req, res) => {
-	try {
-		const { title, description, code, price, stock, category } = req.body;
-		const { id } = req.params;
+router.put(
+	'/:id',
+	uploader.single('file'),
+	passportCall('current'),
+	authorisation('admin'),
+	async (req, res) => {
+		try {
+			const { title, description, code, price, stock, category } = req.body;
+			const { id } = req.params;
 
-		// Use new thumbnail if recived, or keep the previous if not
-		const thumbnail = req.file ? '/img/' + req.file.filename : req.body.thumbnail;
+			// Use new thumbnail if recived, or keep the previous if not
+			const thumbnail = req.file ? '/img/' + req.file.filename : req.body.thumbnail;
 
-		// Verify if there is another product with the same title
-		const existingProduct = await ProductsManager.getBy({ title });
+			// Verify if there is another product with the same title
+			const existingProduct = await ProductsManager.getBy({ title });
 
-		if (existingProduct && existingProduct._id.toString() !== id) {
-			res.setHeader('Content-Type', 'application/json');
-			return res.status(400).json({
-				error: true,
-				message: `Other product with the title "${title}" already exists.`,
-				payload: null,
+			if (existingProduct && existingProduct._id.toString() !== id) {
+				res.setHeader('Content-Type', 'application/json');
+				return res.status(400).json({
+					error: true,
+					message: `Other product with the title "${title}" already exists.`,
+					payload: null,
+				});
+			}
+
+			//try to update the product
+			const updatedProduct = await ProductsManager.update(req.params.id, {
+				title,
+				description,
+				code,
+				price,
+				stock,
+				category,
+				thumbnail,
 			});
-		}
 
-		//try to update the product
-		const updatedProduct = await ProductsManager.update(req.params.id, {
-			title,
-			description,
-			code,
-			price,
-			stock,
-			category,
-			thumbnail,
-		});
+			if (!updatedProduct) {
+				res.setHeader('Content-Type', 'application/json');
+				return res.status(404).json({
+					error: true,
+					message: 'Product not found - The product with the specified ID does not exist',
+					payload: null,
+				});
+			}
 
-		if (!updatedProduct) {
 			res.setHeader('Content-Type', 'application/json');
-			return res.status(404).json({
-				error: true,
-				message: 'Product not found - The product with the specified ID does not exist',
-				payload: null,
+			return res.status(200).json({
+				error: false,
+				message: 'Product updated successfully',
+				payload: { updatedProduct },
 			});
+		} catch (error) {
+			console.error('❌ Error deleting the product:', error.message);
+			errorHandler(error, res);
 		}
-
-		res.setHeader('Content-Type', 'application/json');
-		return res.status(200).json({
-			error: false,
-			message: 'Product updated successfully',
-			payload: { updatedProduct },
-		});
-	} catch (error) {
-		console.error('Error deleting the product:', error.message);
-		errorHandler(error, res);
 	}
-});
+);
 
 //* DELETE ***************************************************/
-router.delete('/:id', async (req, res) => {
-	try {
-		const { id } = req.params;
+router.delete(
+	'/:id',
+	passportCall('current'),
+	authorisation('admin'),
+	async (req, res) => {
+		try {
+			const { id } = req.params;
 
-		// verify that the ID has valid format
-		if (!isValidObjectId(id)) {
+			// verify that the ID has valid format
+			if (!isValidObjectId(id)) {
+				res.setHeader('Content-Type', 'application/json');
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid product ID format',
+					payload: null,
+				});
+			}
+
+			// Delete the product
+			const deletedProduct = await ProductsManager.delete(id);
+
+			if (!deletedProduct) {
+				res.setHeader('Content-Type', 'application/json');
+				return res.status(404).json({
+					error: true,
+					message: 'Product not found - No product exists with the specified ID',
+					payload: null,
+				});
+			}
+
 			res.setHeader('Content-Type', 'application/json');
-			return res.status(400).json({
-				error: true,
-				message: 'Invalid product ID format',
-				payload: null,
+			return res.status(200).json({
+				error: false,
+				message: 'Product deleted successfully',
+				payload: { product: deletedProduct },
 			});
+		} catch (error) {
+			console.error('❌ Error deleting the product:', error.message);
+			errorHandler(error, res);
 		}
-
-		// Delete the product
-		const deletedProduct = await ProductsManager.delete(id);
-
-		if (!deletedProduct) {
-			res.setHeader('Content-Type', 'application/json');
-			return res.status(404).json({
-				error: true,
-				message: 'Product not found - No product exists with the specified ID',
-				payload: null,
-			});
-		}
-
-		res.setHeader('Content-Type', 'application/json');
-		return res.status(200).json({
-			error: false,
-			message: 'Product deleted successfully',
-			payload: { product: deletedProduct },
-		});
-	} catch (error) {
-		console.error('Error deleting the product:', error.message);
-		errorHandler(error, res);
 	}
-});
+);

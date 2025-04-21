@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			}
 		}
 	} catch (error) {
-		console.error('Error checking user session:', error);
+		console.error('❌ Error checking user session:', error);
 		if (profileLink) {
 			profileLink.style.pointerEvents = 'none';
 			profileLink.style.opacity = '0.5';
@@ -50,34 +50,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 	//* end Enable and disable links based on user session ----------------------------------------
 
 	//* Cart link ---------------------------------------------------------------------------------
-	// Obtain the element with the ID "cart-link"
 	const cartLink = document.getElementById('cart-link');
 
-	// Add a click event to the cart link
-	cartLink.addEventListener('click', async (event) => {
+	cartLink?.addEventListener('click', async (event) => {
 		event.preventDefault();
 
-		// Get the cartId from LocalStorage
-		const cartId = localStorage.getItem('cartId');
+		// Try to get the user from localStorage
+		const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 
-		// Verify if there is a cartId in LocalStorage
-		if (!cartId) {
-			await Swal.fire({
-				title: 'Warning!',
-				text: 'No cart found. Please add products to create it',
-				icon: 'warning',
-				position: 'top-end',
-				timer: 2500,
-				showConfirmButton: false,
-				toast: true,
-			});
-			// Redirect to the home page
-			// window.location.href = '/';
-			return;
+		// If there is a user and a cart associated, use it
+		if (currentUser?.cart?._id) {
+			return (window.location.href = `/carts/${currentUser.cart._id}`);
 		}
 
-		// Redirect to the cart if it exists
-		window.location.href = `/carts/${cartId}`;
+		// Otherwise, fallback to localStorage cart
+		const cartId = localStorage.getItem('cartId');
+
+		if (cartId) {
+			return (window.location.href = `/carts/${cartId}`);
+		}
+
+		// If no cart found, show warning
+		await Swal.fire({
+			title: 'Warning!',
+			text: 'No cart found. Please add products to create it.',
+			icon: 'warning',
+			position: 'top-end',
+			timer: 2500,
+			showConfirmButton: false,
+			toast: true,
+		});
 	});
 	//* end Cart link --------------------------------------------------------------------------------
 

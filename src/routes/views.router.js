@@ -17,9 +17,21 @@ router.get('/current', (req, res) => {
 });
 
 router.get('/products', (req, res) => {
-	res.render('products', { title: 'Products' });
+	res.render('products', { title: 'Products List' });
 });
 
 router.get('/product', (req, res) => {
 	res.render('product', { title: 'Product Detail' });
+});
+
+router.get('/carts/:cid', (req, res) => {
+	res.render('cart', { title: 'Your Cart' });
+});
+
+router.get('/products/updateProduct/:cid', (req, res) => {
+	res.render('updateProduct', { title: 'Update Product' });
+});
+
+router.get('/newProduct', (req, res) => {
+	res.render('newProduct', { title: 'Add New Product' });
 });
