@@ -423,25 +423,33 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 - role:String(default:’user’)
 
 **Estrategia de Gestión de Sesión**
+
 • Registro y login con passport-local.
 • Validación de sesión y token con passport-jwt.
 • El token JWT se almacena en una cookie segura.
+
 **Rutas REST (API):**
+
 • POST /api/sessions/register → Registro de usuario.
 • POST /api/sessions/login → Inicio de sesión.
 • GET /api/sessions/current → Obtener usuario autenticado (con JWT).
 • POST /api/sessions/logout → Cerrar sesión.
+
 **Autorización por rol:**
+
 • Se diferencia el comportamiento de usuarios admin y user.
 • Restricciones para ciertas acciones solo disponibles para admin.
 
 💻 **Frontend**
+
 **Vistas:**
 • register.handlebars y login.handlebars para autenticación.
 • current.handlebars para visualizar y editar datos del usuario logueado.
+
 **Manejo de Sesión:**
 • localStorage se utiliza para almacenar temporalmente los datos del usuario (currentUser).
 • Los accesos al menú (navbar) se habilitan o deshabilitan según el estado de sesión y rol del usuario.
+
 **Feedback al Usuario:**
 • Se muestran alertas personalizadas con SweetAlert2 para errores, éxito o advertencias.
 • Se verifica en tiempo real si el usuario tiene sesión activa (JWT válido) antes de mostrar ciertas vistas o permitir acciones.
