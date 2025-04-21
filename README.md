@@ -412,6 +412,7 @@ Esto garantiza que:
 ### 🟢 Gestión de Usuarios
 
 🔙 **Backend**
+
 La gestión de usuarios en esta aplicación se maneja a través del modelo `user.model.js`, que define la estructura de cada registro de usuario en la base de datos. Este modelo incluye campos como
 
 - first_name:String,
@@ -555,6 +556,7 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 ### 🛒 Gestión de Carritos
 
 🔙 **Backend**
+
 - Modelo: Se define un esquema en Mongoose para el carrito, incluyendo productos, cantidades y el total del carrito. Los productos son referencias al modelo de productos.
 - Rutas REST (API):
 - GET /api/carts/:cid → Obtener carrito por ID.
@@ -572,6 +574,7 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 - Verificación de stock y existencia de productos al manipular el carrito.
 
 💻 **Frontend**
+
 - Visualización:
 - cart.handlebars muestra los productos del carrito, sus cantidades, precios, totales y opciones para aumentar, disminuir o eliminar productos.
   
