@@ -284,6 +284,8 @@ node src/app.js -p 4000
 
 Esto brinda flexibilidad al momento de desplegar o testear la aplicación en distintos entornos o puertos, sin necesidad de modificar archivos de configuración.
 
+[Volver al menú](#top)
+
 <hr>
 
 <a name="funcionamiento"></a>
