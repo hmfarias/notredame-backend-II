@@ -271,7 +271,7 @@ La aplicación permite establecer el puerto en el que se ejecuta el servidor de 
 🛠️ Prioridad de asignación del puerto:
 
 1. Parámetro pasado por CLI → node src/app.js --port 4000
-2. Variable de entorno .env → PORT= 34000
+2. Variable de entorno .env → PORT= 3000
 3. Valor por defecto → 8080
 
 ```
