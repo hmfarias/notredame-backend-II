@@ -142,18 +142,18 @@ body {
 }
 
 .cta-button {
-	background-color: #2f14dd;
+	background-color: #3b82f6;
 	color: white;
 	padding: 1rem 2rem;
 	font-size: 1.2rem;
 	border: none;
-	border-radius: 50px;
+	border-radius: 10px;
 	cursor: pointer;
 	transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .cta-button:hover {
-	background-color: #ff4d4d;
+	background-color: #72819a;
 	transform: scale(1.05);
 }
 

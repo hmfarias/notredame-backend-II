@@ -41,6 +41,7 @@
    - [Comentarios en el código](#comentarios)
 4. [Credenciales - .env](#environment)
 5. [Instalación en local](#instalacion)
+   - [Configuración del Puerto desde Línea de Comandos](#comander)
 6. [Funcionamiento de la Aplicacion](#funcionamiento)
    - [Arquitectura](#arquitectura)
    - [Estructura de archivos](#estructura)
@@ -245,6 +246,8 @@ Antes de instalar la aplicación, asegúrate de contar con:
 
    ```
    npm run dev
+   o bien:
+   node src/app.js
    ```
 
    Esto iniciará el servidor y mostrará un mensaje en la terminal indicando que la aplicación está corriendo en el puerto 3000 y conectada a la base de datos.
@@ -256,6 +259,30 @@ Antes de instalar la aplicación, asegúrate de contar con:
 ✅ ¡Listo! Ya puedes explorar y probar la aplicación en tu entorno local. 🚀
 
 [Volver al menú](#top)
+
+<hr>
+
+<a name="comander"></a>
+
+## 🔧 Configuración del Puerto desde Línea de ComandosL
+
+La aplicación permite establecer el puerto en el que se ejecuta el servidor de forma dinámica a través de la línea de comandos, gracias al uso de la librería **commander**.
+
+🛠️ Prioridad de asignación del puerto:
+
+1. Parámetro pasado por CLI → node src/app.js --port 4000
+2. Variable de entorno .env → PORT= 34000
+3. Valor por defecto → 8080
+
+```
+# Usando la opción larga
+node src/app.js --port 4000
+
+# Usando la opción corta
+node src/app.js -p 4000
+```
+
+Esto brinda flexibilidad al momento de desplegar o testear la aplicación en distintos entornos o puertos, sin necesidad de modificar archivos de configuración.
 
 <hr>
 
@@ -444,14 +471,17 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 💻 **Frontend**
 
 **Vistas:**
+
 - register.handlebars y login.handlebars para autenticación.
 - current.handlebars para visualizar y editar datos del usuario logueado.
 
 **Manejo de Sesión:**
+
 - localStorage se utiliza para almacenar temporalmente los datos del usuario (currentUser).
 - Los accesos al menú (navbar) se habilitan o deshabilitan según el estado de sesión y rol del usuario.
 
 **Feedback al Usuario:**
+
 - Se muestran alertas personalizadas con SweetAlert2 para errores, éxito o advertencias.
 - Se verifica en tiempo real si el usuario tiene sesión activa (JWT válido) antes de mostrar ciertas vistas o permitir acciones.
 
@@ -506,6 +536,7 @@ La gestión de productos en esta aplicación está diseñada para ser robusta y 
 La lógica del backend está construida con Node.js, Express y MongoDB, siguiendo principios REST.
 
 📦 Funcionalidades del Backend
+
 - Endpoints RESTful disponibles en /api/products
 - GET /api/products: Listado con filtros, ordenamiento y paginación.
 - GET /api/products/:id: Obtener un producto por ID.
@@ -524,26 +555,31 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 
 🎨 Funcionalidades del Frontend
 **Vista principal (products.handlebars)**
+
 - Lista todos los productos.
 - Permite aplicar filtros por categoría, estado de stock y orden por precio.
 - Incluye paginación dinámica generada desde products.js.
 - Los datos se obtienen desde la API y se renderizan dinámicamente sin usar res.render.
-  
+
 **Vista de detalle de un producto (product.handlebars)**
+
 - Muestra los datos completos del producto.
 - Permite agregar y quitar unidades al carrito.
 - Los botones “Editar” y “Eliminar” están habilitados solo para administradores.
 - Toda la información se obtiene mediante fetch desde la API y se renderiza con JavaScript (product.js).
-  
+
 **Vista de edición (updateProduct.handlebars)**
+
 - Se alimenta desde update.js, que carga el producto desde la API y lo inserta en el DOM.
 - Permite modificar los datos del producto e incluso cambiar su imagen.
-  
+
 **Vista de creación (newProduct.handlebars)**
+
 - Solo accesible para administradores.
 - Valida todos los campos y envía los datos como JSON al backend mediante fetch desde newProduct.js.
 
 ✅ Seguridad y UX
+
 - Los botones sensibles (editar/eliminar) están deshabilitados si el usuario no es admin.
 - Se muestra un tooltip explicativo en esos casos.
 - Se utiliza SweetAlert para brindar retroalimentación visual en cada acción.
@@ -567,8 +603,9 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 - DELETE /api/carts/:cid → Eliminar todo el carrito.
 - POST /api/carts/merge → Fusionar dos carritos (ej: localStorage + carrito del usuario autenticado).
 - PUT /api/carts/:cid/empty → Vaciar carrito sin eliminarlo.+
-  
+
 **Middleware y Validaciones:**
+
 - Validación de IDs con isValidObjectId.
 - Middleware de autorización con JWT para operaciones seguras.
 - Verificación de stock y existencia de productos al manipular el carrito.
@@ -577,8 +614,9 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 
 - Visualización:
 - cart.handlebars muestra los productos del carrito, sus cantidades, precios, totales y opciones para aumentar, disminuir o eliminar productos.
-  
+
 **Lógica en JS:**
+
 - cart.js se encarga de:
 - Manejar eventos de botones para modificar el carrito.
 - Consumir la API para reflejar cambios en tiempo real.
@@ -595,16 +633,19 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 La aplicación implementa una estrategia robusta y flexible para la gestión del carrito, contemplando tanto usuarios autenticados como no autenticados:
 
 🧾 **Usuarios No Autenticados (Visitantes)**
+
 - Cuando un usuario no está logueado, el carrito se crea automáticamente al intentar agregar el primer producto.
 - El ID de este carrito se guarda en el localStorage del navegador bajo la clave cartId.
 - Todas las interacciones posteriores (agregar, quitar productos, vaciar o eliminar el carrito) utilizan este carrito local.
 
 👤 **Usuarios Autenticados**
+
 - Al registrarse un usuario, se crea automáticamente un carrito vacío y se asocia al campo cart del modelo de usuario.
 - Este carrito es persistente y se consulta desde la base de datos mediante el ID referenciado.
 - Las operaciones sobre el carrito del usuario autenticado son seguras y validadas mediante JWT.
 
 🔀 **Fusión de Carritos (localStorage + Usuario)**
+
 - Al hacer login, si existe un carrito en localStorage, como el usuario ya tiene un carrito propio:
 - Se solicita al usuario una confirmación para:
 - 🔁 **Fusionar** ambos carritos: se suman cantidades de productos repetidos, y se integran productos únicos.
@@ -613,6 +654,7 @@ La aplicación implementa una estrategia robusta y flexible para la gestión del
 - POST /api/carts/merge → Fusión de carritos mediante IDs (sourceCartId, targetCartId).
 
 🚨 **Consideraciones adicionales**
+
 - Si un producto del carrito deja de existir, se omite automáticamente al renderizar.
 - Si el carrito queda vacío (sin productos), se puede vaciar o eliminar automáticamente:
 - Para el localStorage, se elimina la clave cartId.

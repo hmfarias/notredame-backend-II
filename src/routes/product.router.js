@@ -131,7 +131,7 @@ router.post(
 	'/',
 	uploader.single('file'),
 	passportCall('current'),
-	authorisation('admin'),
+	authorisation(['admin']),
 	async (req, res) => {
 		try {
 			const { title, description, code, price, stock, category } = req.body;
@@ -183,7 +183,7 @@ router.put(
 	'/:id',
 	uploader.single('file'),
 	passportCall('current'),
-	authorisation('admin'),
+	authorisation(['admin']),
 	async (req, res) => {
 		try {
 			const { title, description, code, price, stock, category } = req.body;
@@ -241,7 +241,7 @@ router.put(
 router.delete(
 	'/:id',
 	passportCall('current'),
-	authorisation('admin'),
+	authorisation(['admin']),
 	async (req, res) => {
 		try {
 			const { id } = req.params;

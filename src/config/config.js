@@ -1,12 +1,22 @@
-//import dotenv and initialize environment variables
+// Import dotenv and initialize environment variables
 import dotenv from 'dotenv';
-dotenv.config({
-	path: '.env',
-	override: true,
-}); //load the .env file
+import { Command } from 'commander';
 
+dotenv.config({ path: '.env', override: true }); // Load the .env file
+
+// Initialize Commander
+const program = new Command();
+
+program
+	.option('-p, --port <port>', 'Set the server port') // Optional command-line argument
+	.parse(process.argv);
+
+// Get the CLI options
+const options = program.opts();
+
+// Fallback priority: CLI > .env > 3000
 export const config = {
-	PORT: process.env.PORT || 3000,
+	PORT: options.port || process.env.PORT || 8080,
 	DB_NAME: process.env.DB_NAME,
 	MONGODB_URI: `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/?retryWrites=true&w=majority&appName=${process.env.APP_NAME}`,
 	SECRET_KEY: process.env.SECRET_KEY,

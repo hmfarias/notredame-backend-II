@@ -136,7 +136,7 @@ const deleteProduct = async (productId) => {
 		const data = await response.json();
 
 		// Check if the token is expired (or user unauthorized)
-		if (response.status === 401 && data.message === 'jwt expired') {
+		if (data.message === 'jwt expired') {
 			// Clean up and redirect
 			localStorage.removeItem('currentUser');
 

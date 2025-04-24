@@ -1,5 +1,15 @@
-export const authorisation = (role = '') => {
+export const authorisation = (allowedRoles) => {
 	return (req, res, next) => {
+		// Ensure roles is an array
+		if (!Array.isArray(allowedRoles)) {
+			return res.status(500).json({
+				error: true,
+				message: 'Internal Server Error - allowed roles must be an array',
+				payload: null,
+			});
+		}
+
+		// Check if the user is authenticated
 		if (!req.user) {
 			res.setHeader('Content-Type', 'application/json');
 			return res.status(401).json({
@@ -9,21 +19,25 @@ export const authorisation = (role = '') => {
 			});
 		}
 
-		if (role.toLowerCase() == 'public' || role.length == 0) {
+		// If no roles are specified, roles include 'public' or the user is admin
+		if (
+			allowedRoles.length === 0 ||
+			allowedRoles.map((r) => r.toLowerCase()).includes('public') ||
+			req.user.role === 'admin'
+		) {
 			return next();
 		}
 
-		if (req.user.role == 'admin') {
-			return next();
-		}
-
-		if (req.user.role !== role) {
+		//Verify if the user's role is on the allowed list
+		if (!allowedRoles.includes(req.user.role)) {
 			return res.status(403).json({
 				error: true,
-				message: 'Forbidden - You do not have permission to this',
+				message: 'Forbidden - You do not have permission to access this resource',
 				payload: null,
 			});
 		}
+
+		//If everything is ok, continue to the next middleware
 		next();
 	};
 };

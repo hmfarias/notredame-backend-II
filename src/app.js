@@ -14,6 +14,7 @@ import cookieParser from 'cookie-parser';
 // STEP 2-1 - IMPORT Passport ******************
 import passport from 'passport';
 import { initPassport } from './config/passport.config.js';
+import { log } from 'console';
 // END STEP 2-1 - IMPORT Passport **************
 
 // app initialization
@@ -48,3 +49,5 @@ await connectDB();
 const server = app.listen(config.PORT, () => {
 	console.log(`Server is running on port ${config.PORT} - DB: ${config.DB_NAME}`);
 });
+
+
