@@ -277,9 +277,13 @@ La aplicación permite establecer el puerto en el que se ejecuta el servidor de 
 ```
 # Usando la opción larga
 node src/app.js --port 4000
+o bien:
+npm run dev -- --port 4000
 
 # Usando la opción corta
 node src/app.js -p 4000
+o bien:
+npm run dev -- -p 4000
 ```
 
 Esto brinda flexibilidad al momento de desplegar o testear la aplicación en distintos entornos o puertos, sin necesidad de modificar archivos de configuración.
