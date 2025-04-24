@@ -1,8 +1,11 @@
 // Import dotenv and initialize environment variables
 import dotenv from 'dotenv';
 import { Command } from 'commander';
+import __dirname from '../utils.js';
+import path from 'path';
 
-dotenv.config({ path: '.env', override: true }); // Load the .env file
+// Use __dirname to be shure that the path is correct independently of the level from which the app is called
+dotenv.config({ path: path.resolve(__dirname, '../.env'), override: true }); // Load the .env file
 
 // Initialize Commander
 const program = new Command();
