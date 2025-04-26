@@ -32,7 +32,6 @@ try {
 		});
 
 		window.location.href = '/login';
-		return;
 	}
 
 	if (!response.ok || !data.payload?.user) {
