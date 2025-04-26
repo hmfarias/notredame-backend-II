@@ -14,4 +14,8 @@ export class UsersManagerMongo {
 		const users = await userModel.find();
 		return users.map((user) => user.toJSON());
 	}
+
+	static async delete(userId) {
+		return await userModel.deleteOne({ _id: userId });
+	}
 }

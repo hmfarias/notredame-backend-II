@@ -2,8 +2,9 @@ import { Router } from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
-import { errorHandler, passportCall } from '../utils.js';
+import { errorHandler, isValidObjectId, passportCall } from '../utils.js';
 import { UsersManagerMongo as UsersManager } from '../dao/UsersManagerMongo.js';
+import { authorisation } from '../middlewares/authorisation.js';
 
 export const router = Router();
 
@@ -75,31 +76,41 @@ router.post('/login', passportCall('login'), async (req, res) => {
 router.get('/current', passportCall('current'), (req, res) => {
 	const { user } = req;
 
-	// Format the user to be returned
-	const safeUser = {
-		_id: user._id,
-		first_name: user.first_name,
-		last_name: user.last_name,
-		email: user.email,
-		age: user.age,
-		role: user.role,
-		cart: {
-			_id: user.cart?._id,
-			totalCart: user.cart?.totalCart,
-			products:
-				user.cart?.products?.map((p) => ({
-					_id: p?.product?._id,
-					title: p?.product?.title,
-					price: p?.product?.price,
-					thumbnail: p?.product?.thumbnail,
-				})) ?? [],
-		},
-	};
+	if (!user) {
+		return res.status(401).json({
+			error: true,
+			message: 'No authenticated user found',
+			payload: null,
+		});
+	}
+
+	// remove password field
+	const { password, ...safeUser } = user;
+
+	// clean cart structure
+	const safeCart = safeUser.cart
+		? {
+				_id: safeUser.cart._id,
+				totalCart: safeUser.cart.totalCart,
+				products:
+					safeUser.cart.products?.map((p) => ({
+						_id: p?.product?._id,
+						title: p?.product?.title,
+						price: p?.product?.price,
+						thumbnail: p?.product?.thumbnail,
+					})) ?? [],
+		  }
+		: null;
 
 	return res.status(200).json({
 		error: false,
 		message: 'Authenticated user',
-		payload: { user: safeUser },
+		payload: {
+			user: {
+				...safeUser,
+				cart: safeCart,
+			},
+		},
 	});
 });
 
@@ -117,14 +128,42 @@ router.get('/error', (req, res) => {
 	});
 });
 
+//* GET ALL USERS **********************************************/
+router.get('/', passportCall('current'), authorisation(['admin']), async (req, res) => {
+	try {
+		const users = await UsersManager.getAll();
+		if (!users || users.length === 0) {
+			res.setHeader('Content-Type', 'application/json');
+			return res.status(404).json({
+				error: true,
+				message: 'No users found',
+				payload: null,
+			});
+		}
+		// Remove the password field before sending
+		const safeUsers = users.map((user) => {
+			const { password, ...safeUser } = user;
+			return safeUser;
+		});
+
+		res.setHeader('Content-Type', 'application/json');
+		return res.status(200).json({
+			error: false,
+			message: 'Users retrieved successfully',
+			payload: { users: safeUsers },
+		});
+	} catch (error) {
+		console.error('❌ Error fetching users:', error.message);
+		errorHandler(error, res);
+	}
+});
+
 //* GET A USER BY ID **********************************************/
 router.get('/:uid', async (req, res) => {
 	try {
 		const userId = req.params.uid;
 
-		// verify that the ID has valid format
-		if (!userId) {
-			res.setHeader('Content-Type', 'application/json');
+		if (!isValidObjectId(userId)) {
 			return res.status(400).json({
 				error: true,
 				message: 'Invalid user ID format',
@@ -132,7 +171,9 @@ router.get('/:uid', async (req, res) => {
 			});
 		}
 
+		// Find the user by ID
 		const user = await UsersManager.getBy({ _id: userId });
+
 		if (!user) {
 			res.setHeader('Content-Type', 'application/json');
 			return res.status(404).json({
@@ -142,14 +183,64 @@ router.get('/:uid', async (req, res) => {
 			});
 		}
 
+		// Remove sensitive fields
+		const { password, ...safeUser } = user;
+
 		res.setHeader('Content-Type', 'application/json');
 		return res.status(200).json({
 			error: false,
 			message: 'User retrieved successfully',
-			payload: { user },
+			payload: { user: safeUser },
 		});
 	} catch (error) {
 		console.error('❌ Error fetching the user:', error.message);
 		errorHandler(error, res);
 	}
 });
+
+//* DELETE A USER **********************************************/
+router.delete(
+	'/:uid',
+	passportCall('current'),
+	authorisation(['admin']),
+	async (req, res) => {
+		try {
+			const userId = req.params.uid;
+
+			// Validate ObjectId format
+			if (!isValidObjectId(userId)) {
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid user ID format',
+					payload: null,
+				});
+			}
+
+			// Find the user first
+			const user = await UsersManager.getBy({ _id: userId });
+
+			if (!user) {
+				return res.status(404).json({
+					error: true,
+					message: 'User not found',
+					payload: null,
+				});
+			}
+
+			// Delete the user
+			await UsersManager.delete(userId);
+
+			// Return the user that was deleted (excluding sensitive data)
+			const { password, ...safeUser } = user;
+
+			return res.status(200).json({
+				error: false,
+				message: 'User deleted successfully',
+				payload: { user: safeUser },
+			});
+		} catch (error) {
+			console.error('❌ Error deleting user:', error.message);
+			errorHandler(error, res);
+		}
+	}
+);
