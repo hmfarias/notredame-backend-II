@@ -539,7 +539,7 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 
 **Autorización por rol:**
 
-- Se diferencia el comportamiento de usuarios admin y user.
+- Se diferencia el comportamiento de usuarios de acuerdo a su rol (admin ,user.
 - Restricciones para ciertas acciones solo disponibles para admin.
 
 💻 **Frontend**
@@ -547,12 +547,14 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 **Vistas:**
 
 - register.handlebars y login.handlebars para autenticación.
-- current.handlebars para visualizar y editar datos del usuario logueado.
+- current.handlebars para visualizar y editar datos del perfil del usuario logueado.
 
 **Manejo de Sesión:**
 
 - localStorage se utiliza para almacenar temporalmente los datos del usuario (currentUser).
 - Los accesos al menú (navbar) se habilitan o deshabilitan según el estado de sesión y rol del usuario.
+- La posibilidad de agregar, editar o borrar productos se limita a los usuarios administradores.
+- La posibilidad de acceder al perfil del usuario, se habilita o deshabilita según el estado de sesión.
 
 **Feedback al Usuario:**
 
@@ -561,7 +563,9 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 
 **Creación de Usuario**: Los usuarios se pueden agregar a la base de datos mediante el formulario de registro en el frontend. Se validan los datos, se encripta la contraseña y se cargan en la base de datos, donde se guardan con un identificador único (`_id`).
 
-**Visualización de Usuarios**: Los datos de un usuario logueado al sistema se pueden obtener en la ruta api/sessions/current. (debe estar logueado en el sistema)
+**Visualización del Perfil de Usuario**: Los datos de un usuario logueado al sistema se pueden obtener en la ruta api/sessions/current. (debe estar logueado en el sistema)
+
+[Volver al menú](#top)
 
 #### 🔶 Relación con el Carrito
 
@@ -569,8 +573,11 @@ Cada usuario tiene un campo cart que referencia a un carrito solo por su `_id`, 
 
 Esta estructura hace que la gestión de usuarios sea flexible y eficiente.
 
+[Volver al menú](#top)
+
 <hr>
-<a name="get"></a>
+
+<a name="getcurrent"></a>
 
 ### 📥 El método GET en CURRENT:
 
@@ -603,7 +610,7 @@ El método GET de usuario en la aplicación está diseñado para recuperar los d
 
 ### 🛍️ Gestión de Productos
 
-La gestión de productos en esta aplicación está diseñada para ser robusta y eficiente, combinando una API RESTful en el backend con una interfaz dinámica del lado del cliente en el frontend.
+La gestión de productos en esta aplicación está diseñada para ser robusta y eficiente, combinando una API RESTful en el backend con una interfaz básica aunque dinámica del lado del cliente en el frontend.
 
 🔙 **Backend**
 
@@ -700,6 +707,8 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 - Si el usuario no está logueado, se guarda el carrito en localStorage.
 - Al hacer login, se ofrece opción para fusionar el carrito local con el del usuario.
 
+[Volver al menú](#top)
+
 <a name="estrategiacarrito"></a>
 
 🔄 **Estrategia de Gestión de Carrito**
@@ -708,7 +717,7 @@ La aplicación implementa una estrategia robusta y flexible para la gestión del
 
 🧾 **Usuarios No Autenticados (Visitantes)**
 
-- Cuando un usuario no está logueado, el carrito se crea automáticamente al intentar agregar el primer producto.
+- Cuando un usuario no está logueado, el carrito se crea automáticamente al agregar el primer producto.
 - El ID de este carrito se guarda en el localStorage del navegador bajo la clave cartId.
 - Todas las interacciones posteriores (agregar, quitar productos, vaciar o eliminar el carrito) utilizan este carrito local.
 
@@ -720,10 +729,9 @@ La aplicación implementa una estrategia robusta y flexible para la gestión del
 
 🔀 **Fusión de Carritos (localStorage + Usuario)**
 
-- Al hacer login, si existe un carrito en localStorage, como el usuario ya tiene un carrito propio:
-- Se solicita al usuario una confirmación para:
-- 🔁 **Fusionar** ambos carritos: se suman cantidades de productos repetidos, y se integran productos únicos.
-- ♻️ **Descartar** el carrito local: se mantiene solamente el carrito del usuario y se elimina el carrito con el id guardado en localStorage.
+- Al hacer login, si existe un carrito en localStorage, se solicita al usuario una confirmación para:
+  - 🔁 **Fusionar** ambos carritos: se suman cantidades de productos repetidos, y se integran productos únicos.
+  - ♻️ **Descartar** el carrito local: se mantiene solamente el carrito del usuario y se elimina el carrito con el id guardado en localStorage.
 - Esta lógica se maneja desde el frontend, y para eso el backend expone un endpoint específico:
 - POST /api/carts/merge → Fusión de carritos mediante IDs (sourceCartId, targetCartId).
 
