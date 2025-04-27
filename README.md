@@ -31,7 +31,7 @@
 
 ## 📚 Tabla de Contenidos
 
-- [📌 Introducción](#introducción)
+- [📌 Introducción](#introduccion)
 - [🛠️ Construido con](#construido)
 - [🧩 Consideraciones Importantes](#consideraciones)
   - 🎨 [Maquetación y CSS](#maquetación)
