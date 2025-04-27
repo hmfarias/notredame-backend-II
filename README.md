@@ -32,25 +32,25 @@
 ## 📚 Tabla de Contenidos
 
 - [📌 Introducción](#introducción)
-- [🛠️ Construido con](#construido-con)
-- [🧩 Consideraciones Importantes](#consideraciones-importantes)
-  - 🎨 [Maquetación y CSS](#maquetación-y-css)
+- [🛠️ Construido con](#construido)
+- [🧩 Consideraciones Importantes](#consideraciones)
+  - 🎨 [Maquetación y CSS](#maquetación)
   - 💾 [Persistencia](#persistencia)
   - 📡 [Acceso a los datos](#accesodatos)
-  - 🧪 [Rutas y Simulación del Front con Handlebars](#rutas-y-simulación-del-front-con-handlebars)
-  - 💬 [Comentarios en el código](#comentarios-en-el-código)
-- [🔐 Credenciales - .env](#credenciales---env)
-- [💻 Instalación en local](#instalación-en-local)
-  - ⚙️ [Configuración del Puerto desde Línea de Comandos](#configuración-del-puerto-desde-línea-de-comandos)
-- [🚀 Funcionamiento de la Aplicación](#funcionamiento-de-la-aplicación)
+  - 🧪 [Rutas y Simulación del Front con Handlebars](#handlebars)
+  - 💬 [Comentarios en el código](#comentarios)
+- [🔐 Credenciales - .env](#credenciales)
+- [💻 Instalación en local](#instalaciónlocal)
+  - ⚙️ [Configuración del Puerto desde Línea de Comandos](#comander)
+- [🚀 Funcionamiento de la Aplicación](#funcionamiento)
   - 🧱 [Arquitectura](#arquitectura)
-  - 🗂️ [Estructura de archivos](#estructura-de-archivos)
-  - 🔐 [Uso de Passport Strategies](#uso-de-passport-strategies)
-  - 🧑‍💼 A. [Gestión de Usuarios](#gestión-de-usuarios)
-    - 📥 [Método GET en Current](#método-get-en-current)
-  - 🛍️ B. [Gestión de Productos](#gestión-de-productos)
-  - 🛒 C. [Gestión de Carritos](#gestión-de-carritos)
-    - 🔄 [Estrategia de Gestión de Carrito - Usuarios Autenticados y Visitantes](#estrategia-de-gestión-de-carrito---usuarios-autenticados-y-visitantes)
+  - 🗂️ [Estructura de archivos](#estructura)
+  - 🔐 [Uso de Passport Strategies](#passport)
+  - 🧑‍💼 A. [Gestión de Usuarios](#usuarios)
+    - 📥 [Método GET en Current](#getcurrent)
+  - 🛍️ B. [Gestión de Productos](#productos)
+  - 🛒 C. [Gestión de Carritos](#carritos)
+    - 🔄 [Estrategia de Gestión de Carrito - Usuarios Autenticados y Visitantes](#estrategiacarrito)
 - [🤝 Contribuyendo](#contribuyendo)
 - [📄 Licencia](#licencia)
 - [📬 Contacto](#contacto)
@@ -73,7 +73,7 @@ Gracias por visitar nuestro repositorio. ¡Esperamos que disfrutes explorando y 
 
 <hr>
 
-<a name="consturido"></a>
+<a name="construido"></a>
 
 ## 🛠️ CONSTRUIDO CON
 
@@ -103,7 +103,7 @@ Gracias por visitar nuestro repositorio. ¡Esperamos que disfrutes explorando y 
 
 ## 🧩 CONSIDERACIONES IMPORTATES
 
-<a name="maqueta"></a>
+<a name="maquetacion"></a>
 
 ### 🎨 MAQUETACIÓN Y CSS DE LA PAGINA
 
@@ -131,7 +131,7 @@ El uso de Mongoose no solo simplifica la manipulación de datos mediante esquema
 
 ### 📡 ACCESO A LOS DATOS
 
-El acceso a los datos se gestiona a través de DAOs (Data Access Object). Esta arquitectura garantiza una clara separación entre la lógica de negocio y el acceso a la base de datos, promoviendo un diseño modular y escalable.
+El acceso a los datos se gestiona a través de DAOs (Data Access Objects). Esta arquitectura garantiza una clara separación entre la lógica de negocio y el acceso a la base de datos, promoviendo un diseño modular y escalable.
 
 Gracias a esta abstracción, si en el futuro se decide cambiar el sistema de persistencia (por ejemplo, migrar de MongoDB a otro motor de base de datos), solo será necesario implementar nuevos Managers sin afectar la estructura ni la lógica de las rutas existentes. Esto facilita el mantenimiento y la evolución del sistema con mínima intervención en el código.
 
@@ -139,7 +139,7 @@ Gracias a esta abstracción, si en el futuro se decide cambiar el sistema de per
 
 <hr>
 
-<a name="rutas"></a>
+<a name="handlebars"></a>
 
 ### 🧪 RUTAS Y SIMULACION DEL FRONT CON HANDLEBARS
 
@@ -163,7 +163,7 @@ Sin embargo, en un proyecto real, se recomienda minimizar el uso de comentarios 
 
 <hr>
 
-<a name="environment"></a>
+<a name="credenciales"></a>
 
 ## 🔐 CREDENCIALES (archivo .env)
 
@@ -199,7 +199,7 @@ Este archivo a su vez es procesado por `/src/config/config.js`, que es quien fin
 
 <hr>
 
-<a name="instalacion"></a>
+<a name="instalaciónlocal"></a>
 
 ## 💻 INSTALACIÓN EN LOCAL
 
@@ -693,7 +693,7 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 - Si el usuario no está logueado, se guarda el carrito en localStorage.
 - Al hacer login, se ofrece opción para fusionar el carrito local con el del usuario.
 
-<a name="estrategiaCarrito"></a>
+<a name="estrategiacarrito"></a>
 
 🔄 **Estrategia de Gestión de Carrito**
 
