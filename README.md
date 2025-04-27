@@ -39,7 +39,7 @@
   - 📡 [Acceso a los datos](#accesodatos)
   - 🧪 [Rutas y Simulación del Front con Handlebars](#handlebars)
   - 💬 [Comentarios en el código](#comentarios)
-- [🔐 Credenciales - .env](#credenciales)
+- [🔐 CREDENCIALES - .env](#credenciales)
 - [💻 Instalación en local](#instalacionlocal)
   - ⚙️ [Configuración del Puerto desde Línea de Comandos](#comander)
 - [🚀 Funcionamiento de la Aplicación](#funcionamiento)
