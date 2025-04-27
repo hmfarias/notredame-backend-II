@@ -536,6 +536,8 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 - POST /api/sessions/login → Inicio de sesión.
 - GET /api/sessions/current → Obtener usuario autenticado (con JWT).
 - POST /api/sessions/logout → Cerrar sesión.
+- UPDATE /api/users/update → Actualizar un usuario - Solo administradores.
+- DELETE /api/users/delete → Elimina un usuario - Solo administradores - (se dispara el middleware "pre" establecido en el modelo de usuario, para eliminar el carrito asociado al usuario.)
 
 **Autorización por rol:**
 
