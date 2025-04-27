@@ -36,7 +36,7 @@
 - [🧩 Consideraciones Importantes](#consideraciones-importantes)
   - 🎨 [Maquetación y CSS](#maquetación-y-css)
   - 💾 [Persistencia](#persistencia)
-  - 📡 [Acceso a los datos](#acceso-a-los-datos)
+  - 📡 [Acceso a los datos](#accesodatos)
   - 🧪 [Rutas y Simulación del Front con Handlebars](#rutas-y-simulación-del-front-con-handlebars)
   - 💬 [Comentarios en el código](#comentarios-en-el-código)
 - [🔐 Credenciales - .env](#credenciales---env)
@@ -127,11 +127,11 @@ El uso de Mongoose no solo simplifica la manipulación de datos mediante esquema
 
 <hr>
 
-<a name="acceso"></a>
+<a name="accesodatos"></a>
 
 ### 📡 ACCESO A LOS DATOS
 
-El acceso a los datos se gestiona a través de Managers. Esta arquitectura garantiza una clara separación entre la lógica de persistencia y las rutas que consumen los datos, promoviendo un diseño modular y escalable.
+El acceso a los datos se gestiona a través de DAOs (Data Access Object). Esta arquitectura garantiza una clara separación entre la lógica de negocio y el acceso a la base de datos, promoviendo un diseño modular y escalable.
 
 Gracias a esta abstracción, si en el futuro se decide cambiar el sistema de persistencia (por ejemplo, migrar de MongoDB a otro motor de base de datos), solo será necesario implementar nuevos Managers sin afectar la estructura ni la lógica de las rutas existentes. Esto facilita el mantenimiento y la evolución del sistema con mínima intervención en el código.
 
