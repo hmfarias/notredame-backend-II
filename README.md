@@ -199,7 +199,7 @@ Este archivo a su vez es procesado por `/src/config/config.js`, que es quien fin
 
 <hr>
 
-<a name="instalaciónlocal"></a>
+<a name="instalacionlocal"></a>
 
 ## 💻 INSTALACIÓN EN LOCAL
 
