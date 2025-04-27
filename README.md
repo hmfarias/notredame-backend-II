@@ -240,7 +240,7 @@ Antes de instalar la aplicación, asegúrate de contar con:
 
 6. **Configurar las variables de entorno:**
    Crea un archivo .env en la raíz del proyecto con la configuración de las credenciales (ver sección CREDENCIALES (.env)).
-   Consulta la configuración de credenciales en la sección [CREDENCIALES (.env)](#environment).
+   Consulta la configuración de credenciales en la sección [CREDENCIALES (.env)](#credenciales).
 7. **Iniciar la aplicación en modo desarrollador:**
    Ejecuta el siguiente comando:
 
