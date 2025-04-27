@@ -1,19 +1,18 @@
 import { Router } from 'express';
 import { uploader } from '../utilsMulter.js';
-import { ProductsManagerMongo as ProductsManager } from '../dao/ProductsManagerMongo.js';
-import { errorHandler, isValidObjectId, passportCall } from '../utils.js';
+import { passportCall } from '../utils.js';
 import { authorisation } from '../middlewares/authorisation.js';
 import { ProductsController } from '../controllers/products.controller.js';
 
 export const router = Router();
 
-//* GET all product  **********************************************/
+//* GET all product  ********************************************/
 router.get('/', ProductsController.getProducts);
 
 //* GET a product by id *****************************************/
 router.get('/:id', ProductsController.getProduct);
 
-//* CREATE a new product *****************************************/
+//* CREATE a new product ****************************************/
 router.post(
 	'/',
 	uploader.single('file'),
@@ -22,7 +21,7 @@ router.post(
 	ProductsController.createProduct
 );
 
-//* UPDATE a product by id *****************************************/
+//* UPDATE a product by id *************************************/
 router.put(
 	'/:id',
 	uploader.single('file'),
@@ -31,7 +30,7 @@ router.put(
 	ProductsController.updateProduct
 );
 
-//* DELETE ***************************************************/
+//* DELETE *****************************************************/
 router.delete(
 	'/:id',
 	passportCall('current'),

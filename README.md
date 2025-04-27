@@ -46,6 +46,7 @@
   - 🧱 [Arquitectura](#arquitectura)
   - 🗂️ [Estructura de archivos](#estructura)
   - 🔐 [Uso de Passport Strategies](#passport)
+  - 🛡️ [Flujo de seguridad en las rutas](#flujoseguridad)
   - 🧑‍💼 A. [Gestión de Usuarios](#usuarios)
     - 📥 [Método GET en Current](#getcurrent)
   - 🛍️ B. [Gestión de Productos](#productos)
@@ -302,7 +303,7 @@ Esto brinda flexibilidad al momento de desplegar o testear la aplicación en dis
 
 La aplicación está basada en una arquitectura **MVC (Modelo-Vista-Controlador)** y utiliza **MongoDB** como sistema de persistencia, gestionado a través de **Mongoose** como ODM. Esto permite realizar las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de forma eficiente y simplificada.
 
-Los datos se acceden mediante **DAO (Data Acces Object)** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos managers sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
+Los datos se acceden mediante **DAOs (Data Acces Objects)** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos managers sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
 
 [Volver al menú](#top)
 
@@ -320,6 +321,12 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │   └── config.js  // Lógica para manejar las variables de entorno provistas en .env
 │   └── database.config.js  // Lógica para manejar la conexíon a la BD
 │   └── passport.config.js  // Middleware de Passport que implementa las estrategias de registro y autorización
+│
+├── controllers/
+│   └── carts.controller.js  // Lógica de negocio para el carrito
+│   └── products.controller.js  // Lógica de negocio para los productos
+│   └── sessions.controller.js  // Lógica de negocio para las sesiones
+│   └── users.controller.js  // Lógica de negocio para los usuarios
 │
 ├── dao/
 │   └── models
@@ -394,7 +401,7 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 
 ### 🔐 Uso de Passport Strategies
 
-Esta aplicación utiliza Passport como middleware de autenticación, implementando dos estrategias principales:
+Esta aplicación utiliza Passport como middleware de autenticación:
 
 🧾 **Estrategia Local**
 
@@ -403,9 +410,9 @@ La estrategia local permite la autenticación tradicional mediante email y contr
 - Se realiza hashing de contraseñas con bcrypt para asegurar la información del usuario.
 - Al iniciar sesión correctamente, se genera un JWT y se guarda en el navegador del cliente como una cookie HTTP-only, lo cual evita accesos desde JavaScript y mejora la seguridad.
 
-🔑 **Estrategia JWT**
+🔑 **Estrategia CURRENT (JWT)**
 
-La estrategia JWT se emplea para proteger rutas privadas. El token se extrae automáticamente desde la cookie enviada por el cliente en cada petición.
+La estrategia CURRENT utiliza JWT y se emplea para proteger rutas privadas. El token se extrae automáticamente desde la cookie enviada por el cliente en cada petición.
 
 - Si el token es válido y no ha expirado, se permite el acceso a la ruta.
 - En caso contrario, la solicitud se rechaza con un mensaje adecuado.
@@ -414,7 +421,7 @@ La estrategia JWT se emplea para proteger rutas privadas. El token se extrae aut
 
 La autenticación en las rutas se maneja mediante una función personalizada llamada passportCall, que encapsula el uso de Passport y agrega una capa extra de control sobre:
 
-- Qué estrategia se utiliza (local o jwt)
+- Qué estrategia se utiliza
 - Cómo manejar errores de autenticación
 - Cómo continuar la ejecución si el usuario es válido
 
@@ -428,14 +435,14 @@ El token JWT se almacena en una cookie con las siguientes configuraciones de seg
 res.cookie('token', token, {
 	httpOnly: true,
 	sameSite: 'strict',
-	maxAge: 1000 * 60 * 60 * 24 // 1 día
+	maxAge: [tiempo de vida máximo]
 });
 ```
 
 Esto garantiza que:
 • El token no es accesible desde JavaScript (httpOnly)
 • Se restringe el envío de cookies entre sitios (sameSite: 'strict')
-• Tiene una duración maxima de 24 horas por defecto (salvo que el token expire antes)
+• Tiene una duración maxima por defecto (salvo que el token expire antes)
 
 [Volver al menú](#top)
 
