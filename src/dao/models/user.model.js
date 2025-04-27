@@ -27,4 +27,23 @@ userSchema.pre(['find', 'findOne'], function (next) {
 	next();
 });
 
+// Middleware to delete the associated cart when the user is deleted
+userSchema.pre(
+	['deleteOne', 'findByIdAndDelete'],
+	{ document: true, query: false },
+	async function (next) {
+		try {
+			// Check if the user has a cart
+			if (this.cart) {
+				// If a cart exists, delete it
+				await mongoose.model('carts').deleteOne({ _id: this.cart });
+			}
+			next(); // Proceed with the deletion of the user
+		} catch (error) {
+			console.error('❌ Error deleting the associated cart:', error.message);
+			next(error);
+		}
+	}
+);
+
 export const userModel = mongoose.model(collection, userSchema);

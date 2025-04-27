@@ -21,47 +21,15 @@ export class CartsManagerMongo {
 	static async update(cart) {
 		const updatedCart = await CartModel.findOneAndUpdate(
 			{ _id: cart._id },
-			{ $set: { products: cart.products, totalCart: cart.totalCart } }, // Update only necessary fields
+			{ $set: { products: cart.products, totalCart: cart.totalCart } },
 			{ new: true, lean: true } // Return updated document as plain object
 		);
 		return updatedCart || null; // Return null if cart not found
 	}
 
-	// DELETE a cart
+	// DELETE a cart ------------------------------------------------
 	static async delete(id) {
 		const cart = await CartModel.findByIdAndDelete(id);
 		return cart ? cart.toObject() : null; // Return null if not found
-	}
-
-	// Check if a cart contains a specific product (optimized for ObjectId comparisons)
-	static hasProduct(cart, productId) {
-		try {
-			// If the cart does not exist, return false
-			if (!cart) return false;
-
-			// Ensure productId is a valid ObjectId before comparing
-			return cart.products.some(
-				(item) => item.product._id?.toString() === productId.toString()
-			);
-		} catch (error) {
-			console.error('❌ Error checking product in cart:', error.message);
-			return false;
-		}
-	}
-
-	// Empty a cart
-	static async empty(cartId) {
-		const updatedCart = await CartModel.findByIdAndUpdate(
-			cartId,
-			{
-				$set: {
-					products: [],
-					totalCart: 0,
-				},
-			},
-			{ new: true, lean: true }
-		);
-
-		return updatedCart;
 	}
 }

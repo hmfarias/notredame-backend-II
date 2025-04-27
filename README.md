@@ -302,7 +302,7 @@ Esto brinda flexibilidad al momento de desplegar o testear la aplicación en dis
 
 La aplicación está basada en una arquitectura **MVC (Modelo-Vista-Controlador)** y utiliza **MongoDB** como sistema de persistencia, gestionado a través de **Mongoose** como ODM. Esto permite realizar las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de forma eficiente y simplificada.
 
-Los datos se acceden mediante **Managers** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos managers sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
+Los datos se acceden mediante **DAO (Data Acces Object)** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos managers sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
 
 [Volver al menú](#top)
 
@@ -310,7 +310,7 @@ Los datos se acceden mediante **Managers** (clases), lo que permite una separaci
 
 <a name="estructura"></a>
 
-### 🗂️ Estructura de la Aplicación
+### 🗂️ Estructura de archivos de la Aplicación
 
 La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 
@@ -354,9 +354,10 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │       └── update.js  // Lógica de la página de actualización de producto
 │
 ├── routes/
-│   └── cart.router.js  // Rutas relacionadas con el carrito
-│   └── product.router.js  // Rutas relacionadas con los productos
-│   └── session.router.js  // Rutas relacionadas con las sessiones (registro - login - current)
+│   └── carts.router.js  // Rutas relacionadas con el carrito
+│   └── sessions.router.js  // Rutas relacionadas con las sessiones (registro - login - current)
+│   └── products.router.js  // Rutas relacionadas con los productos
+│   └── users.router.js  // Rutas relacionadas con los usuarios
 │   └── viewsRouter.js  // Rutas relacionadas con las vistas handlebar
 │
 ├── testData / // Carpeta que contiene datos de prueba para la aplicación
@@ -435,6 +436,66 @@ Esto garantiza que:
 • El token no es accesible desde JavaScript (httpOnly)
 • Se restringe el envío de cookies entre sitios (sameSite: 'strict')
 • Tiene una duración maxima de 24 horas por defecto (salvo que el token expire antes)
+
+[Volver al menú](#top)
+
+<hr>
+
+<a name="flujoseguridad"></a>
+
+### 🛡️ Flujo de Seguridad en las Rutas
+
+Las rutas en la aplicación siguen un proceso estructurado de control de acceso antes de ejecutar su funcionalidad principal:
+
+1. 🧩 Middleware de Autenticación (passportCall)
+
+   - Verifica si el usuario posee un token válido (JWT).
+   - Si no es válido o no existe, la petición se rechaza con un error 401 Unauthorized.
+   - Si es válido, la petición avanza.
+
+2. 🔒 Middleware de Autorización (authorisation)
+
+   - Verifica si el usuario autenticado posee los permisos necesarios (por ejemplo, rol admin).
+   - Si no cumple con los permisos, la petición se rechaza con un error 403 Forbidden.
+   - Si cumple, la petición continúa.
+
+3. ⚙️ Controlador (Controller)
+
+   - Ejecuta la lógica principal de la ruta (por ejemplo, obtener usuarios, crear productos, actualizar carritos, etc.).
+   - Devuelve la respuesta en formato JSON (application/json).
+
+4. 🗄️ Acceso a Datos (DAO - Data Access Object)
+
+   - Interactúa directamente con la base de datos (MongoDB en este caso).
+   - Realiza operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sin que el controlador se preocupe de los detalles de la persistencia.
+
+5. 📦 Respuesta JSON
+   - Finalmente, se envía al cliente una respuesta estandarizada en formato application/json, indicando éxito o error de la operación.
+
+**Esquema:**
+
+```
+Request (usuario)
+   ↓
+Router
+   ↓
+passportCall('current') ✅
+   ↓
+authorisation(['admin']) ✅
+   ↓
+Controller (lógica de negocio)
+   ↓
+DAO (acceso a la base de datos)
+   ↓
+Response (JSON)
+```
+
+✍️ Nota
+
+El **router** solo **organiza el flujo de middlewares** y delega en los controladores las operaciones de negocio.
+Los **controladores aplican lógica de negocio** y gestionan el acceso a los DAOs,
+Los **DAOs manejan directamente la comunicación con la base de datos**.
+Esto garantiza un diseño en capas, ordenado y fácil de escalar.
 
 [Volver al menú](#top)
 

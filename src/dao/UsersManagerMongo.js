@@ -16,6 +16,8 @@ export class UsersManagerMongo {
 	}
 
 	static async delete(userId) {
-		return await userModel.deleteOne({ _id: userId });
+		const user = await userModel.findById(userId); // In order to triger the pre middleware in user.model.js
+		await user.deleteOne();
+		return user;
 	}
 }
