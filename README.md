@@ -312,6 +312,7 @@ Además,utiliza **MongoDB** como sistema de persistencia, gestionado a través d
 La Capa de Presentación es la encargada de gestionar la interacción con el usuario.
 Incluye todo lo que el usuario ve y con lo que interactúa: páginas web, formularios, botones, animaciones, mensajes de alerta, navegación, etc.
 En este caso se utiliza la librería **Handlebars** para la visualización dinámica de las vistas, asi como recursos estáticos como CSS y JavaScript.
+
 Como se ha explicado anteriormente, el foco de este proyecto es el **backend**, pero se ha desarrollado una capa de presentación utilizando **Handlebars** con una maquetacion básica (NO RESPONSIVE) para ofrecer un entorno visual limpio y funcional que facilite la prueba de sus funcionalidades.
 
 **Routes**
