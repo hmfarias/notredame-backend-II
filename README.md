@@ -308,21 +308,26 @@ Además,utiliza **MongoDB** como sistema de persistencia, gestionado a través d
 📚 **Descripción de las capas**
 
 **Presentación**
+
 La Capa de Presentación es la encargada de gestionar la interacción con el usuario.
 Incluye todo lo que el usuario ve y con lo que interactúa: páginas web, formularios, botones, animaciones, mensajes de alerta, navegación, etc.
 En este caso se utiliza la librería **Handlebars** para la visualización dinámica de las vistas, asi como recursos estáticos como CSS y JavaScript.
 Como se ha explicado anteriormente, el foco de este proyecto es el **backend**, pero se ha desarrollado una capa de presentación utilizando **Handlebars** con una maquetacion básica (NO RESPONSIVE) para ofrecer un entorno visual limpio y funcional que facilite la prueba de sus funcionalidades.
 
 **Routes**
+
 Define las rutas HTTP disponibles (GET, POST, PUT, DELETE) y asigna quÃ© controlador maneja cada ruta. Además, aplica middlewares como passportCall y authorisation.
 
 **Controllers**
+
 Se encarga de manejar la lógica de negocio de cada recurso (usuarios, productos, carritos, sesiones). Recibe las solicitudes (req) y devuelve las respuestas (res). Solo se ocupa de â€œquÃ© hacerâ€, no accede a la base de datos directamente.
 
 **Services**
+
 Actúan como intermediarios entre los controladores y los DAO. Se encargan de ejecutar reglas específicas de negocio, y de pedirle datos a los DAO.
 
 **DAO (Data Access Object)**
+
 Se ocupa del acceso directo a la base de datos usando los modelos de Mongoose. Solo tiene métodos CRUD puros (find, findBy, create, update, delete). NO contiene lógica de negocio alguna.
 Esto permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos DAOs sin necesidad de alterar lo controladores y las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
 
