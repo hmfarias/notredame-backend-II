@@ -1,11 +1,11 @@
-import { UsersManagerMongo as UsersManager } from '../dao/UsersManagerMongo.js';
+import { UsersDAO } from '../dao/UsersDAO.js';
 import { errorHandler, isValidObjectId } from '../utils.js';
 
 export class UsersController {
 	//* Get all users ******************************
 	static async getUsers(req, res) {
 		try {
-			const users = await UsersManager.getAll();
+			const users = await UsersDAO.getAll();
 
 			// If no users, throw an error to be handled by the catch block
 			if (!users || users.length === 0) {
@@ -47,7 +47,7 @@ export class UsersController {
 			}
 
 			// Find the user by ID
-			const user = await UsersManager.getBy({ _id: userId });
+			const user = await UsersDAO.getBy({ _id: userId });
 
 			if (!user) {
 				return res.status(404).json({
@@ -86,7 +86,7 @@ export class UsersController {
 			}
 
 			// Find the user first
-			const user = await UsersManager.getBy({ _id: userId });
+			const user = await UsersDAO.getBy({ _id: userId });
 
 			if (!user) {
 				return res.status(404).json({
@@ -97,7 +97,7 @@ export class UsersController {
 			}
 
 			// Delete the user
-			await UsersManager.delete(userId);
+			await UsersDAO.delete(userId);
 
 			// Return the user that was deleted (excluding sensitive data)
 			const { password, ...safeUser } = user;

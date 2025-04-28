@@ -1,6 +1,6 @@
 import { CartModel } from './models/cart.model.js';
 
-export class CartsManagerMongo {
+export class CartsDAO {
 	// GET all carts ---------------------------------------------------
 	static async get() {
 		return await CartModel.find().lean();

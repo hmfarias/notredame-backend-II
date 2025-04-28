@@ -134,7 +134,7 @@ El uso de Mongoose no solo simplifica la manipulación de datos mediante esquema
 
 El acceso a los datos se gestiona a través de DAOs (Data Access Objects). Esta arquitectura garantiza una clara separación entre la lógica de negocio y el acceso a la base de datos, promoviendo un diseño modular y escalable.
 
-Gracias a esta abstracción, si en el futuro se decide cambiar el sistema de persistencia (por ejemplo, migrar de MongoDB a otro motor de base de datos), solo será necesario implementar nuevos Managers sin afectar la estructura ni la lógica de las rutas existentes. Esto facilita el mantenimiento y la evolución del sistema con mínima intervención en el código.
+Gracias a esta abstracción, si en el futuro se decide cambiar el sistema de persistencia (por ejemplo, migrar de MongoDB a otro motor de base de datos), solo será necesario implementar nuevos DAOs sin afectar la estructura ni la lógica de las rutas existentes. Esto facilita el mantenimiento y la evolución del sistema con mínima intervención en el código.
 
 [Volver al menú](#top)
 
@@ -303,7 +303,7 @@ Esto brinda flexibilidad al momento de desplegar o testear la aplicación en dis
 
 La aplicación está basada en una arquitectura **MVC (Modelo-Vista-Controlador)** y utiliza **MongoDB** como sistema de persistencia, gestionado a través de **Mongoose** como ODM. Esto permite realizar las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de forma eficiente y simplificada.
 
-Los datos se acceden mediante **DAOs (Data Acces Objects)** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos managers sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
+Los datos se acceden mediante **DAOs (Data Acces Objects)** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos DAOS sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
 
 [Volver al menú](#top)
 
@@ -333,9 +333,9 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │   │   └── user.model.js  // Modelo de datos de usuarios en MongoDB
 │   │   └── product.model.js  // Modelo de datos de productos en MongoDB
 │   │   └── cart.model.js // Modelo de datos de carritos en MongoDB
-│   └── CartsManagerMongo.js  // Lógica de interacción con la base de datos de carritos
-│   └── ProductsManagerMongo.js  // Lógica de interacción con la base de datos de productos
-│   └── UsersManagerMongo.js  // Lógica de interacción con la base de datos de usuarios
+│   └── CartsDAO.js  // Lógica de interacción con la base de datos de carritos
+│   └── ProductsDAO.js  // Lógica de interacción con la base de datos de productos
+│   └── UsersDAO.js  // Lógica de interacción con la base de datos de usuarios
 │
 ├── logs/ // Archivos de registro de errores inesperados en la aplicación - Inicialmente no existe y se crea automáticamente al ocurrir el primer error inesperado
 │

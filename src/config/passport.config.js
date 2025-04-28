@@ -1,8 +1,8 @@
 import passport from 'passport';
 import passportJWT from 'passport-jwt';
 import local from 'passport-local';
-import { UsersManagerMongo as UsersManager } from '../dao/UsersManagerMongo.js';
-import { CartsManagerMongo as CartsManager } from '../dao/CartsManagerMongo.js';
+import { UsersDAO as UsersDAO } from '../dao/UsersDAO.js';
+import { CartsDAO as CartsDAO } from '../dao/CartsDAO.js';
 import { comparePassword, hashPassword } from '../utils.js';
 import { config } from './config.js';
 
@@ -22,19 +22,19 @@ export const initPassport = () => {
 				}
 
 				try {
-					const exists = await UsersManager.getBy({ email: username });
+					const exists = await UsersDAO.getBy({ email: username });
 					if (exists) {
 						return done(null, false, { message: 'User already exists' });
 					}
 
 					// Create empty cart
-					const cart = await CartsManager.create();
+					const cart = await CartsDAO.create();
 
 					// Hash password
 					const hashedPassword = await hashPassword(password);
 
 					// Create user with asociated cart
-					const user = await UsersManager.create({
+					const user = await UsersDAO.create({
 						first_name,
 						last_name,
 						email: username,
@@ -59,7 +59,7 @@ export const initPassport = () => {
 		'login',
 		new local.Strategy({ usernameField: 'email' }, async (username, password, done) => {
 			try {
-				const user = await UsersManager.getBy({ email: username });
+				const user = await UsersDAO.getBy({ email: username });
 				if (!user) {
 					return done(null, false, { message: 'Invalid credentials' }); // no error - user is not logged
 				}
@@ -92,7 +92,7 @@ export const initPassport = () => {
 			async (tokenContent, done) => {
 				try {
 					// I need to find the user by the token content in order to populate the cart in the user
-					const user = await UsersManager.getBy({ _id: tokenContent._id });
+					const user = await UsersDAO.getBy({ _id: tokenContent._id });
 					if (!user) {
 						return done(null, false, { message: 'User not found' });
 					}
@@ -115,7 +115,7 @@ export const initPassport = () => {
 	//Recover from session--------------------------------------------------------------
 	//Only if using sessions
 	// passport.deserializeUser(async (id, done) => {
-	// 	const user = await UsersManager.getBy({ _id: id });
+	// 	const user = await UsersDAO.getBy({ _id: id });
 	// 	return done(null, user);
 	// });
 	// END STEP 1'************************

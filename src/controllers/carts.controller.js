@@ -1,12 +1,14 @@
-import { CartsManagerMongo as CartsManager } from '../dao/CartsManagerMongo.js';
-import { ProductsManagerMongo as ProductsManager } from '../dao/ProductsManagerMongo.js';
+import { CartsDAO as CartsDAO } from '../dao/CartsDAO.js';
+import { CartsService } from '../services/carts.service.js';
+import { ProductsDAO } from '../dao/ProductsDAO.js';
 import { errorHandler, isValidObjectId, roundToTwoDecimals } from '../utils.js';
 
 export class CartsController {
 	//* GET ALL CARTS **********************************************/
 	static async getCarts(req, res) {
 		try {
-			const carts = await CartsManager.get();
+			// const carts = await CartsDAO.get();
+			const carts = await CartsService.getCarts();
 			if (!carts || carts.length === 0) {
 				return res.status(404).json({
 					message: 'No carts found',
@@ -40,7 +42,8 @@ export class CartsController {
 				});
 			}
 
-			const cart = await CartsManager.getBy({ _id: cartId });
+			// const cart = await CartsDAO.getBy({ _id: cartId });
+			const cart = await CartsService.getCartById({ _id: cartId });
 
 			if (!cart) {
 				return res.status(404).json({
@@ -88,7 +91,8 @@ export class CartsController {
 				total: 0,
 			};
 			// Save the cart
-			const newCart = await CartsManager.create(cart);
+			// const newCart = await CartsDAO.create(cart);
+			const newCart = await CartsService.createCart(cart);
 
 			return res.status(201).json({
 				message: 'Cart created successfully',
@@ -123,7 +127,7 @@ export class CartsController {
 			}
 
 			// Find the product
-			const product = await ProductsManager.getBy({ _id: productId });
+			const product = await ProductsDAO.getBy({ _id: productId });
 
 			// If the product is not found, return an error
 			if (!product) {
@@ -135,7 +139,8 @@ export class CartsController {
 			}
 
 			// Find the cart
-			let cart = await CartsManager.getBy({ _id: cartId });
+			// let cart = await CartsDAO.getBy({ _id: cartId });
+			let cart = await CartsService.getCartById({ _id: cartId });
 
 			// If the cart is not found, return an error
 			if (!cart) {
@@ -168,7 +173,8 @@ export class CartsController {
 				cart.products.reduce((acc, curr) => acc + curr.totalProduct, 0)
 			);
 
-			const updatedCart = await CartsManager.update(cart);
+			// const updatedCart = await CartsDAO.update(cart);
+			const updatedCart = await CartsService.updateCart(cart);
 
 			return res.status(201).json({
 				message: 'Product successfully added to cart ',
@@ -204,7 +210,8 @@ export class CartsController {
 			}
 
 			// Find the cart
-			const cart = await CartsManager.getBy({ _id: cartId });
+			// const cart = await CartsDAO.getBy({ _id: cartId });
+			const cart = await CartsService.getCartById({ _id: cartId });
 
 			// If the cart is not found, return an error
 			if (!cart) {
@@ -216,7 +223,7 @@ export class CartsController {
 			}
 
 			// Find the product
-			const product = await ProductsManager.getBy({ _id: productId });
+			const product = await ProductsDAO.getBy({ _id: productId });
 
 			// If the product is not found, return an error
 			if (!product) {
@@ -257,7 +264,8 @@ export class CartsController {
 			);
 
 			// If there are still products, update the cart
-			const updatedCart = await CartsManager.update(cart);
+			// const updatedCart = await CartsDAO.update(cart);
+			const updatedCart = await CartsService.updateCart(cart);
 
 			return res.status(201).json({
 				message: 'product successfully subtracted from cart ',
@@ -293,7 +301,8 @@ export class CartsController {
 			}
 
 			// Find the cart
-			const cart = await CartsManager.getBy({ _id: cartId });
+			// const cart = await CartsDAO.getBy({ _id: cartId });
+			const cart = await CartsService.getCartById({ _id: cartId });
 
 			// If the cart is not found, return an error
 			if (!cart) {
@@ -305,7 +314,7 @@ export class CartsController {
 			}
 
 			// Find the product
-			const product = await ProductsManager.getBy({ _id: productId });
+			const product = await ProductsDAO.getBy({ _id: productId });
 
 			// If the product is not found, return an error
 			if (!product) {
@@ -341,7 +350,8 @@ export class CartsController {
 			);
 
 			// If there are still products, update the cart
-			const updatedCart = await CartsManager.update(cart);
+			// const updatedCart = await CartsDAO.update(cart);
+			const updatedCart = await CartsService.updateCart(cart);
 
 			return res.status(201).json({
 				message: 'product successfully deleted from cart ',
@@ -369,7 +379,8 @@ export class CartsController {
 			}
 
 			// Delete the cart
-			const deletedCart = await CartsManager.delete(cartId);
+			// const deletedCart = await CartsDAO.delete(cartId);
+			const deletedCart = await CartsService.deleteCart(cartId);
 
 			if (!deletedCart) {
 				return res.status(404).json({
@@ -412,7 +423,8 @@ export class CartsController {
 			};
 
 			// update the cart to empty it
-			const emptiedCart = await CartsManager.update(emptyCart);
+			// const emptiedCart = await CartsDAO.update(emptyCart);
+			const emptiedCart = await CartsService.updateCart(emptyCart);
 
 			if (!emptiedCart) {
 				return res.status(404).json({
@@ -451,8 +463,10 @@ export class CartsController {
 			}
 
 			// Fetch both carts
-			const sourceCart = await CartsManager.getBy({ _id: sourceCartId });
-			const targetCart = await CartsManager.getBy({ _id: targetCartId });
+			// const sourceCart = await CartsDAO.getBy({ _id: sourceCartId });
+			// const targetCart = await CartsDAO.getBy({ _id: targetCartId });
+			const sourceCart = await CartsService.getCartById({ _id: sourceCartId });
+			const targetCart = await CartsService.getCartById({ _id: targetCartId });
 
 			if (!sourceCart || !targetCart) {
 				return res.status(404).json({
@@ -483,10 +497,11 @@ export class CartsController {
 			);
 
 			// Save the updated target cart
-			const updatedCart = await CartsManager.update(targetCart);
+			// const updatedCart = await CartsDAO.update(targetCart);
+			const updatedCart = await CartsService.updateCart(targetCart);
 
 			// Delete the source cart
-			await CartsManager.delete(sourceCartId);
+			await CartsDAO.delete(sourceCartId);
 
 			return res.status(200).json({
 				error: false,

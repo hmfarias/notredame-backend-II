@@ -1,6 +1,6 @@
 import { userModel } from './models/user.model.js';
 
-export class UsersManagerMongo {
+export class UsersDAO {
 	static async create(user) {
 		const newUser = await userModel.create(user);
 		return newUser.toJSON();

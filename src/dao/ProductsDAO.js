@@ -1,6 +1,6 @@
 import { ProductModel } from './models/product.model.js';
 
-export class ProductsManagerMongo {
+export class ProductsDAO {
 	// GET all products with pagination ----------------------
 	static async get(filter = {}, options = {}) {
 		const result = await ProductModel.paginate(filter, options);
