@@ -437,7 +437,7 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 ├── app.js  // Archivo principal que inicia el servidor
 ├── utils.js  // crea y exporta una variable __dirname que proporciona la ruta del archivo App.js y funciones para proteger las contraseñas mediante encriptación, y registrar errores inesperados en archivos de log
 ├── utilsMulter.js  // configura el manejo de archivos mediante la librería multer para la carga de imágenes en la aplicación.
-├── .env  // Variables de entorno
+├── .env  // Variables de entorno - (incluida en .gitignore)
 └── package.json  // Dependencias y configuraciones del proyecto
 └── readme.md  // Este archivo
 ```
