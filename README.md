@@ -469,7 +469,12 @@ Cuando ocurre un error inesperado en el servidor:
 ]
 ```
 
-🚨 **Beneficios de esta estrategia** - Protección de la aplicación: El usuario nunca ve detalles sensibles del error. - Facilita la depuración: El desarrollador accede a logs completos para analizar. - Escalabilidad: Permite integrar fácilmente herramientas como Winston, Sentry, etc. - Automatización: La creación de carpetas y archivos de log es automática.
+🚨 **Beneficios de esta estrategia**
+
+- Protección de la aplicación: El usuario nunca ve detalles sensibles del error.
+- Facilita la depuración: El desarrollador accede a logs completos para analizar.
+- Escalabilidad: Permite integrar fácilmente herramientas como Winston, Sentry, etc.
+- Automatización: La creación de carpetas y archivos de log es automática.
 
 [Volver al menú](#top)
 
