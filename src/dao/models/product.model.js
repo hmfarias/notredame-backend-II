@@ -46,7 +46,7 @@ const productSchema = new Schema(
 		rating: { type: Number, default: 4.5 },
 		stock: { type: Number, required: true },
 		code: { type: String, required: false, default: 'RCH45Q1A' },
-		availabilityStatus: { type: String, default: 'In Stock' },
+		availabilityStatus: { type: String, default: 'in-stock' },
 		thumbnail: { type: String, required: false },
 	},
 	{

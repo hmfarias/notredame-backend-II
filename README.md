@@ -532,12 +532,12 @@ La gestión de usuarios en esta aplicación se maneja a través del modelo `user
 
 **Rutas REST (API):**
 
-- POST /api/sessions/register → Registro de usuario.
-- POST /api/sessions/login → Inicio de sesión.
-- GET /api/sessions/current → Obtener usuario autenticado (con JWT).
-- POST /api/sessions/logout → Cerrar sesión.
-- UPDATE /api/users/update → Actualizar un usuario - Solo administradores.
-- DELETE /api/users/delete → Elimina un usuario - Solo administradores - (se dispara el middleware "pre" establecido en el modelo de usuario, para eliminar el carrito asociado al usuario.)
+- **POST /api/sessions/register** → Registro de usuario.
+- **POST /api/sessions/login** → Inicio de sesión.
+- **GET /api/sessions/current** → Obtener usuario autenticado (con JWT).
+- **POST /api/sessions/logout** → Cerrar sesión.
+- **UPDATE /api/users/update** → Actualizar un usuario - Solo administradores.
+- **DELETE /api/users/delete** → Elimina un usuario - Solo administradores - (se dispara el middleware "pre" establecido en el modelo de usuario, para eliminar el carrito asociado al usuario.)
 
 **Autorización por rol:**
 
@@ -620,15 +620,26 @@ La lógica del backend está construida con Node.js, Express y MongoDB, siguiend
 
 📦 Funcionalidades del Backend
 
-- Endpoints RESTful disponibles en /api/products
-- GET /api/products: Listado con filtros, ordenamiento y paginación.
-- GET /api/products/:id: Obtener un producto por ID.
-- POST /api/products: Crear un nuevo producto (requiere rol admin).
-- PUT /api/products/:id: Actualizar un producto existente (requiere rol admin).
-- DELETE /api/products/:id: Eliminar un producto (requiere rol admin).
+Endpoints RESTful disponibles en /api/products
+
+- **GET /api/products**: Listado con filtros, ordenamiento y paginación.
+- **GET /api/products/:id**: Obtener un producto por ID.
+- **POST /api/products**: Crear un nuevo producto (requiere rol admin).
+  Los campos obligatorios y mínimos para crear un productos son:
+  - title: Título del producto
+  - description: Descripción del producto
+  - code: Código del producto
+  - price: Precio del producto
+  - stock: Stock del producto
+  - category: Categoría del producto
+    **Mientras que los campos:**
+  - thumbnail: URL de la imagen del producto - opcional con carga opcional de imágenes mediante multer.
+  - availabilityStatus: Estado de disponibilidad del producto (in-stock, low-stock, out-of-stock) - se calcula automáticamente
+- **PUT /api/products/:id**: Actualizar un producto existente (requiere rol admin).
+  En este caso sólo se actualizarán aquellos campos que se indiquen en la petición. (no hay campos obligatorios)
+- **DELETE /api/products/:id**: Eliminar un producto (requiere rol admin).
 - Validación de campos en la creación y edición de productos.
 - Verificación de duplicados por título antes de insertar o actualizar.
-- Carga opcional de imágenes mediante multer.
 - Control de acceso mediante autenticación con JWT y roles.
 - Paginación dinámica implementada con mongoose-paginate-v2.
 
@@ -677,30 +688,33 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 🔙 **Backend**
 
 - Modelo: Se define un esquema en Mongoose para el carrito, incluyendo productos, cantidades y el total del carrito. Los productos son referencias al modelo de productos.
-- Rutas REST (API):
-- GET /api/carts/:cid → Obtener carrito por ID.
-- POST /api/carts → Crear un nuevo carrito.
-- POST /api/carts/:cid/product/:pid → Agregar o aumentar cantidad de un producto.
-- DELETE /api/carts/:cid/product/:pid → Disminuir cantidad o eliminar un producto.
-- DELETE /api/carts/:cid/product/:pid/delete → Eliminar completamente un producto.
-- DELETE /api/carts/:cid → Eliminar todo el carrito.
-- POST /api/carts/merge → Fusionar dos carritos (ej: localStorage + carrito del usuario autenticado).
-- PUT /api/carts/:cid/empty → Vaciar carrito sin eliminarlo.+
+  **Rutas REST (API):**
+- **GET /api/carts/:cid** → Obtener carrito por ID.
+- **POST /api/carts** → Crear un nuevo carrito.
+- **POST /api/carts/:cid/product/:pid** → Aumentar lacantidad de un producto en el carrito.
+- **DELETE /api/carts/:cid/product/:pid** → Disminuir la cantidad de un producto en el carrito.
+- **DELETE /api/carts/:cid/product/:pid/delete** → Eliminar completamente un producto del carrito.
+- **DELETE /api/carts/:cid** → Eliminar todo el carrito (solo para carritos en LocalStorage).
+- **POST /api/carts/merge** → Fusionar dos carritos (ej: localStorage + carrito del usuario autenticado).
+- **PUT /api/carts/:cid/empty** → Vaciar carrito sin eliminarlo (para carritos asociados al usuario).
 
 **Middleware y Validaciones:**
 
-- Validación de IDs con isValidObjectId.
-- Middleware de autorización con JWT para operaciones seguras.
+- Middleware de autenticación con JWT para operaciones con usuario autenticado.
+- Middleware de autorización para operaciones según el rol del usuario autenticado.
 - Verificación de stock y existencia de productos al manipular el carrito.
+- Validación de IDs con isValidObjectId.
 
 💻 **Frontend**
 
-- Visualización:
-- cart.handlebars muestra los productos del carrito, sus cantidades, precios, totales y opciones para aumentar, disminuir o eliminar productos.
+Visualización:
+
+- cart.handlebars muestra los productos del carrito, sus cantidades, precios, totales y botones para aumentar, disminuir o eliminar productos y vaciar el carrito.
 
 **Lógica en JS:**
 
-- cart.js se encarga de:
+cart.js se encarga de:
+
 - Manejar eventos de botones para modificar el carrito.
 - Consumir la API para reflejar cambios en tiempo real.
 - Mostrar alertas interactivas con SweetAlert2.

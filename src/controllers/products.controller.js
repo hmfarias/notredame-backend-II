@@ -1,34 +1,71 @@
 import { ProductsManagerMongo as ProductsManager } from '../dao/ProductsManagerMongo.js';
-import { isValidObjectId } from '../utils.js';
+import { categoriesList, errorHandler, isValidObjectId } from '../utils.js';
 
 export class ProductsController {
 	//* GET all product  **********************************************/
 	static async getProducts(req, res) {
 		try {
-			const { category, status, priceOrder, page = 1, limit = 10 } = req.query;
+			const {
+				category = 'all',
+				status = 'all',
+				priceOrder,
+				page = 1,
+				limit = 10,
+			} = req.query;
+
+			// validate category
+			if (category && category !== 'all' && !categoriesList.includes(category)) {
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid category provided',
+					payload: null,
+				});
+			}
+
+			// Validate status (just accept 'all', 'active' or 'inactive')
+			const validStatus = ['all', 'in-stock', 'low-stock', 'out-of-stock'];
+			if (status && !validStatus.includes(status)) {
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid status provided',
+					payload: null,
+				});
+			}
 
 			// Validate Priceorder (just accept 'asc' or 'desc')
 			const validPriceOrder = ['asc', 'desc'];
 			if (priceOrder && !validPriceOrder.includes(priceOrder)) {
 				return res.status(400).json({
 					error: true,
-					message: 'Invalid value for priceOrder. Use "asc" or "desc".',
+					message: 'Invalid priceOrder provided',
 					payload: null,
 				});
 			}
 
-			// transform the page and limit to integer
-			const pagenumber = parseInt(page, 10) || 1;
+			// validate page and limit must be positive integers
+			const pageNumber = parseInt(page, 10) || 1;
 			const limitNumber = parseInt(limit, 10) || 10;
 
-			//Call the get() method with filtering and pagination parameters
-			const result = await ProductsManager.get({
-				category,
-				status,
-				priceOrder,
-				page: pagenumber,
+			// build the filter object
+			const filter = {};
+			if (category !== 'all') filter.category = category;
+			if (status !== 'all') filter.availabilityStatus = status;
+
+			const options = {
+				page: pageNumber,
 				limit: limitNumber,
-			});
+				sort: {},
+				lean: true,
+			};
+
+			if (priceOrder) {
+				options.sort.price = priceOrder === 'asc' ? 1 : -1;
+			}
+
+			// query the database
+			const result = await ProductsManager.get(filter, options);
+
+			// If there are no products, return an empty array
 			if (!result || result.length === 0) {
 				return res.status(404).json({
 					message: 'No products found',
@@ -59,6 +96,7 @@ export class ProductsController {
 					? `/products?${baseParams}&page=${result.totalPages}`
 					: null;
 
+			//return the response
 			return res.status(200).json({
 				error: false,
 				message: `Products fetched successfully`,
@@ -121,15 +159,63 @@ export class ProductsController {
 		try {
 			const { title, description, code, price, stock, category } = req.body;
 
+			// Validate required fields
+			if (!title || !description || !code || !price || stock === undefined || !category) {
+				return res.status(400).json({
+					error: true,
+					message: 'Missing required fields',
+					payload: null,
+				});
+			}
+
+			// Validate price and stock
+			const parsedPrice = parseFloat(price);
+			const parsedStock = parseInt(stock, 10);
+
+			if (isNaN(parsedPrice) || parsedPrice <= 0) {
+				return res.status(400).json({
+					error: true,
+					message: 'Price must be a positive decimal number',
+					payload: null,
+				});
+			}
+
+			if (isNaN(parsedStock) || parsedStock < 0) {
+				return res.status(400).json({
+					error: true,
+					message: 'Stock must be a non-negative integer',
+					payload: null,
+				});
+			}
+
+			// Set availabilityStatus based on stock
+			let availabilityStatus = '';
+			if (parsedStock === 0) {
+				availabilityStatus = 'out-of-stock'; // Stock is 0
+			} else if (parsedStock < 5) {
+				availabilityStatus = 'low-stock'; // Stock is between 1 and 4
+			} else {
+				availabilityStatus = 'in-stock'; // Stock is 5 or more
+			}
+
+			// Validate category
+			if (!categoriesList.includes(category)) {
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid category',
+					payload: null,
+				});
+			}
+
+			// asign default thumbnail if not provided (dicactic goal)
 			const thumbnail = req.file
 				? '/img/' + req.file.filename
 				: 'https://prd.place/400?id=14';
 
-			// Verify if there is already a product with the same title
+			// Check for duplicate title
 			const existingProduct = await ProductsManager.getBy({ title });
 
 			if (existingProduct) {
-				res.setHeader('Content-Type', 'application/json');
 				return res.status(409).json({
 					error: true,
 					message: `A product with the title "${title}" already exists`,
@@ -145,12 +231,12 @@ export class ProductsController {
 				stock,
 				category,
 				thumbnail,
+				availabilityStatus,
 			};
 
 			// Save the product
 			const newProduct = await ProductsManager.create(product);
 
-			res.setHeader('Content-Type', 'application/json');
 			return res.status(201).json({
 				error: false,
 				message: `Product created successfully`,
@@ -168,42 +254,99 @@ export class ProductsController {
 			const { title, description, code, price, stock, category } = req.body;
 			const { id } = req.params;
 
-			// Use new thumbnail if recived, or keep the previous if not
-			const thumbnail = req.file ? '/img/' + req.file.filename : req.body.thumbnail;
-
-			// Verify if there is another product with the same title
-			const existingProduct = await ProductsManager.getBy({ title });
-
-			if (existingProduct && existingProduct._id.toString() !== id) {
-				res.setHeader('Content-Type', 'application/json');
+			// verify that the ID has valid format
+			if (!isValidObjectId(id)) {
 				return res.status(400).json({
 					error: true,
-					message: `Other product with the title "${title}" already exists.`,
+					message: 'Invalid product ID format',
 					payload: null,
 				});
 			}
 
-			//try to update the product
-			const updatedProduct = await ProductsManager.update(req.params.id, {
-				title,
-				description,
-				code,
-				price,
-				stock,
-				category,
-				thumbnail,
-			});
+			// Initialize product fields to update
+			const updatedFields = {};
+
+			// Check and update each field only if it's provided in the request body
+			if (title) {
+				updatedFields.title = title;
+			}
+
+			if (description) {
+				updatedFields.description = description;
+			}
+
+			if (code) {
+				updatedFields.code = code;
+			}
+
+			// Validate and update price if provided
+			if (price !== undefined) {
+				const parsedPrice = parseFloat(price);
+				if (isNaN(parsedPrice) || parsedPrice <= 0) {
+					return res.status(400).json({
+						error: true,
+						message: 'Price must be a positive decimal number',
+						payload: null,
+					});
+				}
+				updatedFields.price = parsedPrice;
+			}
+
+			// Validate and update stock if provided
+			if (stock !== undefined) {
+				const parsedStock = parseInt(stock, 10);
+				if (isNaN(parsedStock) || parsedStock < 0) {
+					return res.status(400).json({
+						error: true,
+						message: 'Stock must be a non-negative integer',
+						payload: null,
+					});
+				}
+
+				// Set availability status based on stock
+				let availabilityStatus = '';
+				if (parsedStock === 0) {
+					availabilityStatus = 'out-of-stock';
+				} else if (parsedStock < 5) {
+					availabilityStatus = 'low-stock';
+				} else {
+					availabilityStatus = 'in-stock';
+				}
+				updatedFields.stock = parsedStock;
+				updatedFields.availabilityStatus = availabilityStatus;
+			}
+
+			// Validate and update category if provided
+			if (category) {
+				if (!categoriesList.includes(category)) {
+					return res.status(400).json({
+						error: true,
+						message: 'Invalid category',
+						payload: null,
+					});
+				}
+				updatedFields.category = category;
+			}
+
+			// Use new thumbnail if received, or keep the previous one if not
+			if (req.file) {
+				updatedFields.thumbnail = '/img/' + req.file.filename;
+			} else if (req.body.thumbnail) {
+				updatedFields.thumbnail = req.body.thumbnail;
+			}
+
+			// Try to update the product in the database
+			const updatedProduct = await ProductsManager.update(id, updatedFields);
 
 			if (!updatedProduct) {
-				res.setHeader('Content-Type', 'application/json');
-				return res.status(404).json({
+				return res.status(400).json({
 					error: true,
-					message: 'Product not found - The product with the specified ID does not exist',
+					message:
+						'Failed to update product - The product may not exist or there was an issue with the request',
 					payload: null,
 				});
 			}
 
-			res.setHeader('Content-Type', 'application/json');
 			return res.status(200).json({
 				error: false,
 				message: 'Product updated successfully',
@@ -222,7 +365,6 @@ export class ProductsController {
 
 			// verify that the ID has valid format
 			if (!isValidObjectId(id)) {
-				res.setHeader('Content-Type', 'application/json');
 				return res.status(400).json({
 					error: true,
 					message: 'Invalid product ID format',
@@ -234,7 +376,6 @@ export class ProductsController {
 			const deletedProduct = await ProductsManager.delete(id);
 
 			if (!deletedProduct) {
-				res.setHeader('Content-Type', 'application/json');
 				return res.status(404).json({
 					error: true,
 					message: 'Product not found - No product exists with the specified ID',
@@ -242,7 +383,6 @@ export class ProductsController {
 				});
 			}
 
-			res.setHeader('Content-Type', 'application/json');
 			return res.status(200).json({
 				error: false,
 				message: 'Product deleted successfully',

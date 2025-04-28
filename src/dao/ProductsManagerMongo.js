@@ -1,41 +1,9 @@
 import { ProductModel } from './models/product.model.js';
 
 export class ProductsManagerMongo {
-	// GET products with filters and pagination -------------------------------
-	static async get({ category, status, priceOrder, page = 1, limit = 10 }) {
-		const filter = {};
-
-		// Add filter by category
-		if (category && category !== 'all') {
-			filter.category = category;
-		}
-
-		// Add filter by availability status
-		if (status && status !== 'all') {
-			filter.availabilityStatus = status;
-		}
-
-		// Pagination options configuration
-		const options = {
-			page: parseInt(page, 10),
-			limit: parseInt(limit, 10),
-			sort: {},
-			lean: true, // To improve performance
-		};
-
-		// Apply price order if provided
-		if (priceOrder === 'asc' || priceOrder === 'desc') {
-			options.sort.price = priceOrder === 'asc' ? 1 : -1;
-		}
-
-		// Execute and returnthe query with pagination
+	// GET all products with pagination ----------------------
+	static async get(filter = {}, options = {}) {
 		const result = await ProductModel.paginate(filter, options);
-
-		// If there are no products, return an empty array
-		if (result.docs.length === 0) {
-			return { products: [], totalDocs: 0, totalPages: 0, currentPage: 1 };
-		}
-
 		return result;
 	}
 

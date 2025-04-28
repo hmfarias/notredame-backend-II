@@ -210,7 +210,7 @@ const renderProduct = (product) => {
 					<button id='add-to-cart-btn' data-product-id='${product._id}'><i class='fa-solid fa-plus'></i></button>
 				</div>
 			</div>
-			<button onclick="window.location.href = '/products'">Products List</button>
+			<button onclick="window.history.back()">Back</button>
 			<div>
 				<p>Edit</p>
 				<button type='button' class='button-update' data-product-id='${product._id}'><i class='fa-solid fa-pen-to-square'></i></button>

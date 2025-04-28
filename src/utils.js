@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import fs from 'fs';
 import path from 'path';
 import passport from 'passport';
+import { categoryList } from './dao/models/product.model.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,7 +59,6 @@ export const passportCall = (strategy) => {
 			}
 			if (!user) {
 				//when passport.config returns donde(null,false) - (no error and user is not logged)
-				res.setHeader('Content-Type', 'application/json');
 				return res.status(400).json({
 					error: true,
 					message: `${info.message ? info.message : info.toString()}`,
@@ -79,3 +79,6 @@ export const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 export const roundToTwoDecimals = (value) => {
 	return Number(value.toFixed(2));
 };
+
+// export category list
+export const categoriesList = categoryList;

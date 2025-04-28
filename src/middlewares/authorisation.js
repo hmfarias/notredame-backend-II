@@ -11,7 +11,6 @@ export const authorisation = (allowedRoles) => {
 
 		// Check if the user is authenticated
 		if (!req.user) {
-			res.setHeader('Content-Type', 'application/json');
 			return res.status(401).json({
 				error: true,
 				message: 'Unauthorized',
