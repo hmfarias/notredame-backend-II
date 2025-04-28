@@ -1,3 +1,5 @@
+import { checkSessionValidity } from './service.js';
+
 // Extract cart ID from URL
 const getCartIdFromURL = () => {
 	const parts = window.location.pathname.split('/');
@@ -7,6 +9,7 @@ const cartId = getCartIdFromURL();
 
 // Fetch and render the cart
 const fetchAndRenderCart = async () => {
+	await checkSessionValidity();
 	try {
 		const response = await fetch(`/api/carts/${cartId}`);
 		const data = await response.json();

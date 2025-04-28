@@ -6,24 +6,24 @@ class UsersService {
 	}
 	//* Get all users ********************************/
 	async getUsers() {
-		return await UsersDAO.getAll();
+		return await this.usersDAO.getAll();
 	}
 
 	//* Get a user by filter **************************/
 	async getUser(filter) {
-		return await UsersDAO.getBy(filter);
+		return await this.usersDAO.getBy(filter);
 	}
 
 	//* Create a user *******************************/ // Replaced by Passport Strategy
 
 	//* Update a user by id **************************/
 	async updateUser(id, user) {
-		return await UsersDAO.update(id, user);
+		return await this.usersDAO.update(id, user);
 	}
 
 	//* Delete a user by ID **************************/
 	async deleteUser(userId) {
-		return await UsersDAO.delete(userId);
+		return await this.usersDAO.delete(userId);
 	}
 }
 export const usersService = new UsersService(UsersDAO);

@@ -189,8 +189,11 @@ const renderProduct = (product) => {
 	const container = document.querySelector('.product-container');
 	if (!container) return;
 
+	console.log('thumbnail');
+	console.log(product.thumbnail);
+
 	container.innerHTML = `
-		<img src='${product.thumbnail}' alt='${product.title}' />
+		<img src="${product.thumbnail}" alt="${product.title}" />
 
 		<div>
 			<h2>${product.title}</h2>

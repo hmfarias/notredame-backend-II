@@ -6,27 +6,27 @@ class CartsService {
 	}
 	//* GET ALL CARTS **********************************************/
 	async getCarts() {
-		return await CartsDAO.get();
+		return await this.cartsDAO.get();
 	}
 
 	//* GET A CART BY FILTER ****************************************/
 	async getCartByFilter(filter) {
-		return await CartsDAO.getBy(filter);
+		return await this.cartsDAO.getBy(filter);
 	}
 
 	//* CREATE a new empty cart ************************************/
 	async createCart(cart) {
-		return await CartsDAO.create(cart);
+		return await this.cartsDAO.create(cart);
 	}
 
 	//* UPDATE A CART **********************************************/
 	async updateCart(cart) {
-		return await CartsDAO.update(cart);
+		return await this.cartsDAO.update(cart);
 	}
 
 	//* DELETE A CART **********************************************/
 	async deleteCart(CartId) {
-		return await CartsDAO.delete(CartId);
+		return await this.cartsDAO.delete(CartId);
 	}
 }
 export const cartsService = new CartsService(CartsDAO);

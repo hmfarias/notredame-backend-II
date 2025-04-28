@@ -45,6 +45,7 @@
 - [🚀 Funcionamiento de la Aplicación](#funcionamiento)
   - 🏛️ [Arquitectura](#arquitectura)
   - 🗂️ [Estructura de archivos](#estructura)
+  - 🛑 [Manejo de errores inesperados - LOG](#erroresinesperados)
   - 🔐 [Uso de Passport Strategies](#passport)
   - 🛡️ [Flujo de seguridad en las rutas](#flujoseguridad)
 - 🧑‍💼 [Gestión de Usuarios](#usuarios)
@@ -305,6 +306,13 @@ La aplicación sigue un modelo de **arquitectura en capas**, una de las mejores 
 Además,utiliza **MongoDB** como sistema de persistencia, gestionado a través de **Mongoose** como ODM. Esto permite realizar las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de forma eficiente y simplificada.
 
 📚 **Descripción de las capas**
+
+**Presentación**
+La Capa de Presentación es la encargada de gestionar la interacción con el usuario.
+Incluye todo lo que el usuario ve y con lo que interactúa: páginas web, formularios, botones, animaciones, mensajes de alerta, navegación, etc.
+En este caso se utiliza la librería **Handlebars** para la visualización dinámica de las vistas, asi como recursos estáticos como CSS y JavaScript.
+Como se ha explicado anteriormente, el foco de este proyecto es el **backend**, pero se ha desarrollado una capa de presentación utilizando **Handlebars** con una maquetacion básica (NO RESPONSIVE) para ofrecer un entorno visual limpio y funcional que facilite la prueba de sus funcionalidades.
+
 **Routes**
 Define las rutas HTTP disponibles (GET, POST, PUT, DELETE) y asigna quÃ© controlador maneja cada ruta. Además, aplica middlewares como passportCall y authorisation.
 
@@ -317,6 +325,23 @@ Actúan como intermediarios entre los controladores y los DAO. Se encargan de ej
 **DAO (Data Access Object)**
 Se ocupa del acceso directo a la base de datos usando los modelos de Mongoose. Solo tiene métodos CRUD puros (find, findBy, create, update, delete). NO contiene lógica de negocio alguna.
 Esto permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos DAOs sin necesidad de alterar lo controladores y las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
+
+📥 **Flujo de trabajo básico**
+
+1. El usuario realiza una acción en el navegador (ej: hace clic en “Agregar al carrito”).
+2. La capa de presentación captura el evento y hace una solicitud HTTP.
+3. El router recibe la solicitud y la deriva al controlador correspondiente (controlador de carritos en este caso).
+4. El controlador llama al servicio, que coordina qué debe hacerse.
+5. El servicio pide o actualiza datos a través del DAO.
+6. El DAO interactúa directamente con MongoDB.
+7. La respuesta fluye en sentido inverso: DAO → Service → Controller → Router → Presentación → Usuario.
+
+🔥 **Beneficios de esta arquitectura**
+
+- Facilita el Mantenimiento: Se puede cambiar una capa sin afectar a las demás.
+- Escalabilidad: Es posible agregar más lógica en servicios o cambiar bases de datos fácilmente.
+- Seguridad: Se protegen campos sensibles en controladores y servicios, no en DAOs.
+- Organización clara: Facilita que otros desarrolladores entiendan la app y puedan trabajar en equipo sin problemas.
 
 [Volver al menú](#top)
 
@@ -410,6 +435,41 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 └── package.json  // Dependencias y configuraciones del proyecto
 └── readme.md  // Este archivo
 ```
+
+[Volver al menú](#top)
+
+<hr>
+
+<a name="erroresinesperados"></a>
+
+### 🛑 Manejo de Errores Inesperados
+
+La aplicación implementa un **sistema de captura, registro y respuesta** ante **errores no controlados** que puedan surgir en tiempo de ejecución.
+
+Cuando ocurre un error inesperado en el servidor:
+
+| Componente                      | Descripción                                                                                                                                                                   |
+| :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📋 **Registro de error**        | Se crea automáticamente un archivo `.log` en la carpeta `logs/` dentro del proyecto. Cada día se genera un archivo nuevo con la fecha como nombre (`YYYY-MM-DD.log`).         |
+| 🗂️ **Formato del log**          | Cada error registrado contiene:<br>• `timestamp`: fecha y hora exacta<br>• `message`: mensaje del error<br>• `stack`: traza de pila completa del error para diagnóstico       |
+| 📂 **Gestión de carpeta logs/** | Si la carpeta `logs/` no existe, se crea automáticamente.                                                                                                                     |
+| 📡 **Respuesta al cliente**     | El servidor responde con un `status 500` y un mensaje estándar: <br> `"Unexpected server error - Try later or contact your administrator"`, sin exponer información sensible. |
+
+---
+
+#### 📜 Ejemplo de un error registrado:
+
+```json
+[
+	{
+		"timestamp": "2025-04-28T19:45:31.920Z",
+		"message": "Cannot read properties of undefined (reading 'cart')",
+		"stack": "TypeError: Cannot read properties of undefined (reading 'cart')\n    at ..."
+	}
+]
+```
+
+🚨 **Beneficios de esta estrategia** - Protección de la aplicación: El usuario nunca ve detalles sensibles del error. - Facilita la depuración: El desarrollador accede a logs completos para analizar. - Escalabilidad: Permite integrar fácilmente herramientas como Winston, Sentry, etc. - Automatización: La creación de carpetas y archivos de log es automática.
 
 [Volver al menú](#top)
 
@@ -518,7 +578,7 @@ Response (JSON)
 ✍️ Nota
 
 El **router** solo **organiza el flujo de middlewares** y delega en los controladores las operaciones de negocio.
-Los **controladores aplican lógica de negocio** y gestionan el acceso a los DAOs,
+Los **controladores aplican lógica de negocio** y delegan en los Servicios el acceso a los DAOs,
 Los **DAOs manejan directamente la comunicación con la base de datos**.
 Esto garantiza un diseño en capas, ordenado y fácil de escalar.
 
