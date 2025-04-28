@@ -1,23 +1,32 @@
-import { CartsDAO } from '../dao/CartsDAO.js';
+import { CartsDAOMongo as CartsDAO } from '../dao/CartsDAOMongo.js';
 
-export class CartsService {
-	static async getCarts() {
+class CartsService {
+	constructor(dao) {
+		this.cartsDAO = dao;
+	}
+	//* GET ALL CARTS **********************************************/
+	async getCarts() {
 		return await CartsDAO.get();
 	}
 
-	static async createCart(cart) {
+	//* GET A CART BY FILTER ****************************************/
+	async getCartByFilter(filter) {
+		return await CartsDAO.getBy(filter);
+	}
+
+	//* CREATE a new empty cart ************************************/
+	async createCart(cart) {
 		return await CartsDAO.create(cart);
 	}
 
-	static async getCartById(cartId) {
-		return await CartsDAO.getBy({ _id: cartId });
-	}
-
-	static async updateCart(cart) {
+	//* UPDATE A CART **********************************************/
+	async updateCart(cart) {
 		return await CartsDAO.update(cart);
 	}
 
-	static async deleteCart(CartId) {
+	//* DELETE A CART **********************************************/
+	async deleteCart(CartId) {
 		return await CartsDAO.delete(CartId);
 	}
 }
+export const cartsService = new CartsService(CartsDAO);

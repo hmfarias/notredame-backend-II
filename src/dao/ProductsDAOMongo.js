@@ -1,21 +1,21 @@
 import { ProductModel } from './models/product.model.js';
 
-export class ProductsDAO {
+export class ProductsDAOMongo {
 	// GET all products with pagination ----------------------
 	static async get(filter = {}, options = {}) {
 		const result = await ProductModel.paginate(filter, options);
 		return result;
 	}
 
+	// GET a product by ID or filter -----------------------
+	static async getBy(filter) {
+		return await ProductModel.findOne(filter).lean();
+	}
+
 	// CREATE a new product -------------------------------
 	static async create(product) {
 		const newProduct = await ProductModel.create(product);
 		return newProduct.toJSON();
-	}
-
-	// GET a product by ID or filter -----------------------
-	static async getBy(filter) {
-		return await ProductModel.findOne(filter).lean();
 	}
 
 	// UPDATE a product by ID -----------------------------

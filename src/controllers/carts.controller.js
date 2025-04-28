@@ -1,14 +1,12 @@
-import { CartsDAO as CartsDAO } from '../dao/CartsDAO.js';
-import { CartsService } from '../services/carts.service.js';
-import { ProductsDAO } from '../dao/ProductsDAO.js';
+import { cartsService } from '../services/carts.service.js';
+import { ProductsDAOMongo as ProductsDAO } from '../dao/ProductsDAOMongo.js';
 import { errorHandler, isValidObjectId, roundToTwoDecimals } from '../utils.js';
 
 export class CartsController {
 	//* GET ALL CARTS **********************************************/
 	static async getCarts(req, res) {
 		try {
-			// const carts = await CartsDAO.get();
-			const carts = await CartsService.getCarts();
+			const carts = await cartsService.getCarts();
 			if (!carts || carts.length === 0) {
 				return res.status(404).json({
 					message: 'No carts found',
@@ -42,8 +40,7 @@ export class CartsController {
 				});
 			}
 
-			// const cart = await CartsDAO.getBy({ _id: cartId });
-			const cart = await CartsService.getCartById({ _id: cartId });
+			const cart = await cartsService.getCartByFilter({ _id: cartId });
 
 			if (!cart) {
 				return res.status(404).json({
@@ -91,8 +88,7 @@ export class CartsController {
 				total: 0,
 			};
 			// Save the cart
-			// const newCart = await CartsDAO.create(cart);
-			const newCart = await CartsService.createCart(cart);
+			const newCart = await cartsService.createCart(cart);
 
 			return res.status(201).json({
 				message: 'Cart created successfully',
@@ -139,8 +135,7 @@ export class CartsController {
 			}
 
 			// Find the cart
-			// let cart = await CartsDAO.getBy({ _id: cartId });
-			let cart = await CartsService.getCartById({ _id: cartId });
+			let cart = await cartsService.getCartByFilter({ _id: cartId });
 
 			// If the cart is not found, return an error
 			if (!cart) {
@@ -173,8 +168,7 @@ export class CartsController {
 				cart.products.reduce((acc, curr) => acc + curr.totalProduct, 0)
 			);
 
-			// const updatedCart = await CartsDAO.update(cart);
-			const updatedCart = await CartsService.updateCart(cart);
+			const updatedCart = await cartsService.updateCart(cart);
 
 			return res.status(201).json({
 				message: 'Product successfully added to cart ',
@@ -210,8 +204,8 @@ export class CartsController {
 			}
 
 			// Find the cart
-			// const cart = await CartsDAO.getBy({ _id: cartId });
-			const cart = await CartsService.getCartById({ _id: cartId });
+
+			const cart = await cartsService.getCartByFilter({ _id: cartId });
 
 			// If the cart is not found, return an error
 			if (!cart) {
@@ -264,8 +258,7 @@ export class CartsController {
 			);
 
 			// If there are still products, update the cart
-			// const updatedCart = await CartsDAO.update(cart);
-			const updatedCart = await CartsService.updateCart(cart);
+			const updatedCart = await cartsService.updateCart(cart);
 
 			return res.status(201).json({
 				message: 'product successfully subtracted from cart ',
@@ -301,8 +294,7 @@ export class CartsController {
 			}
 
 			// Find the cart
-			// const cart = await CartsDAO.getBy({ _id: cartId });
-			const cart = await CartsService.getCartById({ _id: cartId });
+			const cart = await cartsService.getCartByFilter({ _id: cartId });
 
 			// If the cart is not found, return an error
 			if (!cart) {
@@ -350,8 +342,7 @@ export class CartsController {
 			);
 
 			// If there are still products, update the cart
-			// const updatedCart = await CartsDAO.update(cart);
-			const updatedCart = await CartsService.updateCart(cart);
+			const updatedCart = await cartsService.updateCart(cart);
 
 			return res.status(201).json({
 				message: 'product successfully deleted from cart ',
@@ -379,8 +370,7 @@ export class CartsController {
 			}
 
 			// Delete the cart
-			// const deletedCart = await CartsDAO.delete(cartId);
-			const deletedCart = await CartsService.deleteCart(cartId);
+			const deletedCart = await cartsService.deleteCart(cartId);
 
 			if (!deletedCart) {
 				return res.status(404).json({
@@ -423,8 +413,7 @@ export class CartsController {
 			};
 
 			// update the cart to empty it
-			// const emptiedCart = await CartsDAO.update(emptyCart);
-			const emptiedCart = await CartsService.updateCart(emptyCart);
+			const emptiedCart = await cartsService.updateCart(emptyCart);
 
 			if (!emptiedCart) {
 				return res.status(404).json({
@@ -463,10 +452,8 @@ export class CartsController {
 			}
 
 			// Fetch both carts
-			// const sourceCart = await CartsDAO.getBy({ _id: sourceCartId });
-			// const targetCart = await CartsDAO.getBy({ _id: targetCartId });
-			const sourceCart = await CartsService.getCartById({ _id: sourceCartId });
-			const targetCart = await CartsService.getCartById({ _id: targetCartId });
+			const sourceCart = await cartsService.getCartByFilter({ _id: sourceCartId });
+			const targetCart = await cartsService.getCartByFilter({ _id: targetCartId });
 
 			if (!sourceCart || !targetCart) {
 				return res.status(404).json({
@@ -497,11 +484,10 @@ export class CartsController {
 			);
 
 			// Save the updated target cart
-			// const updatedCart = await CartsDAO.update(targetCart);
-			const updatedCart = await CartsService.updateCart(targetCart);
+			const updatedCart = await cartsService.updateCart(targetCart);
 
 			// Delete the source cart
-			await CartsDAO.delete(sourceCartId);
+			await cartsService.deleteCart(sourceCartId);
 
 			return res.status(200).json({
 				error: false,

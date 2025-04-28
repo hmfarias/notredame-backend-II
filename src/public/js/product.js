@@ -210,7 +210,7 @@ const renderProduct = (product) => {
 					<button id='add-to-cart-btn' data-product-id='${product._id}'><i class='fa-solid fa-plus'></i></button>
 				</div>
 			</div>
-			<button onclick="window.history.back()">Back</button>
+				<button id="products-list-btn">Products List</button>
 			<div>
 				<p>Edit</p>
 				<button type='button' class='button-update' data-product-id='${product._id}'><i class='fa-solid fa-pen-to-square'></i></button>
@@ -291,6 +291,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 		// Delete product
 		document.querySelector('.button-delete')?.addEventListener('click', () => {
 			deleteProduct(product._id);
+		});
+
+		// Handle products list button
+		document.getElementById('products-list-btn')?.addEventListener('click', () => {
+			const filters = localStorage.getItem('productsFilters') || '';
+			window.location.href = `/products${filters}`;
 		});
 	} catch (error) {
 		console.error('❌ Error loading product:', error.message);

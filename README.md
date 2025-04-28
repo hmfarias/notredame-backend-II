@@ -43,7 +43,7 @@
 - [💻 Instalación en local](#instalacionlocal)
   - ⚙️ [Configuración del Puerto desde Línea de Comandos](#comander)
 - [🚀 Funcionamiento de la Aplicación](#funcionamiento)
-  - 🧱 [Arquitectura](#arquitectura)
+  - 🏛️ [Arquitectura](#arquitectura)
   - 🗂️ [Estructura de archivos](#estructura)
   - 🔐 [Uso de Passport Strategies](#passport)
   - 🛡️ [Flujo de seguridad en las rutas](#flujoseguridad)
@@ -108,7 +108,7 @@ Gracias por visitar nuestro repositorio. ¡Esperamos que disfrutes explorando y 
 
 ### 🎨 MAQUETACIÓN Y CSS DE LA PAGINA
 
-El enfoque principal de la aplicación ha sido el desarrollo del backend, no obstante lo cual, se ha implementado una maquetación básica para ofrecer un entorno visual limpio y funcional que facilite la prueba de sus funcionalidades.
+El enfoque principal de la aplicación ha sido el desarrollo del backend, no obstante lo cual, se ha implementado una maquetación básica (NO RESPONSIVE) para ofrecer un entorno visual limpio y funcional que facilite la prueba de sus funcionalidades.
 
 El diseño de la interfaz sigue una estructura sencilla pero organizada, asegurando una navegación clara y una experiencia de usuario intuitiva. Se han aplicado estilos CSS básicos para mejorar la presentación de los datos sin descuidar el rendimiento ni la accesibilidad.
 
@@ -299,11 +299,24 @@ Esto brinda flexibilidad al momento de desplegar o testear la aplicación en dis
 
 <a name="arquitectura"></a>
 
-### 🧱 Arquitectura
+### 🏛️ Arquitectura
 
-La aplicación está basada en una arquitectura **MVC (Modelo-Vista-Controlador)** y utiliza **MongoDB** como sistema de persistencia, gestionado a través de **Mongoose** como ODM. Esto permite realizar las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de forma eficiente y simplificada.
+La aplicación sigue un modelo de **arquitectura en capas**, una de las mejores prácticas para construir aplicaciones escalables, mantenibles y organizadas. Cada capa tiene responsabilidades claras y separadas, evitando acoplamientos innecesarios.
+Además,utiliza **MongoDB** como sistema de persistencia, gestionado a través de **Mongoose** como ODM. Esto permite realizar las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) de forma eficiente y simplificada.
 
-Los datos se acceden mediante **DAOs (Data Acces Objects)** (clases), lo que permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos DAOS sin necesidad de alterar las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
+📚 **Descripción de las capas**
+**Routes**
+Define las rutas HTTP disponibles (GET, POST, PUT, DELETE) y asigna quÃ© controlador maneja cada ruta. Además, aplica middlewares como passportCall y authorisation.
+
+**Controllers**
+Se encarga de manejar la lógica de negocio de cada recurso (usuarios, productos, carritos, sesiones). Recibe las solicitudes (req) y devuelve las respuestas (res). Solo se ocupa de â€œquÃ© hacerâ€, no accede a la base de datos directamente.
+
+**Services**
+Actúan como intermediarios entre los controladores y los DAO. Se encargan de ejecutar reglas específicas de negocio, y de pedirle datos a los DAO.
+
+**DAO (Data Access Object)**
+Se ocupa del acceso directo a la base de datos usando los modelos de Mongoose. Solo tiene métodos CRUD puros (find, findBy, create, update, delete). NO contiene lógica de negocio alguna.
+Esto permite una separación clara entre la lógica de negocio y el acceso a la base de datos. De esta forma, si se decidiera cambiar el sistema de persistencia, bastaría con modificar o crear nuevos DAOs sin necesidad de alterar lo controladores y las rutas de la aplicación. Esta estructura proporciona flexibilidad y escalabilidad al proyecto.
 
 [Volver al menú](#top)
 
@@ -322,13 +335,13 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │   └── database.config.js  // Lógica para manejar la conexíon a la BD
 │   └── passport.config.js  // Middleware de Passport que implementa las estrategias de registro y autorización
 │
-├── controllers/
+├── controllers/ Capa de controladores
 │   └── carts.controller.js  // Lógica de negocio para el carrito
 │   └── products.controller.js  // Lógica de negocio para los productos
 │   └── sessions.controller.js  // Lógica de negocio para las sesiones
 │   └── users.controller.js  // Lógica de negocio para los usuarios
 │
-├── dao/
+├── dao/ // Capa de DAO (Data Access Object)
 │   └── models
 │   │   └── user.model.js  // Modelo de datos de usuarios en MongoDB
 │   │   └── product.model.js  // Modelo de datos de productos en MongoDB
@@ -360,12 +373,17 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │       └── register.js  // Lógica de la página de registro de ususarios
 │       └── update.js  // Lógica de la página de actualización de producto
 │
-├── routes/
+├── routes/ // Capa de rutas
 │   └── carts.router.js  // Rutas relacionadas con el carrito
 │   └── sessions.router.js  // Rutas relacionadas con las sessiones (registro - login - current)
 │   └── products.router.js  // Rutas relacionadas con los productos
 │   └── users.router.js  // Rutas relacionadas con los usuarios
 │   └── viewsRouter.js  // Rutas relacionadas con las vistas handlebar
+│
+├── services/ // Capas de servicios
+│   └── carts.service.js  // Servicio para el carrito
+│   └── products.service.js  // Servicio para los productos
+│   └── users.service.js  // Servicio para los usuarios
 │
 ├── testData / // Carpeta que contiene datos de prueba para la aplicación
 │   └── products.json // Archivo JSON con datos de prueba de productos

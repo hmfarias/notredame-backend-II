@@ -1,8 +1,8 @@
 import passport from 'passport';
 import passportJWT from 'passport-jwt';
 import local from 'passport-local';
-import { UsersDAO as UsersDAO } from '../dao/UsersDAO.js';
-import { CartsDAO as CartsDAO } from '../dao/CartsDAO.js';
+import { UsersDAOMongo as UsersDAO } from '../dao/UsersDAOMongo.js';
+import { CartsDAOMongo as CartsDAO } from '../dao/CartsDAOMongo.js';
 import { comparePassword, hashPassword } from '../utils.js';
 import { config } from './config.js';
 

@@ -1,4 +1,4 @@
-import { ProductsDAO } from '../dao/ProductsDAO.js';
+import { productsService } from '../services/products.service.js';
 import { categoriesList, errorHandler, isValidObjectId } from '../utils.js';
 
 export class ProductsController {
@@ -63,7 +63,7 @@ export class ProductsController {
 			}
 
 			// query the database
-			const result = await ProductsDAO.get(filter, options);
+			const result = await productsService.getProducts(filter, options);
 
 			// If there are no products, return an empty array
 			if (!result || result.length === 0) {
@@ -133,7 +133,7 @@ export class ProductsController {
 					payload: null,
 				});
 			}
-			const product = await ProductsDAO.getBy({ _id: id });
+			const product = await productsService.getProductByFilter({ _id: id });
 
 			if (!product) {
 				return res.status(404).json({
@@ -213,7 +213,7 @@ export class ProductsController {
 				: 'https://prd.place/400?id=14';
 
 			// Check for duplicate title
-			const existingProduct = await ProductsDAO.getBy({ title });
+			const existingProduct = await productsService.getProductByFilter({ title });
 
 			if (existingProduct) {
 				return res.status(409).json({
@@ -235,7 +235,7 @@ export class ProductsController {
 			};
 
 			// Save the product
-			const newProduct = await ProductsDAO.create(product);
+			const newProduct = await productsService.createProduct(product);
 
 			return res.status(201).json({
 				error: false,
@@ -336,7 +336,7 @@ export class ProductsController {
 			}
 
 			// Try to update the product in the database
-			const updatedProduct = await ProductsDAO.update(id, updatedFields);
+			const updatedProduct = await productsService.updateProduct(id, updatedFields);
 
 			if (!updatedProduct) {
 				return res.status(400).json({
@@ -373,7 +373,7 @@ export class ProductsController {
 			}
 
 			// Delete the product
-			const deletedProduct = await ProductsDAO.delete(id);
+			const deletedProduct = await productsService.deleteProduct(id);
 
 			if (!deletedProduct) {
 				return res.status(404).json({

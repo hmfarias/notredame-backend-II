@@ -66,25 +66,28 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (selectedPrice && priceSelect) priceSelect.value = selectedPrice;
 	if (selectedLimit && limitInput) limitInput.value = selectedLimit;
 
+	// Save filters to localStorage
+	const saveFilters = () => {
+		const params = new URLSearchParams();
+		if (categorySelect?.value && categorySelect.value !== 'all')
+			params.append('category', categorySelect.value);
+		if (statusSelect?.value && statusSelect.value !== 'all')
+			params.append('status', statusSelect.value);
+		if (priceSelect?.value) params.append('priceOrder', priceSelect.value);
+		if (limitInput?.value) params.append('limit', limitInput.value);
+
+		localStorage.setItem('productsFilters', `?${params.toString()}`);
+	};
+
 	// Handle filter form submit
 	if (filtersForm) {
 		filtersForm.addEventListener('submit', (event) => {
 			event.preventDefault();
 
-			const category = categorySelect.value;
-			const status = statusSelect.value;
-			const price = priceSelect.value;
-			const limit = limitInput.value;
+			saveFilters(); // Save the filters when submitting
 
-			// Build query parameters
-			const params = new URLSearchParams();
-			if (category !== 'all') params.append('category', category);
-			if (status !== 'all') params.append('status', status);
-			if (price) params.append('priceOrder', price);
-			if (limit) params.append('limit', limit);
-
-			// Navigate with the filters applied
-			window.location.href = `/products?${params.toString()}`;
+			const filters = localStorage.getItem('productsFilters') || '';
+			window.location.href = `/products${filters}`;
 		});
 	}
 
@@ -96,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (priceSelect) priceSelect.value = 'asc';
 			if (limitInput) limitInput.value = '10';
 
+			localStorage.removeItem('productsFilters'); // Clean stored filters
 			window.location.href = '/products';
 		});
 	}
@@ -112,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				<h3>${product.title}</h3>
 				<p>Price: $${product.price}</p>
 				<a href='/product?id=${product._id}'>View Details</a>
-
 			`;
 			productsList.appendChild(li);
 		});
@@ -153,14 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
 				const url = link.getAttribute('data-url');
 
 				try {
-					// Make the request directly to the API
 					const response = await fetch(`/api${url}`);
 					const data = await response.json();
 					renderProducts(data.payload.products);
 					renderPagination(data.payload);
 
-					// Optional: update the browser's address bar without reloading
 					window.history.pushState({}, '', url);
+
+					// Save the filters again
+					const filtersFromUrl = new URLSearchParams(url.split('?')[1]);
+					localStorage.setItem('productsFilters', `?${filtersFromUrl.toString()}`);
 				} catch (error) {
 					console.error('❌ Error fetching paginated data:', error);
 				}
@@ -195,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	};
 
-	// Initial load: fetch filtered products via API if needed
+	// Initial load: fetch filtered products via API
 	const init = async () => {
 		const apiUrl = `/api/products${window.location.search}`;
 		try {
@@ -208,5 +213,5 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	};
 
-	init(); // run on load
+	init();
 });

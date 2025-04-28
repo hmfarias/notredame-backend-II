@@ -21,6 +21,17 @@ router.get(
 	UsersController.getUser
 );
 
+//* CREATE A USER **********************************************/
+// replaced by Passport Strategy
+
+//* UPDATE A USER **********************************************/
+router.put(
+	'/:uid',
+	passportCall('current'),
+	authorisation(['public']),
+	UsersController.updateUser
+);
+
 //* DELETE A USER **********************************************/
 router.delete(
 	'/:uid',
