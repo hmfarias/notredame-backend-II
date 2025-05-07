@@ -42,7 +42,7 @@ const renderCart = (cart) => {
 	cart.products.forEach((item) => {
 		html += `
 			<div class='cart-item'>
-				<img src='${item.product.thumbnail}' alt='${item.product.title}' />
+				<img src="${item.product.thumbnail}" alt="${item.product.title}" />
 				<div class='cart-item-details'>
 					<h3 class='cart-item-title'>${item.product.title}</h3>
 					<div class='quantity-buttons'>

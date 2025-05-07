@@ -1,3 +1,5 @@
+import { checkSessionValidity } from './service.js'; //POSIBLE MODIFICACION PARA ENTREGA si se pide que deba estar logueado para generar un carrito
+
 // Extract product ID from URL
 const getProductIdFromURL = () => {
 	const params = new URLSearchParams(window.location.search);
@@ -20,10 +22,9 @@ const getUserFromLocalStorage = () => {
 
 // Create a cart if needed and add the product to it -------------------
 const createCartAndAddProduct = async (productId) => {
+	await checkSessionValidity(); //POSIBLE MODIFICACION PARA ENTREGA si se pide que deba estar logueado para generar un carrito
 	let user = getUserFromLocalStorage();
-	console.log('✅ ~ createCartAndAddProduct ~ user:', user);
 	let cartId = user?.cart?._id || getCartIdFromStorage();
-	console.log('✅ ~ createCartAndAddProduct ~ cartId:', cartId);
 
 	if (!cartId) {
 		try {
@@ -65,6 +66,7 @@ const createCartAndAddProduct = async (productId) => {
 
 // Add product to cart ------------------------------------------------
 const addProductToCart = async (cartId, productId) => {
+	await checkSessionValidity(); //POSIBLE MODIFICACION PARA ENTREGA si se pide que deba estar logueado para generar un carrito
 	try {
 		const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
 			method: 'POST',
@@ -89,6 +91,7 @@ const addProductToCart = async (cartId, productId) => {
 
 // Remove or decrease product quantity from cart ----------------------------
 const removeProductFromCart = async (cartId, productId) => {
+	await checkSessionValidity(); //POSIBLE MODIFICACION PARA ENTREGA si se pide que deba estar logueado para generar un carrito
 	try {
 		const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
 			method: 'DELETE',
@@ -127,6 +130,7 @@ const removeProductFromCart = async (cartId, productId) => {
 
 // Delete product ------------------------------------------------------------
 const deleteProduct = async (productId) => {
+	await checkSessionValidity(); //POSIBLE MODIFICACION PARA ENTREGA
 	try {
 		const response = await fetch(`/api/products/${productId}`, {
 			method: 'DELETE',

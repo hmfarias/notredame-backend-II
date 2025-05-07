@@ -16,16 +16,10 @@ export class UsersController {
 				});
 			}
 
-			// Remove the password field before sending
-			const safeUsers = users.map((user) => {
-				const { password, ...safeUser } = user;
-				return safeUser;
-			});
-
 			return res.status(200).json({
 				error: false,
 				message: 'Users retrieved successfully',
-				payload: { users: safeUsers },
+				payload: { users },
 			});
 		} catch (error) {
 			console.error('❌ Error fetching users:', error.message);
@@ -57,13 +51,10 @@ export class UsersController {
 				});
 			}
 
-			// Remove sensitive fields
-			const { password, ...safeUser } = user;
-
 			return res.status(200).json({
 				error: false,
 				message: 'User retrieved successfully',
-				payload: { user: safeUser },
+				payload: { user },
 			});
 		} catch (error) {
 			console.error('❌ Error fetching the user:', error.message);
@@ -156,13 +147,10 @@ export class UsersController {
 				});
 			}
 
-			// Return the updated user without password
-			const { password: _, ...safeUser } = updatedUser;
-
 			return res.status(200).json({
 				error: false,
 				message: 'User updated successfully',
-				payload: { user: safeUser },
+				payload: { user: updatedUser },
 			});
 		} catch (error) {
 			console.error('❌ Error updating user:', error.message);
@@ -199,12 +187,12 @@ export class UsersController {
 			await usersService.deleteUser(userId);
 
 			// Return the user that was deleted (excluding sensitive data)
-			const { password, ...safeUser } = user;
+			//const { password, ...safeUser } = user;
 
 			return res.status(200).json({
 				error: false,
 				message: 'User deleted successfully',
-				payload: { user: safeUser },
+				payload: { user },
 			});
 		} catch (error) {
 			console.error('❌ Error deleting user:', error.message);

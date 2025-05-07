@@ -20,11 +20,9 @@ export class UsersDAOMongo {
 
 	//* Update a user by ID ***********************/
 	static async update(userId, user) {
-		const updatedUser = await userModel.findOneAndUpdate(
-			{ _id: userId },
-			{ $set: user },
-			{ new: true, lean: true }
-		);
+		const updatedUser = await userModel
+			.findOneAndUpdate({ _id: userId }, { $set: user }, { new: true, lean: true })
+			.populate('cart', '_id totalCart');
 		return updatedUser;
 	}
 

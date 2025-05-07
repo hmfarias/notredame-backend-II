@@ -1,4 +1,5 @@
 import { UsersDAOMongo as UsersDAO } from '../dao/UsersDAOMongo.js';
+import { UsersDTO } from '../dto/users.dto.js';
 
 class UsersService {
 	constructor(dao) {
@@ -6,19 +7,22 @@ class UsersService {
 	}
 	//* Get all users ********************************/
 	async getUsers() {
-		return await this.usersDAO.getAll();
+		const users = await this.usersDAO.getAll();
+		return users ? UsersDTO.formatUserOutput(users) : null;
 	}
 
 	//* Get a user by filter **************************/
 	async getUser(filter) {
-		return await this.usersDAO.getBy(filter);
+		const user = await this.usersDAO.getBy(filter);
+		return user ? UsersDTO.formatUserOutput(user) : null;
 	}
 
 	//* Create a user *******************************/ // Replaced by Passport Strategy
 
 	//* Update a user by id **************************/
 	async updateUser(id, user) {
-		return await this.usersDAO.update(id, user);
+		const userUpdated = await this.usersDAO.update(id, user);
+		return userUpdated ? UsersDTO.formatUserOutput(userUpdated) : null;
 	}
 
 	//* Delete a user by ID **************************/

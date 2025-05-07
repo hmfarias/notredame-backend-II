@@ -48,6 +48,7 @@
   - 🛑 [Manejo de errores inesperados - LOG](#erroresinesperados)
   - 🔐 [Uso de Passport Strategies](#passport)
   - 🛡️ [Flujo de seguridad en las rutas](#flujoseguridad)
+  - 🛡️ [Data Transfer Object (DTO)](#dto)
 - 🧑‍💼 [Gestión de Usuarios](#usuarios)
   - 📥 [Método GET en Current](#getcurrent)
 - 🛍️ [Gestión de Productos](#productos)
@@ -592,6 +593,31 @@ El **router** solo **organiza el flujo de middlewares** y delega en los controla
 Los **controladores aplican lógica de negocio** y delegan en los Servicios el acceso a los DAOs,
 Los **DAOs manejan directamente la comunicación con la base de datos**.
 Esto garantiza un diseño en capas, ordenado y fácil de escalar.
+
+[Volver al menú](#top)
+
+<hr>
+
+<a name="dto"></a>
+
+## 🧩 Data Transfer Object (DTO)
+
+Este proyecto implementa el patrón DTO (Data Transfer Object) para garantizar una estructura consistente en la salida de datos enviada desde el backend al frontend, y para proteger información sensible como contraseñas.
+
+### 📦 ¿Qué hace el DTO?
+
+- **Filtra datos sensibles**: Elimina campos como `password` antes de devolver los datos.
+- **Normaliza valores**: Convierte `first_name` y `last_name` a mayúsculas, y `email` a minúsculas para mantener consistencia.
+- **Unifica la lógica de presentación**: Aplica el mismo formato tanto a usuarios individuales como a listas de usuarios.
+
+### 🛠 Cómo se usa
+
+El DTO se utiliza desde la capa `Service`. Por ejemplo, en `UsersService`:
+
+```js
+const users = await this.usersDAO.getAll();
+return UsersDTO.formatUserOutput(users); // Puede ser un solo usuario o un array
+```
 
 [Volver al menú](#top)
 

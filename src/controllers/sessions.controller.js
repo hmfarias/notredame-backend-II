@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
 import { errorHandler } from '../utils.js';
+import { UsersDTO } from '../dto/users.dto.js';
 
 export class SessionsController {
 	//* Register - Local Strategy *************************************************
@@ -14,9 +15,10 @@ export class SessionsController {
 					payload: null,
 				});
 			}
+			const safeUser = UsersDTO.formatUserOutput(user);
 
 			// Destructure to exclude sensitive fields like password
-			const { password, ...safeUser } = user;
+			//const { password, ...safeUser } = user;
 
 			return res.status(201).json({
 				error: false,
