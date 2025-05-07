@@ -48,7 +48,7 @@
   - 🛑 [Manejo de errores inesperados - LOG](#erroresinesperados)
   - 🔐 [Uso de Passport Strategies](#passport)
   - 🛡️ [Flujo de seguridad en las rutas](#flujoseguridad)
-  - 🛡️ [Data Transfer Object (DTO)](#dto)
+  - 🔄 [Data Transfer Object (DTO)](#dto)
 - 🧑‍💼 [Gestión de Usuarios](#usuarios)
   - 📥 [Método GET en Current](#getcurrent)
 - 🛍️ [Gestión de Productos](#productos)
@@ -600,7 +600,7 @@ Esto garantiza un diseño en capas, ordenado y fácil de escalar.
 
 <a name="dto"></a>
 
-## 🧩 Data Transfer Object (DTO)
+## 🔄 Data Transfer Object (DTO)
 
 Este proyecto implementa el patrón DTO (Data Transfer Object) para garantizar una estructura consistente en la salida de datos enviada desde el backend al frontend, y para proteger información sensible como contraseñas.
 
@@ -618,6 +618,22 @@ El DTO se utiliza desde la capa `Service`. Por ejemplo, en `UsersService`:
 const users = await this.usersDAO.getAll();
 return UsersDTO.formatUserOutput(users); // Puede ser un solo usuario o un array
 ```
+
+Internamente, se aplica la función formatUserOutput() a cada usuario (o al único objeto), retornando sólo los campos relevantes y normalizados.
+
+✅ Ejemplo de salida del DTO
+
+```JSON
+{
+  "first_name": "JUAN",
+  "last_name": "PÉREZ",
+  "email": "juan.perez@example.com",
+  "age": 30,
+  "role": "user"
+}
+```
+
+🔒 El campo password ha sido removido por seguridad.
 
 [Volver al menú](#top)
 

@@ -5,27 +5,27 @@ class UsersService {
 	constructor(dao) {
 		this.usersDAO = dao;
 	}
-	//* Get all users ********************************/
+	//* Get all users --------------------------------*/
 	async getUsers() {
 		const users = await this.usersDAO.getAll();
 		return users ? UsersDTO.formatUserOutput(users) : null;
 	}
 
-	//* Get a user by filter **************************/
+	//* Get a user by filter --------------------------*/
 	async getUser(filter) {
 		const user = await this.usersDAO.getBy(filter);
 		return user ? UsersDTO.formatUserOutput(user) : null;
 	}
 
-	//* Create a user *******************************/ // Replaced by Passport Strategy
+	//* Create a user ------------------------------- // Replaced by Passport Strategy
 
-	//* Update a user by id **************************/
+	//* Update a user by id ----------------------------*/
 	async updateUser(id, user) {
 		const userUpdated = await this.usersDAO.update(id, user);
 		return userUpdated ? UsersDTO.formatUserOutput(userUpdated) : null;
 	}
 
-	//* Delete a user by ID **************************/
+	//* Delete a user by ID ----------------------------*/
 	async deleteUser(userId) {
 		return await this.usersDAO.delete(userId);
 	}
