@@ -12,11 +12,11 @@ export class UsersDAOMongo {
 		return await userModel.findOne(filter).lean();
 	}
 
-	//* Create a user ----------------------------- Replaced by Passport Strategy
-	// static async create(user) {
-	// 	const newUser = await userModel.create(user);
-	// 	return newUser.toJSON();
-	// }
+	//* Create a user -----------------------------
+	static async create(user) {
+		const newUser = await userModel.create(user);
+		return newUser.toJSON();
+	}
 
 	//* Update a user by ID -----------------------
 	static async update(userId, user) {

@@ -14,33 +14,46 @@ router.get(
 );
 
 //* GET A CART BY ID ********************************************/
-router.get('/:cid', CartsController.getCart);
+router.get('/:cid', passportCall('current'), CartsController.getCart);
 
 //* CREATE a new empty cart *************************************/
-router.post('/', CartsController.createCart);
+router.post('/', passportCall('current'), CartsController.createCart);
 
 //* ADD A PRODUCT IN AN EXISTING CART ***************************/
-router.post('/:cid/product/:pid', CartsController.addProductToCart);
+router.post(
+	'/:cid/product/:pid',
+	passportCall('current'),
+	CartsController.addProductToCart
+);
 
 //* REMOVE A PRODUCT FROM A CART ********************************/
-router.delete('/:cid/product/:pid', CartsController.removeProductFromCart);
+router.delete(
+	'/:cid/product/:pid',
+	passportCall('current'),
+	CartsController.removeProductFromCart
+);
 
 //* DELETE THE ENTIRE PRODUCT FROM AN EXISTING CART *************/
-router.delete('/:cid/product/:pid/delete', CartsController.deleteProductFromCart);
+router.delete(
+	'/:cid/product/:pid/delete',
+	passportCall('current'),
+	CartsController.deleteProductFromCart
+);
 
 //* DELETE A COMPLETE CART **************************************/
-router.delete('/:cid', CartsController.deleteCart);
+router.delete('/:cid', passportCall('current'), CartsController.deleteCart);
 
 //* EMPTY A CART ************************************************/
-router.delete('/empty/:cid', CartsController.emptyCart);
+router.delete('/empty/:cid', passportCall('current'), CartsController.emptyCart);
 
 //* MERGE TWO CARTS *********************************************/
 // This endpoint merges two carts by combining their products and quantities
 // and then deletes the source cart.
 // It assumes that the source cart's products will be merged into the target cart.
-router.post(
-	'/merge',
-	passportCall('current'),
-	authorisation(['public']),
-	CartsController.mergeCarts
-);
+router.post('/merge', passportCall('current'), CartsController.mergeCarts);
+
+//* ADD MULTIPLE PRODUCTS TO CART - SENDIND [{product, quantity}] BY BODY **********/
+router.put('/:cid', passportCall('current'), CartsController.addProductsToCart);
+
+//* PURCHASE A CART *********************************************/
+router.post('/:cid/purchase', passportCall('current'), CartsController.purchaseCart);

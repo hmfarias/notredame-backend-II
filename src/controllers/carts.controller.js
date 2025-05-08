@@ -1,5 +1,6 @@
 import { cartsService } from '../services/carts.service.js';
-import { ProductsDAOMongo as ProductsDAO } from '../dao/ProductsDAOMongo.js';
+import { productsService } from '../services/products.service.js';
+import { ticketsService } from '../services/tickets.service.js';
 import { errorHandler, isValidObjectId, roundToTwoDecimals } from '../utils.js';
 
 export class CartsController {
@@ -50,28 +51,10 @@ export class CartsController {
 				});
 			}
 
-			// TotalProduct Recalculate for each product in case the prices of a product change
-			const updatedProducts = cart.products.map((item) => {
-				const totalProduct = roundToTwoDecimals(item.quantity * item.product.price);
-				return { ...item, totalProduct };
-			});
-
-			// Calculate the total cart by adding all the totalproduct in case the prices of a product change // Round two decimals
-			const totalCart = roundToTwoDecimals(
-				updatedProducts.reduce((acc, item) => acc + item.totalProduct, 0)
-			);
-
-			// Create the formatted cart with updated values
-			const formattedCart = {
-				...cart,
-				products: updatedProducts,
-				totalCart: totalCart,
-			};
-
 			return res.status(200).json({
 				error: false,
 				message: `Cart fetched successfully`,
-				payload: { cart: formattedCart },
+				payload: { cart },
 			});
 		} catch (error) {
 			console.error('❌ Error fetching the cart:', error.message);
@@ -106,6 +89,7 @@ export class CartsController {
 		try {
 			const cartId = req.params.cid;
 			const productId = req.params.pid;
+
 			// verify that the ID has valid format
 			if (!isValidObjectId(cartId)) {
 				return res.status(400).json({
@@ -123,7 +107,7 @@ export class CartsController {
 			}
 
 			// Find the product
-			const product = await ProductsDAO.getBy({ _id: productId });
+			const product = await productsService.getProductByFilter({ _id: productId });
 
 			// If the product is not found, return an error
 			if (!product) {
@@ -217,7 +201,7 @@ export class CartsController {
 			}
 
 			// Find the product
-			const product = await ProductsDAO.getBy({ _id: productId });
+			const product = await productsService.getProductByFilter({ _id: productId });
 
 			// If the product is not found, return an error
 			if (!product) {
@@ -271,6 +255,133 @@ export class CartsController {
 		}
 	}
 
+	//* ADD MULTIPLE PRODUCTS TO CART - SENDIND [{product, quantity}] BY BODY **********/
+	static async addProductsToCart(req, res) {
+		try {
+			const cartId = req.params.cid;
+			const { products: productsToAdd } = req.body; // [{ productId, quantity }, ...]
+
+			// Validate cart ID
+			if (!isValidObjectId(cartId)) {
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid cart ID format',
+					payload: null,
+				});
+			}
+
+			// Validate body structure
+			if (!Array.isArray(productsToAdd) || productsToAdd.length === 0) {
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid or empty product list',
+					payload: null,
+				});
+			}
+
+			// Get the cart
+			const cart = await cartsService.getCartByFilter({ _id: cartId });
+			if (!cart) {
+				return res.status(404).json({
+					error: true,
+					message: 'Cart not found',
+					payload: null,
+				});
+			}
+
+			const notAdded = [];
+
+			for (const item of productsToAdd) {
+				const { product: productId, quantity } = item;
+
+				// Validate productId and quantity
+				if (!isValidObjectId(productId)) {
+					notAdded.push({
+						productId,
+						quantity,
+						reason: 'Invalid product ID',
+					});
+					continue;
+				}
+				// Validate quantity
+				const parsedQuantity = parseInt(quantity, 10);
+
+				if (
+					typeof quantity === 'undefined' ||
+					quantity === null ||
+					isNaN(parsedQuantity) ||
+					parsedQuantity <= 0
+				) {
+					notAdded.push({
+						productId,
+						quantity,
+						reason: 'Quantity must be a valid positive number',
+					});
+					continue;
+				}
+
+				// Fetch product
+				const product = await productsService.getProductByFilter({ _id: productId });
+				if (!product) {
+					notAdded.push({
+						productId,
+						quantity,
+						reason: 'Product not found',
+					});
+					continue;
+				}
+
+				// Check if product already in cart
+				const existingProduct = cart.products.find(
+					(p) => String(p.product._id) === String(productId)
+				);
+
+				if (existingProduct) {
+					existingProduct.quantity += quantity;
+					existingProduct.totalProduct = roundToTwoDecimals(
+						existingProduct.quantity * product.price
+					);
+				} else {
+					cart.products.push({
+						product: product._id,
+						quantity,
+						totalProduct: roundToTwoDecimals(quantity * product.price),
+					});
+				}
+			}
+
+			// Recalculate totalCart
+			cart.totalCart = roundToTwoDecimals(
+				cart.products.reduce((acc, item) => acc + item.totalProduct, 0)
+			);
+
+			const updatedCart = await cartsService.updateCart(cart);
+
+			// Return partial success if some products failed
+			if (notAdded.length > 0) {
+				return res.status(207).json({
+					error: true,
+					message: 'Some products could not be added to the cart',
+					payload: {
+						cart: updatedCart,
+						notAdded,
+					},
+				});
+			}
+
+			return res.status(200).json({
+				error: false,
+				message: 'All products successfully added to cart',
+				payload: {
+					cart: updatedCart,
+				},
+			});
+		} catch (error) {
+			console.error('❌ Error adding multiple products to cart:', error.message);
+			errorHandler(error, res);
+		}
+	}
+
 	//* DELETE THE ENTIRE PRODUCT FROM AN EXISTING CART ************************/
 	static async deleteProductFromCart(req, res) {
 		try {
@@ -306,7 +417,7 @@ export class CartsController {
 			}
 
 			// Find the product
-			const product = await ProductsDAO.getBy({ _id: productId });
+			const product = await productsService.getProductByFilter({ _id: productId });
 
 			// If the product is not found, return an error
 			if (!product) {
@@ -496,6 +607,106 @@ export class CartsController {
 			});
 		} catch (error) {
 			console.error('Error deleting the cart:', error.message);
+			errorHandler(error, res);
+		}
+	}
+
+	//* PURCHASE A CART *********************************************/
+	static async purchaseCart(req, res) {
+		try {
+			const cartId = req.params.cid;
+			const user = req.user;
+
+			// Validate cart ID
+			if (!isValidObjectId(cartId)) {
+				return res.status(400).json({
+					error: true,
+					message: 'Invalid cart ID format',
+					payload: null,
+				});
+			}
+
+			// Fetch the cart
+			const cart = await cartsService.getCartByFilter({ _id: cartId });
+
+			if (!cart) {
+				return res.status(404).json({
+					error: true,
+					message: 'Cart not found',
+					payload: null,
+				});
+			}
+
+			if (cart.products.length === 0) {
+				return res.status(404).json({
+					error: true,
+					message: 'Cart is empty',
+					payload: null,
+				});
+			}
+
+			let totalAmount = 0;
+			const productsPurchased = [];
+			const productsNotPurchased = [];
+
+			for (const item of cart.products) {
+				const product = await productsService.getProductByFilter({
+					_id: item.product._id,
+				});
+
+				if (!product || product.stock < item.quantity) {
+					productsNotPurchased.push(item);
+					continue;
+				}
+
+				// Update product stock
+				const newStock = product.stock - item.quantity;
+				await productsService.updateProduct(product._id, { stock: newStock });
+
+				const subtotal = roundToTwoDecimals(item.quantity * item.product.price);
+				totalAmount += roundToTwoDecimals(subtotal);
+
+				productsPurchased.push({
+					product: item.product._id,
+					quantity: item.quantity,
+					subtotal,
+				});
+			}
+
+			// Create ticket only if there are items purchased
+			let ticket = null;
+			if (productsPurchased.length > 0) {
+				ticket = await ticketsService.createTicket({
+					amount: roundToTwoDecimals(totalAmount),
+					purchaser: user.email.toLowerCase(),
+					products: productsPurchased,
+				});
+			}
+
+			// Update the cart with only the products that could not be purchased
+			const updatedCart = await cartsService.updateCart({
+				_id: cart._id,
+				products: productsNotPurchased,
+				totalCart: roundToTwoDecimals(
+					productsNotPurchased.reduce(
+						(acc, item) => acc + item.quantity * item.product.price,
+						0
+					)
+				),
+			});
+
+			// Response
+			return res.status(200).json({
+				error: false,
+				message: 'Purchase processed successfully',
+				payload: {
+					ticket: ticket || null,
+					notProcessed: productsNotPurchased.map((p) => p.product._id),
+					cart: updatedCart,
+				},
+			});
+		} catch (error) {
+			console.error('❌ Error processing purchase:', error.message);
 			errorHandler(error, res);
 		}
 	}

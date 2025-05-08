@@ -15,7 +15,7 @@ router.post('/login', passportCall('login'), SessionsController.login);
 router.get('/current', passportCall('current'), SessionsController.current);
 
 //* Logout - ******************************************************************
-router.post('/logout', SessionsController.logout);
+router.get('/logout', passportCall('current'), SessionsController.logout);
 
 //* Error -  *****************************************************************
 router.get('/error', SessionsController.error);

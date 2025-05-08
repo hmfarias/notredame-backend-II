@@ -17,9 +17,6 @@ export class SessionsController {
 			}
 			const safeUser = UsersDTO.formatUserOutput(user);
 
-			// Destructure to exclude sensitive fields like password
-			//const { password, ...safeUser } = user;
-
 			return res.status(201).json({
 				error: false,
 				message: 'User created successfully',
@@ -43,8 +40,7 @@ export class SessionsController {
 				});
 			}
 
-			// Safely extract user without password
-			const { password, ...safeUser } = user;
+			const safeUser = UsersDTO.formatUserOutput(user);
 
 			// Generate JWT token
 			const token = jwt.sign(safeUser, config.SECRET_KEY, {
@@ -80,23 +76,7 @@ export class SessionsController {
 			});
 		}
 
-		// remove password field
-		const { password, ...safeUser } = user;
-
-		// clean cart structure
-		const safeCart = safeUser.cart
-			? {
-					_id: safeUser.cart._id,
-					totalCart: safeUser.cart.totalCart,
-					products:
-						safeUser.cart.products?.map((p) => ({
-							_id: p?.product?._id,
-							title: p?.product?.title,
-							price: p?.product?.price,
-							thumbnail: p?.product?.thumbnail,
-						})) ?? [],
-			  }
-			: null;
+		const safeUser = UsersDTO.formatUserOutput(user);
 
 		return res.status(200).json({
 			error: false,
@@ -104,7 +84,7 @@ export class SessionsController {
 			payload: {
 				user: {
 					...safeUser,
-					cart: safeCart,
+					cart: safeUser.cart,
 				},
 			},
 		});

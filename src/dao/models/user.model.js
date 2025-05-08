@@ -23,7 +23,7 @@ const userSchema = new Schema(
 
 // Populate cart field automatically when finding users
 userSchema.pre(['find', 'findOne'], function (next) {
-	this.populate('cart', '_id totalCart');
+	this.populate('cart', '_id totalCart products');
 	next();
 });
 
