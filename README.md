@@ -47,7 +47,7 @@
   - 🗂️ [Estructura de archivos](#estructura)
   - 🛑 [Manejo de errores inesperados - LOG](#erroresinesperados)
   - 🔐 [Uso de Passport Strategies](#passport)
-  - 🛡️ [Flujo de seguridad en las rutas](#flujoseguridad)
+  - 🛡️ [Flujo de seguridad y Arquitectura por capas](#flujoseguridad)
   - 🔄 [Data Transfer Object (DTO)](#dto)
 - 🧑‍💼 [Gestión de Usuarios](#usuarios)
   - 📥 [Método GET en Current](#getcurrent)
@@ -541,59 +541,101 @@ Esto garantiza que:
 
 <a name="flujoseguridad"></a>
 
-### 🛡️ Flujo de Seguridad en las Rutas
+### 🛡️ Flujo de Seguridad y Arquitectura por Capas
 
-Las rutas en la aplicación siguen un proceso estructurado de control de acceso antes de ejecutar su funcionalidad principal:
+La aplicación sigue una arquitectura en capas bien definida y un flujo de seguridad estructurado que garantiza separación de responsabilidades, escalabilidad y facilidad de mantenimiento.
 
-1. 🧩 Middleware de Autenticación (passportCall)
+## 🛡️ Flujo de Seguridad y Arquitectura por Capas
 
-   - Verifica si el usuario posee un token válido (JWT).
-   - Si no es válido o no existe, la petición se rechaza con un error 401 Unauthorized.
-   - Si es válido, la petición avanza.
+La aplicación sigue una arquitectura en capas bien definida y un flujo de seguridad estructurado que garantiza separación de responsabilidades, escalabilidad y facilidad de mantenimiento.
 
-2. 🔒 Middleware de Autorización (authorisation)
+---
 
-   - Verifica si el usuario autenticado posee los permisos necesarios (por ejemplo, rol admin).
-   - Si no cumple con los permisos, la petición se rechaza con un error 403 Forbidden.
-   - Si cumple, la petición continúa.
+### 🛣️ Routes (Rutas)
 
-3. ⚙️ Controlador (Controller)
+- Definen el **punto de entrada** para cada operación del sistema.
+- No contienen lógica de negocio.
+- Solo **organizan los middlewares** y delegan la ejecución al controlador correspondiente.
+- Ejemplo:
+  ```js
+  router.get(
+  	'/users',
+  	passportCall('current'),
+  	authorisation(['admin']),
+  	UsersController.getUsers
+  );
+  ```
 
-   - Ejecuta la lógica principal de la ruta (por ejemplo, obtener usuarios, crear productos, actualizar carritos, etc.).
-   - Devuelve la respuesta en formato JSON (application/json).
+### 🧩 Middleware de Autenticación (`passportCall`)
 
-4. 🗄️ Acceso a Datos (DAO - Data Access Object)
+- Verifica si el usuario posee un **token JWT válido**.
+- Si no es válido o no existe, la petición es rechazada con un **error 401 Unauthorized**.
+- Si el token es válido, el usuario se adjunta a `req.user` y la solicitud continúa.
 
-   - Interactúa directamente con la base de datos (MongoDB en este caso).
-   - Realiza operaciones CRUD (Crear, Leer, Actualizar, Eliminar) sin que el controlador se preocupe de los detalles de la persistencia.
+### 🔒 Middleware de Autorización (`authorisation`)
 
-5. 📦 Respuesta JSON
-   - Finalmente, se envía al cliente una respuesta estandarizada en formato application/json, indicando éxito o error de la operación.
+- Verifica si el usuario autenticado posee los **permisos necesarios** (por ejemplo, rol `admin`).
+- Si no cumple con los permisos, se devuelve un **error 403 Forbidden**.
+- Si cumple, la solicitud sigue su flujo.
+
+### ⚙️ Controlador (Controller)
+
+- Ejecuta la **lógica de negocio de alto nivel** específica de la ruta.
+- Valida datos y define el flujo de ejecución.
+- Delega tareas específicas a la **capa de servicios**.
+- Retorna respuestas en formato **JSON**.
+
+### 🧠 Servicio (Service)
+
+- Normaliza el nombre de los métodos de la capa DAO.
+- Interactúa con la **capa DAO** para acceder a la base de datos.
+- Permite mantener los controladores limpios y enfocados solo en coordinar el flujo.
+
+### 🗄️ DAO (Data Access Object)
+
+- Encapsula la lógica para interactuar con la base de datos (**MongoDB**).
+- Expone métodos como `getById`, `create`, `update`, `delete`.
+- Permite cambiar la tecnología de persistencia sin afectar capas superiores.
+
+### 📦 Respuesta JSON
+
+- La respuesta final es enviada al cliente en **formato `application/json`**.
+- Contiene los siguientes campos estándar:
+  ```json
+  {
+    "error": false,
+    "message": "Operación exitosa",
+    "payload": { ...datos }
+  }
+  ```
 
 **Esquema:**
 
-```
 Request (usuario)
-   ↓
+↓
 Router
-   ↓
+↓
 passportCall('current') ✅
-   ↓
+↓
 authorisation(['admin']) ✅
-   ↓
+↓
 Controller (lógica de negocio)
-   ↓
+↓
+Service (interacción con DAO)
+↓
 DAO (acceso a la base de datos)
-   ↓
-Response (JSON)
-```
+↓
+Response (JSON - application/json)
+
+---
 
 ✍️ Nota
 
-El **router** solo **organiza el flujo de middlewares** y delega en los controladores las operaciones de negocio.
-Los **controladores aplican lógica de negocio** y delegan en los Servicios el acceso a los DAOs,
-Los **DAOs manejan directamente la comunicación con la base de datos**.
-Esto garantiza un diseño en capas, ordenado y fácil de escalar.
+El **Router** solo organiza el flujo de middlewares y delega en los **controladores** las operaciones de negocio.
+Los controladores aplican la lógica de flujo y delegan en los **servicios** la lógica reutilizable .
+Los **servicios** se encargan de interactuar con los **DAOs**, que a su vez manejan la persistencia en la base de datos.
+
+Esto garantiza una arquitectura limpia, escalable y fácil de mantener.
 
 [Volver al menú](#top)
 
@@ -601,7 +643,7 @@ Esto garantiza un diseño en capas, ordenado y fácil de escalar.
 
 <a name="dto"></a>
 
-## 🔄 Data Transfer Object (DTO)
+## 🔄 Data Transfer Object (DTO) - Para USERs
 
 Este proyecto implementa el patrón DTO (Data Transfer Object) para garantizar una estructura consistente en la salida de datos enviada desde el backend al frontend, y para proteger información sensible como contraseñas.
 
@@ -829,6 +871,8 @@ El frontend está basado en Handlebars como motor de plantillas y JavaScript mod
 - **DELETE /api/carts/:cid** → Eliminar todo el carrito (solo para carritos en LocalStorage).
 - **POST /api/carts/merge** → Fusionar dos carritos (ej: localStorage + carrito del usuario autenticado).
 - **PUT /api/carts/:cid/empty** → Vaciar carrito sin eliminarlo (para carritos asociados al usuario).
+- **PUT /api/carts/:cid** → Agregar multiples productos en un carrito (enviando [{product, quantity}] en el body ).
+- **POST /api/carts/:cid/purchase** → hace la compra del carrito.
 
 **Middleware y Validaciones:**
 
