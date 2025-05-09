@@ -377,10 +377,12 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 ├── dao/ // Capa de DAO (Data Access Object)
 │   └── models
 │   │   └── user.model.js  // Modelo de datos de usuarios en MongoDB
+│   │   └── tiquet.model.js  // Modelo de datos de tiquets en MongoDB`
 │   │   └── product.model.js  // Modelo de datos de productos en MongoDB
 │   │   └── cart.model.js // Modelo de datos de carritos en MongoDB
 │   └── CartsDAO.js  // Lógica de interacción con la base de datos de carritos
 │   └── ProductsDAO.js  // Lógica de interacción con la base de datos de productos
+│   └── TiquetsDAO.js  // Lógica de interacción con la base de datos de tiquets
 │   └── UsersDAO.js  // Lógica de interacción con la base de datos de usuarios
 │
 ├── logs/ // Archivos de registro de errores inesperados en la aplicación - Inicialmente no existe y se crea automáticamente al ocurrir el primer error inesperado
@@ -416,6 +418,7 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 ├── services/ // Capas de servicios
 │   └── carts.service.js  // Servicio para el carrito
 │   └── products.service.js  // Servicio para los productos
+│   └── tiquets.service.js  // Servicio para los tiquets
 │   └── users.service.js  // Servicio para los usuarios
 │
 ├── testData / // Carpeta que contiene datos de prueba para la aplicación
