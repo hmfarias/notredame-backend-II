@@ -310,12 +310,12 @@ export class CartsController {
 					typeof quantity === 'undefined' ||
 					quantity === null ||
 					isNaN(parsedQuantity) ||
-					parsedQuantity <= 0
+					parsedQuantity < 0
 				) {
 					notAdded.push({
 						productId,
 						quantity,
-						reason: 'Quantity must be a valid positive number',
+						reason: 'Quantity must be a valid non-negative number',
 					});
 					continue;
 				}
@@ -336,16 +336,26 @@ export class CartsController {
 					(p) => String(p.product._id) === String(productId)
 				);
 
+				// If quantity is 0 and product exists, remove it
+				if (parsedQuantity === 0 && existingProduct) {
+					cart.products = cart.products.filter(
+						(p) => String(p.product._id) !== String(productId)
+					);
+					continue;
+				}
+
+				// If product exists, increase quantity
 				if (existingProduct) {
-					existingProduct.quantity += quantity;
+					existingProduct.quantity += parsedQuantity;
 					existingProduct.totalProduct = roundToTwoDecimals(
 						existingProduct.quantity * product.price
 					);
-				} else {
+				} else if (parsedQuantity > 0) {
+					// Add product to cart
 					cart.products.push({
 						product: product._id,
-						quantity,
-						totalProduct: roundToTwoDecimals(quantity * product.price),
+						quantity: parsedQuantity,
+						totalProduct: roundToTwoDecimals(parsedQuantity * product.price),
 					});
 				}
 			}
@@ -695,13 +705,37 @@ export class CartsController {
 				),
 			});
 
-			// Response
+			// Response if no products were purchased
+			if (productsPurchased.length === 0) {
+				return res.status(422).json({
+					error: true,
+					message: 'No products were processed',
+					payload: {
+						ticket: null,
+						notProcessed: productsNotPurchased.map((p) => ({
+							productId: p.product._id,
+							quantity: p.quantity,
+							reason: 'Insufficient stock',
+						})),
+						cart: updatedCart,
+					},
+				});
+			}
+
+			// Response if products were purchased
 			return res.status(200).json({
-				error: false,
-				message: 'Purchase processed successfully',
+				error: productsNotPurchased.length > 0,
+				message:
+					productsNotPurchased.length > 0
+						? 'Purchase processed but with unavailable products'
+						: 'Purchase processed successfully',
 				payload: {
 					ticket: ticket || null,
-					notProcessed: productsNotPurchased.map((p) => p.product._id),
+					notProcessed: productsNotPurchased.map((p) => ({
+						productId: p.product._id,
+						quantity: p.quantity,
+						reason: 'Insufficient stock',
+					})),
 					cart: updatedCart,
 				},
 			});

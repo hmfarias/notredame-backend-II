@@ -53,7 +53,8 @@
   - 📥 [Método GET en Current](#getcurrent)
 - 🛍️ [Gestión de Productos](#productos)
 - 🛒 [Gestión de Carritos](#carritos)
-  - 🔄 [Estrategia de Gestión de Carrito - Usuarios Autenticados y Visitantes](#estrategiacarrito)
+  - 🧠 [Estrategia de Gestión de Carrito](#estrategiacarrito)
+  - 🛒✅ [Comprar el Carrito](#comprarcarrito)
 - [🤝 Contribuyendo](#contribuyendo)
 - [📄 Licencia](#licencia)
 - [📬 Contacto](#contacto)
@@ -888,6 +889,110 @@ La aplicación implementa una estrategia robusta y flexible para la gestión del
 - Si el carrito queda vacío (sin productos), se puede vaciar o eliminar automáticamente:
 - Para el localStorage, se elimina la clave cartId.
 - Para el usuario autenticado, el carrito nunca se elimina de la base de datos, solo se vacía.
+
+[Volver al menú](#top)
+
+<hr>
+
+<a name="comprarcarrito"></a>
+
+## 🛒✅ Comprar el Carrito `/api/carts/:cid/purchase`
+
+Este endpoint permite procesar la compra de todos los productos en un carrito determinado. Valida el stock de cada producto y genera un ticket en caso de éxito.
+
+### 🧠 Lógica de funcionamiento
+
+1. **Validación**:
+
+   - Se verifica que el `cartId` tenga un formato válido.
+   - Se busca el carrito por su ID.
+   - Se verifica que el carrito tenga productos cargados.
+
+2. **Procesamiento del carrito**:
+
+   - Se recorre cada producto del carrito.
+   - Si el producto tiene stock suficiente:
+     - Se descuenta el stock del producto.
+     - Se agrega al listado de productos comprados.
+   - Si no tiene stock suficiente:
+     - Se agrega al listado de productos no procesados.
+
+3. **Generación del ticket**:
+
+   - Si al menos un producto pudo ser comprado:
+     - Se genera un ticket con:
+       - `code`: código único autogenerado.
+       - `amount`: monto total de la compra.
+       - `purchaser`: correo del usuario comprador.
+       - `products`: array con los productos comprados y subtotales.
+   - Si **ningún producto** pudo ser comprado:
+     - No se genera ticket.
+     - Se devuelve status `422` (Precondición fallida).
+
+4. **Actualización del carrito**:
+   - El carrito es actualizado para conservar solo los productos que **no** pudieron comprarse.
+
+---
+
+### ✅ Posibles respuestas
+
+| Código | Situación                                            |
+| ------ | ---------------------------------------------------- |
+| `200`  | Compra exitosa con al menos un producto comprado.    |
+| `422`  | Ningún producto pudo comprarse (stock insuficiente). |
+| `404`  | Carrito no encontrado o vacío.                       |
+| `400`  | ID de carrito inválido.                              |
+
+---
+
+### 📦 Ejemplo de respuesta `200 OK`
+
+```json
+{
+	"error": false,
+	"message": "Purchase processed successfully",
+	"payload": {
+		"ticket": {
+			"code": "XJ7#L4F9$QRW1",
+			"amount": 890.5,
+			"purchaser": "usuario@example.com",
+			"products": [
+				{
+					"product": "665a6c25f23b8b412ecb05c2",
+					"quantity": 2,
+					"subtotal": 480.5
+				}
+			]
+		},
+		"notProcessed": [
+			{
+				"productId": "665a6c25f23b8b412ecb05c3",
+				"title": "Tablet XYZ",
+				"quantity": 3,
+				"reason": "Insufficient stock"
+			}
+		],
+		"cart": {
+			"_id": "665a6c25f23b8b412ecb05b7",
+			"products": [
+				{
+					"product": {
+						"_id": "665a6c25f23b8b412ecb05c3",
+						"title": "Tablet XYZ",
+						"price": 300,
+						"thumbnail": "https://example.com/img.png"
+					},
+					"quantity": 3,
+					"totalProduct": 900
+				}
+			],
+			"totalCart": 900
+		}
+	}
+}
+```
+
+[Volver al menú](#top)
 
 <hr>
 

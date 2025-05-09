@@ -31,6 +31,7 @@ export const categoryList = [
 	'womens-jewellery',
 	'womens-shoes',
 	'womens-watches',
+	'Herramientas',
 ];
 
 const productSchema = new Schema(
