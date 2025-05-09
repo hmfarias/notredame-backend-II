@@ -180,7 +180,7 @@ Antes de ejecutar la aplicación, es necesario crear un archivo .env en la carpe
 * Environment variables
 */
 # Server Configuration
-PORT=3000
+PORT=8080
 
 SECRET_KEY="X9v$3jK@pLm7!zQwT2"
 
