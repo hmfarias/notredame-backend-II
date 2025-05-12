@@ -1,4 +1,5 @@
 import { ProductsDAOMongo as ProductsDAO } from '../dao/ProductsDAOMongo.js';
+import { ProductsDTO } from '../dto/products.dto.js';
 
 class ProductsService {
 	constructor(dao) {
@@ -7,27 +8,32 @@ class ProductsService {
 
 	//* GET all product with pagination *****************************/
 	async getProducts(filter = {}, options = {}) {
-		return await this.productsDAO.get(filter, options);
+		const products = await this.productsDAO.get(filter, options);
+		return products ? ProductsDTO.formatProductOutput(products) : null;
 	}
 
 	//* GET a product by filter ***************************************/
 	async getProductByFilter(filter) {
-		return await this.productsDAO.getBy(filter);
+		const product = await this.productsDAO.getBy(filter);
+		return product ? ProductsDTO.formatProductOutput(product) : null;
 	}
 
 	//* CREATE a new product *****************************************/
 	async createProduct(product) {
-		return await this.productsDAO.create(product);
+		const newProduct = await this.productsDAO.create(product);
+		return newProduct ? ProductsDTO.formatProductOutput(newProduct) : null;
 	}
 
 	//* UPDATE a product  *********************************************/
 	async updateProduct(id, product) {
-		return await this.productsDAO.update(id, product);
+		const productUpdated = await this.productsDAO.update(id, product);
+		return productUpdated ? ProductsDTO.formatProductOutput(productUpdated) : null;
 	}
 
 	//* DELETE ***************************************************/
 	async deleteProduct(id) {
-		return await this.productsDAO.delete(id);
+		const product = await this.productsDAO.delete(id);
+		return product ? ProductsDTO.formatProductOutput(product) : null;
 	}
 }
 export const productsService = new ProductsService(ProductsDAO);

@@ -9,6 +9,7 @@ import { router as usersRouter } from './routes/users.router.js';
 import { router as viewsRouter } from './routes/views.router.js';
 import { router as productsRouter } from './routes/products.router.js';
 import { router as cartRouter } from './routes/carts.router.js';
+import { router as ticketsRouter } from './routes/tickets.router.js';
 
 import cookieParser from 'cookie-parser';
 
@@ -42,6 +43,7 @@ app.use('/api/sessions', sessionsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);
+app.use('/api/tickets', ticketsRouter);
 
 //connect to the database
 await connectDB();

@@ -686,11 +686,14 @@ export class CartsController {
 			// Create ticket only if there are items purchased
 			let ticket = null;
 			if (productsPurchased.length > 0) {
-				ticket = await ticketsService.createTicket({
+				const createdTicket = await ticketsService.createTicket({
 					amount: roundToTwoDecimals(totalAmount),
 					purchaser: user.email.toLowerCase(),
 					products: productsPurchased,
 				});
+
+				// Re-fetch the ticket with populated product data
+				ticket = await ticketsService.getTicketByFilter({ _id: createdTicket._id }, true);
 			}
 
 			// Update the cart with only the products that could not be purchased
@@ -714,17 +717,18 @@ export class CartsController {
 						ticket: null,
 						notProcessed: productsNotPurchased.map((p) => ({
 							productId: p.product._id,
+							title: p.product.title,
 							quantity: p.quantity,
 							reason: 'Insufficient stock',
 						})),
-						cart: updatedCart,
+						remainingCart: updatedCart,
 					},
 				});
 			}
 
 			// Response if products were purchased
 			return res.status(200).json({
-				error: productsNotPurchased.length > 0,
+				error: false,
 				message:
 					productsNotPurchased.length > 0
 						? 'Purchase processed but with unavailable products'
@@ -733,10 +737,11 @@ export class CartsController {
 					ticket: ticket || null,
 					notProcessed: productsNotPurchased.map((p) => ({
 						productId: p.product._id,
+						title: p.product.title,
 						quantity: p.quantity,
 						reason: 'Insufficient stock',
 					})),
-					cart: updatedCart,
+					remainingCart: updatedCart,
 				},
 			});
 		} catch (error) {

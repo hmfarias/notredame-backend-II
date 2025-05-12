@@ -13,8 +13,12 @@ export class TicketsDAOMongo {
 	}
 
 	//* GET a ticket by filter ****************************************/
-	static async getBy(filter) {
-		return await TicketModel.findOne(filter).lean();
+	static async getBy(filter, populate = false) {
+		let query = TicketModel.findOne(filter);
+		if (populate) {
+			query = query.populate('products.product', '_id title price thumbnail');
+		}
+		return await query.lean();
 	}
 
 	//* DELETE a ticket by ID *****************************************/

@@ -199,7 +199,7 @@ export class ProductsController {
 			}
 
 			// Validate category
-			if (!categoriesList.includes(category)) {
+			if (!categoriesList.includes(category.toLowerCase())) {
 				return res.status(400).json({
 					error: true,
 					message: 'Invalid category',
@@ -229,7 +229,7 @@ export class ProductsController {
 				code,
 				price,
 				stock,
-				category,
+				category: category.toLowerCase(),
 				thumbnail,
 				availabilityStatus,
 			};

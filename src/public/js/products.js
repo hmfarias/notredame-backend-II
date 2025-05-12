@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		'fragrances',
 		'furniture',
 		'groceries',
+		'herramientas',
 		'home-decoration',
 		'kitchen-accessories',
 		'laptops',

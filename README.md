@@ -385,6 +385,10 @@ La aplicación tiene la siguiente estructura básica de archivos y carpetas:
 │   └── TiquetsDAO.js  // Lógica de interacción con la base de datos de tiquets
 │   └── UsersDAO.js  // Lógica de interacción con la base de datos de usuarios
 │
+├── dto/ // Lógica de transformación de datos
+│   └── products.dto.js  // Formateo de datos de productos
+│   └── users.dto.js  // Formateo de datos de usuarios
+│
 ├── logs/ // Archivos de registro de errores inesperados en la aplicación - Inicialmente no existe y se crea automáticamente al ocurrir el primer error inesperado
 │
 ├── middlewares/
@@ -680,6 +684,54 @@ Internamente, se aplica la función formatUserOutput() a cada usuario (o al úni
 ```
 
 🔒 El campo password ha sido removido por seguridad.
+
+### 🧾 Data Transfer Object (DTO) - Para PRODUCTs
+
+El **DTO (Data Transfer Object)** para productos permite estructurar y filtrar los datos que serán enviados desde el backend al cliente.
+
+### 🎯 Propósito
+
+- Evitar exponer campos innecesarios o sensibles.
+- Estandarizar la salida de datos para los consumidores de la API.
+- Mejorar la seguridad y legibilidad de las respuestas JSON.
+- Desacoplar la lógica interna de la estructura de datos expuesta.
+
+### 📦 Implementación
+
+El DTO se encuentra en `src/dto/ProductsDTO.js`. Su método principal es:
+
+```js
+static formatProductOutput(data)
+```
+
+Este método recibe uno o varios productos y devuelve una versión formateada que incluye únicamente los siguientes campos: - \_id - title - description - price - stock - status - category (en mayúsculas)
+
+📤 Ejemplo de salida formateada
+
+```json
+{
+	"_id": "647dc88c7dd22d657a291287",
+	"title": "Smartphone Galaxy",
+	"description": "High performance device with AMOLED screen",
+	"price": 699.99,
+	"stock": 15,
+	"status": true,
+	"category": "SMARTPHONES"
+}
+```
+
+🔁 Uso en la Capa de Servicio
+
+El DTO se aplica en products.service.js, lo que asegura que los datos lleguen al cliente ya transformados:
+
+```js
+async getProducts(filter = {}, options = {}) {
+  const products = await this.productsDAO.get(filter, options);
+  return products ? ProductsDTO.formatProductOutput(products) : null;
+}
+```
+
+✅ Beneficios - Estandarización y limpieza de la salida de datos. - Reducción del acoplamiento entre las capas internas y externas. - Mejora de la mantenibilidad y escalabilidad del sistema.
 
 [Volver al menú](#top)
 

@@ -11,6 +11,7 @@ export const categoryList = [
 	'fragrances',
 	'furniture',
 	'groceries',
+	'herramientas',
 	'home-decoration',
 	'kitchen-accessories',
 	'laptops',
@@ -31,7 +32,6 @@ export const categoryList = [
 	'womens-jewellery',
 	'womens-shoes',
 	'womens-watches',
-	'Herramientas',
 ];
 
 const productSchema = new Schema(
@@ -49,6 +49,7 @@ const productSchema = new Schema(
 		code: { type: String, required: false, default: 'RCH45Q1A' },
 		availabilityStatus: { type: String, default: 'in-stock' },
 		thumbnail: { type: String, required: false },
+		status: { type: Boolean, default: true },
 	},
 	{
 		timestamps: true,

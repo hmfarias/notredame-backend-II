@@ -11,8 +11,8 @@ class TicketsService {
 	}
 
 	//* GET a ticket by filter ****************************************/
-	async getTicketByFilter(filter) {
-		return await this.ticketsDAO.getBy(filter);
+	async getTicketByFilter(filter, populate = false) {
+		return await this.ticketsDAO.getBy(filter, populate);
 	}
 
 	//* GET all tickets ***********************************************/
