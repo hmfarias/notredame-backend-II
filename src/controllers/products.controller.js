@@ -353,7 +353,7 @@ export class ProductsController {
 				payload: { updatedProduct },
 			});
 		} catch (error) {
-			console.error('❌ Error deleting the product:', error.message);
+			console.error('❌ Error updating the product:', error.message);
 			errorHandler(error, res);
 		}
 	}

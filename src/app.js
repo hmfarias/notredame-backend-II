@@ -11,6 +11,7 @@ import { router as viewsRouter } from './routes/views.router.js';
 import { router as productsRouter } from './routes/products.router.js';
 import { router as cartRouter } from './routes/carts.router.js';
 import { router as ticketsRouter } from './routes/tickets.router.js';
+import { router as categoriesRouter } from './routes/categories.router.js';
 
 import cookieParser from 'cookie-parser';
 
@@ -46,6 +47,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);
 app.use('/api/tickets', ticketsRouter);
+app.use('/api/categories', categoriesRouter);
 
 //connect to the database
 await connectDB();
