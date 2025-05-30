@@ -154,6 +154,32 @@ export class ProductsController {
 		}
 	}
 
+	//* GET products by category *********************************/
+	static async getProductsByCategory(req, res) {
+		try {
+			const category = req.params.category;
+
+			const products = await productsService.getProductsByCategory(category);
+
+			if (!products || products.length === 0) {
+				return res.status(404).json({
+					message: 'No products found',
+					error: true,
+					payload: null,
+				});
+			}
+
+			return res.status(200).json({
+				error: false,
+				message: `Products fetched successfully`,
+				payload: { products },
+			});
+		} catch (error) {
+			console.error('❌ Error fetching products by category:', error.message);
+			errorHandler(error, res);
+		}
+	}
+
 	//* CREATE a new product *****************************************/
 	static async createProduct(req, res) {
 		try {

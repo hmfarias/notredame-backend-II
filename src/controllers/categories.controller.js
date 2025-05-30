@@ -28,13 +28,13 @@ export class CategoriesController {
 	//* GET A CATEGORY BY ID **********************************************/
 	static async getCategory(req, res) {
 		try {
-			const categoryId = req.params.cid;
+			const categoryId = req.params.id;
 
 			// verify that the ID has valid format
 			if (!isValidObjectId(categoryId)) {
 				return res.status(400).json({
 					error: true,
-					message: 'Invalid category ID format',
+					message: `Invalid category ID format ${categoryId}`,
 					payload: null,
 				});
 			}

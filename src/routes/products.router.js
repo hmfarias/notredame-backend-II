@@ -12,6 +12,9 @@ router.get('/', ProductsController.getProducts);
 //* GET a product by id *****************************************/
 router.get('/:id', ProductsController.getProduct);
 
+//* GET products by category *********************************/
+router.get('/category/:category', ProductsController.getProductsByCategory);
+
 //* CREATE a new product ****************************************/
 router.post(
 	'/',

@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import passport from 'passport';
 import { categoryList } from './dao/models/product.model.js';
+import mongoose from 'mongoose';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -73,7 +74,8 @@ export const passportCall = (strategy) => {
 };
 
 // verify if and ID has valid format
-export const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+// export const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+export const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
 // round to two decimals
 export const roundToTwoDecimals = (value) => {

@@ -18,6 +18,13 @@ class ProductsService {
 		return product ? ProductsDTO.formatProductOutput(product) : null;
 	}
 
+	//* GET products by category *********************************/
+	async getProductsByCategory(category, options = {}) {
+		const filter = { category: category };
+		const products = await this.productsDAO.get(filter, options);
+		return products ? ProductsDTO.formatProductOutput(products) : null;
+	}
+
 	//* CREATE a new product *****************************************/
 	async createProduct(product) {
 		const newProduct = await this.productsDAO.create(product);
