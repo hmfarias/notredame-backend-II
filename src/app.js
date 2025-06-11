@@ -24,9 +24,14 @@ import { initPassport } from './config/passport.config.js';
 const app = express();
 
 // app middlewares
+const isProduction = config.NODE_ENV === 'production';
+
+//define the permitted origins
 const allowedOrigins = [
-	'http://localhost:5173',
-	'https://proyecto-notredame.onrender.com',
+	'http://localhost:5173', // local development
+	'http://localhost:8080', //If you try the backend from the browser
+	'https://hmfarias.github.io', // GitHub Pages principal
+	'https://hmfarias.github.io/proyecto-notredame', // full path of the project (in case the browser interprets it like that)
 ];
 
 app.use(
@@ -35,12 +40,14 @@ app.use(
 			if (!origin || allowedOrigins.includes(origin)) {
 				callback(null, true);
 			} else {
+				console.warn('❌ CORS blocked origin:', origin);
 				callback(new Error('Not allowed by CORS'));
 			}
 		},
-		credentials: true,
+		credentials: true, // To send cookies (token, session, etc.)
 	})
 );
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./src/public'));

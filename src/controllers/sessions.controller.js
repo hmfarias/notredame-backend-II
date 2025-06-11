@@ -48,9 +48,11 @@ export class SessionsController {
 			});
 
 			// Set JWT token in cookie
+			const isProduction = process.env.NODE_ENV === 'production';
 			res.cookie('token', token, {
 				httpOnly: true,
-				sameSite: 'strict',
+				sameSite: isProduction ? 'none' : 'lax', // None for Cross-Site, Lax for Development
+				secure: isProduction, // Secure only in production (HTTPS)
 				maxAge: 1000 * 60 * 60 * 24, //one day max duration
 			});
 
@@ -92,7 +94,11 @@ export class SessionsController {
 
 	//* Logout - ******************************************************************
 	static async logout(req, res) {
-		res.clearCookie('token');
+		res.clearCookie('token', {
+			httpOnly: true,
+			sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+			secure: process.env.NODE_ENV === 'production',
+		});
 		res.status(200).json({ error: false, message: 'Logout successful', payload: null });
 	}
 	//* Error -  *****************************************************************
