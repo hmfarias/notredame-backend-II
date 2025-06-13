@@ -3,7 +3,7 @@ import { CartModel } from './models/cart.model.js';
 export class CartsDAOMongo {
 	//* GET all carts ---------------------------------------------------
 	static async get() {
-		return await CartModel.find().lean();
+		return await CartModel.find();
 	}
 
 	//* CREATE a new cart  ---------------------------------------------------
@@ -14,7 +14,10 @@ export class CartsDAOMongo {
 
 	//* GET a cart by ID or filter -------------------------------------------
 	static async getBy(filter) {
-		return await CartModel.findOne(filter).lean();
+		// return await CartModel.findOne(filter).lean();
+		return await CartModel.findOne(filter)
+			.populate('products.product', '_id title price thumbnail')
+			.lean();
 	}
 
 	//* UPDATE a cart's products and totalCart value ------------------------

@@ -29,9 +29,11 @@ const isProduction = config.NODE_ENV === 'production';
 //define the permitted origins
 const allowedOrigins = [
 	'http://localhost:5173', // local development
+	'http://localhost:5173/proyecto-notredame/', // local development with full path
 	'http://localhost:8080', //If you try the backend from the browser
 	'https://hmfarias.github.io', // GitHub Pages principal
-	'https://hmfarias.github.io/proyecto-notredame', // full path of the project (in case the browser interprets it like that)
+	'https://hmfarias.github.io/proyecto-notredame', // full path of the project
+	'https://notredame-backend-ii.onrender.com', // Render.com production backend
 ];
 
 app.use(
